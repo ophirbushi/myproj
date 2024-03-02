@@ -1,7 +1,7 @@
-import { defaultConfig } from './constants'
-import { initState } from './init'
-import * as engine from './engine'
-import { Input, Output, OutputMessage } from './models'
+import { defaultConfig } from './engine/constants'
+import { initState } from './engine/init'
+import * as engine from './engine/engine'
+import { Input, Output, OutputMessage } from './engine/models'
 
 const input: Input = {
   getInput: async <T>() => {
