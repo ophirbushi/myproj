@@ -3,24 +3,26 @@ export interface Config {
   initCashPerPlayer: number
   maxStocks: number
   unmergableHotelSize: number
-  hotels: [string, number][]
+  hotels: { hotelName: string, prestige: number }[]
   possibleGameEndHotelSize: number
   numberOfTilesPerPlayer: number
-  priceTable: [number, number, number[]] // init, step, levels
+  priceTable: { init: number, step: number, levels: number[] }
   boardWidth: number
   boardHeight: number
 }
 
-export type Phase = 'pregame' | 'selectTile' | 'selectHotel' | 'decideStocks' | 'buyStocks' | 'gameEnd'
+export type Phase = 'build' | 'establish' | 'merge' | 'mergeDecide' | 'invest' | 'gameEnd'
+
+export type TileEffect = 'replace' | 'merge' | 'establish' | 'noop'
 
 export interface State {
   config: Config
   tiles: [number, number][]
   discardedTiles: [number, number][]
-  hotels: [number, number, number][] // hotelIndex, x, y
+  hotels: { hotelIndex: number, x: number, y: number }[]
   cash: number[]
-  playerTiles: [number, number][][]
-  stocks: number[][] // player, hotelIndex, numberOfStocks
+  playerTiles: { playerIndex: number, tiles: [number, number][] }[]
+  stocks: { [hotelIndex: number]: number[] }
   phaseId: Phase
   playerIndex: number
   decidingPlayerIndex: number

@@ -9,17 +9,20 @@ const initCash = (state: State): State => {
 }
 
 const initPlayerTiles = (state: State): State => {
-  const playerTiles: [number, number][][] = []
+  const playerTiles: { playerIndex: number, tiles: [number, number][] }[] = []
   for (let i = 0; i < state.config.numberOfPlayers; i++) {
-    playerTiles[i] = []
+    playerTiles[i] = {
+      playerIndex: i,
+      tiles: []
+    }
   }
   return { ...state, playerTiles }
 }
 
 const initStocks = (state: State): State => {
-  const stocks: number[][] = []
-  for (let i = 0; i < state.config.numberOfPlayers; i++) {
-    stocks[i] = new Array(state.config.hotels.length).fill(0)
+  const stocks: { [hotelIndex: number]: number[] } = {}
+  for (let i = 0; i < state.config.hotels.length; i++) {
+    stocks[i] = new Array(state.config.numberOfPlayers).fill(0)
   }
   return { ...state, stocks }
 }
@@ -35,7 +38,7 @@ export const initState = (config: Config): State => {
     stocks: [],
     playerIndex: 0,
     decidingPlayerIndex: 0,
-    phaseId: 'pregame'
+    phaseId: 'build'
   }
   state = initCash(state)
   state = initPlayerTiles(state)

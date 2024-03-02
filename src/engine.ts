@@ -1,41 +1,121 @@
-import { Input, Output, OutputMessageCode, State } from './models'
+import { Input, Output, OutputMessageCode, State, TileEffect } from './models'
 
 const isGameEnd = (state: State): boolean => {
   return false
 }
 
-const validateSelectTileInput = (state: State, input: [number, number]): boolean => {
-  if (!Array.isArray(input) || input.length !== 2) {
-    return false
-  }
-  const [x, y] = input
-  if (!Number.isInteger(x) || !Number.isInteger(y)) {
-    return false
-  }
-  return x >= 0 && x < state.config.boardWidth && y >= 0 && y < state.config.boardHeight
-}
-
-const validateInput = (state: State, input: any): boolean => {
-  switch (state.phaseId) {
-    case 'selectTile':
-      return validateSelectTileInput(state, input)
-    default:
-      return false
-  }
-}
-
-const applySelectTileInput = (state: State, input: [number, number]) => {
-  return {...state,}
-}
-
 const applyInput = (state: State, input: any): State => {
   switch (state.phaseId) {
-    case 'selectTile':
-      return state
+    case 'build':
+      return doBuild(state, input)
+    case 'establish':
+      return doEstablish(state, input)
+    case 'merge':
+      return doMerge(state, input)
+    case 'mergeDecide': case 'mergeDecide':
+      return doMergeDecide(state, input)
+    case 'invest':
+      return doInvest(state, input)
     default:
       break;
   }
   return state
+}
+
+const getTileEffect = (state: State, input: [number, number]): TileEffect => {
+  return 'noop'
+}
+
+
+let buildTile = (state: State, input: [number, number]): State => {
+  return state
+}
+
+
+let replaceTile = (state: State, input: [number, number]): State => {
+  return state
+}
+
+const doEstablish = (state: State, input: [number, number]): State => {
+  return {
+    ...state,
+    phaseId: 'invest',
+  }
+}
+
+const doMerge = (state: State, input: [number, number]): State => {
+  return {
+    ...state,
+    phaseId: 'mergeDecide',
+    decidingPlayerIndex: getNextDecidingPlayerIndex(state)
+  }
+}
+
+const getNextDecidingPlayerIndex = (state: State): number => {
+  return -1
+}
+
+const applyMergeDecision = (state: State, input: [number, number]): State => {
+  return state
+}
+
+const doMergeDecide = (state: State, input: [number, number]): State => {
+  state = {
+    ...state,
+    ...applyMergeDecision(state, input),
+  }
+  let nextDecidingPlayerIndex = getNextDecidingPlayerIndex(state)
+  if (nextDecidingPlayerIndex !== -1) {
+    return {
+      ...state,
+      decidingPlayerIndex: nextDecidingPlayerIndex
+    }
+  }
+  return {
+    ...state,
+    phaseId: 'invest'
+  }
+}
+
+const doInvest = (state: State, input: [number, number]): State => {
+  return {
+    ...state,
+    phaseId: 'build'
+  }
+}
+
+const doBuild = (state: State, input: [number, number]): State => {
+  const effect = getTileEffect(state, input)
+  switch (effect) {
+    case 'noop':
+      return {
+        ...state,
+        ...buildTile(state, input),
+        phaseId: 'invest',
+      }
+    case 'replace':
+      return {
+        ...state,
+        ...replaceTile(state, input),
+        phaseId: 'build',
+      }
+    case 'merge':
+      return {
+        ...state,
+        ...buildTile(state, input),
+        phaseId: 'merge',
+      }
+    case 'establish':
+      return {
+        ...state,
+        ...buildTile(state, input),
+        phaseId: 'establish',
+      }
+  }
+}
+
+const validateInput = (state: State, input: any): boolean => {
+  return true
 }
 
 export const run = async (state: State, input: Input, output: Output) => {
@@ -55,4 +135,3 @@ export const run = async (state: State, input: Input, output: Output) => {
     output.broadcast({ state, code: OutputMessageCode.SUCCESS, log: 'ok' })
   }
 }
-
