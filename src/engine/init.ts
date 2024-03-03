@@ -33,10 +33,10 @@ export const initState = (config: Config): State => {
     cash: [],
     hotels: [],
     playerTiles: [],
-    tiles: [],
+    boardTiles: [],
     discardedTiles: [],
     stocks: [],
-    playerIndex: 0,
+    currentPlayerIndex: 0,
     decidingPlayerIndex: 0,
     phaseId: 'build'
   }

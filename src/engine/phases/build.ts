@@ -1,39 +1,32 @@
-import { getTileEffect } from '../helpers'
+import { getTileByIndex, getTileEffect, playerBuildTile, playerReplaceTile } from '../helpers'
 import { State } from '../models'
 
-const buildTile = (state: State, input: [number, number]): State => {
-  return state
-}
-
-const replaceTile = (state: State, input: [number, number]): State => {
-  return state
-}
-
-export const doBuild = (state: State, input: [number, number]): State => {
-  const effect = getTileEffect(state, input)
+export const doBuild = (state: State, input: number): State => {
+  const tile = getTileByIndex(state, input)
+  const effect = getTileEffect(state, tile)
   switch (effect) {
     case 'noop':
       return {
         ...state,
-        ...buildTile(state, input),
+        ...playerBuildTile(state, input),
         phaseId: 'invest',
       }
     case 'replace':
       return {
         ...state,
-        ...replaceTile(state, input),
+        ...playerReplaceTile(state, input),
         phaseId: 'build',
       }
     case 'merge':
       return {
         ...state,
-        ...buildTile(state, input),
+        ...playerBuildTile(state, input),
         phaseId: 'merge',
       }
     case 'establish':
       return {
         ...state,
-        ...buildTile(state, input),
+        ...playerBuildTile(state, input),
         phaseId: 'establish',
       }
   }

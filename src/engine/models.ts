@@ -17,14 +17,15 @@ export type TileEffect = 'replace' | 'merge' | 'establish' | 'noop'
 
 export interface State {
   config: Config
-  tiles: [number, number][]
+  tilesPile: [number, number][]
+  boardTiles: [number, number][]
   discardedTiles: [number, number][]
   hotels: { hotelIndex: number, x: number, y: number }[]
   cash: number[]
   playerTiles: { playerIndex: number, tiles: [number, number][] }[]
   stocks: { [hotelIndex: number]: number[] }
   phaseId: Phase
-  playerIndex: number
+  currentPlayerIndex: number
   decidingPlayerIndex: number
 }
 
