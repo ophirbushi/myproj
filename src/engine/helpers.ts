@@ -5,7 +5,7 @@ export const getNextDecidingPlayerIndex = (state: State): number => {
 }
 
 export const getTileByIndex = (state: State, index: number): [number, number] => {
-  return state.playerTiles[state.currentPlayerIndex].tiles[index]
+  return state.playerTiles[state.currentPlayerIndex].getHotelTiles[index]
 }
 
 export const getTileEffect = (state: State, input: [number, number]): TileEffect => {
@@ -29,7 +29,7 @@ export const playerDrawTile = (state: State): State => {
   const tile = tilesPile.pop()
   const playerTiles = clone(state.playerTiles)
   if (tile !== undefined) {
-    playerTiles[state.currentPlayerIndex].tiles.push(tile)
+    playerTiles[state.currentPlayerIndex].getHotelTiles.push(tile)
   }
   return {
     ...state,
@@ -40,7 +40,7 @@ export const playerDrawTile = (state: State): State => {
 
 export const playerDiscardTile = (state: State, tileIndex: number): State => {
   const playerTiles = clone(state.playerTiles)
-  const [tile] = playerTiles[state.currentPlayerIndex].tiles.splice(tileIndex, 1)
+  const [tile] = playerTiles[state.currentPlayerIndex].getHotelTiles.splice(tileIndex, 1)
   const discardedTiles = clone(state.discardedTiles)
   if (tile !== undefined) {
     discardedTiles.push(tile)
@@ -69,4 +69,24 @@ export const playerReplaceTile = (state: State, tileIndex: number): State => {
     ...playerDiscardTile(state, tileIndex),
     ...playerDrawTile(state),
   }
+}
+
+const isNeighboringTile = (a: [number, number], b: [number, number]): boolean => {
+  return Math.abs(a[0] - b[0]) === 1 || Math.abs(a[1] - b[1]) === 1
+}
+
+// const iterateTiles = (list: [number, number][], tile: [number, number], result: [number, number][]): [number, number][] => {
+
+// }
+
+export const getHotelTiles = (state: State, hotelIndex: number): [number, number][] => {
+  const hotel = state.hotels[hotelIndex]
+  const startTile = [hotel.x, hotel.y]
+
+
+
+
+  const hotelTiles: [number, number][] = []
+
+  return hotelTiles
 }
