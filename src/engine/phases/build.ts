@@ -1,4 +1,5 @@
-import { getTileByIndex, getTileEffect, playerBuildTile, playerReplaceTile } from '../helpers'
+import { playerBuildTile, playerReplaceTile } from '../actions'
+import { getTileByIndex, getTileEffect } from '../helpers'
 import { State } from '../models'
 
 export const doBuild = (state: State, input: number): State => {

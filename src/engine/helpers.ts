@@ -24,53 +24,6 @@ export const clone = <T>(obj: T): T => {
   return JSON.parse(JSON.stringify(obj))
 }
 
-export const playerDrawTile = (state: State): State => {
-  const tilesPile = clone(state.tilesPile)
-  const tile = tilesPile.pop()
-  const playerTiles = clone(state.playerTiles)
-  if (tile !== undefined) {
-    playerTiles[state.currentPlayerIndex].tiles.push(tile)
-  }
-  return {
-    ...state,
-    tilesPile,
-    playerTiles
-  }
-}
-
-export const playerDiscardTile = (state: State, tileIndex: number): State => {
-  const playerTiles = clone(state.playerTiles)
-  const [tile] = playerTiles[state.currentPlayerIndex].tiles.splice(tileIndex, 1)
-  const discardedTiles = clone(state.discardedTiles)
-  if (tile !== undefined) {
-    discardedTiles.push(tile)
-  }
-  return {
-    ...state,
-    discardedTiles,
-    playerTiles
-  }
-}
-
-export const playerBuildTile = (state: State, tileIndex: number): State => {
-  const boardTiles = clone(state.boardTiles)
-  const tile = getTileByIndex(state, tileIndex)
-  boardTiles.push(tile)
-  return {
-    ...state,
-    ...playerDiscardTile(state, tileIndex),
-    boardTiles
-  }
-}
-
-export const playerReplaceTile = (state: State, tileIndex: number): State => {
-  return {
-    ...state,
-    ...playerDiscardTile(state, tileIndex),
-    ...playerDrawTile(state),
-  }
-}
-
 const isNeighboringTile = (a: [number, number], b: [number, number]): boolean => {
   return Math.abs(a[0] - b[0]) === 1 || Math.abs(a[1] - b[1]) === 1
 }
@@ -95,4 +48,12 @@ export const getHotelTiles = (state: State, hotelIndex: number): [number, number
 
 export const getHotelTilesCount = (state: State, hotelIndex: number): number => {
   return getHotelTiles(state, hotelIndex).length
+}
+
+export const shuffleArray = <T>(array: T[]): T[] => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 }
