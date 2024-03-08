@@ -11,18 +11,20 @@ export interface Config {
   boardHeight: number
 }
 
+export type Tile = [number, number]
+
 export type Phase = 'build' | 'establish' | 'merge' | 'mergeDecide' | 'invest' | 'gameEnd'
 
 export type TileEffect = 'replace' | 'merge' | 'establish' | 'noop'
 
 export interface State {
   config: Config
-  tilesPile: [number, number][]
-  boardTiles: [number, number][]
-  discardedTiles: [number, number][]
+  tilesPile: Tile[]
+  boardTiles: Tile[]
+  discardedTiles: Tile[]
   hotels: { hotelIndex: number, x: number, y: number }[]
   cash: number[]
-  playerTiles: { playerIndex: number, tiles: [number, number][] }[]
+  playerTiles: { playerIndex: number, tiles: Tile[] }[]
   stocks: { [hotelIndex: number]: number[] }
   phaseId: Phase
   currentPlayerIndex: number

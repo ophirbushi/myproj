@@ -57,3 +57,10 @@ export const playerEstablishHotel = (state: State, hotelIndex: number): State =>
     hotels
   }
 }
+
+export const nextPlayer = (state: State): State => {
+  return {
+    ...state,
+    currentPlayerIndex: (state.currentPlayerIndex + 1) % state.playerTiles.length
+  }
+}

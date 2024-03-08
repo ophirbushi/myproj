@@ -1,19 +1,42 @@
-<h1>
-  {{ title }}
-</h1>
+<div class="container" *ngIf="state">
 
-<input type="number" [(ngModel)]="input" />
 
-<button (click)="fetchState()">refresh</button>
-<button (click)="postInput()">post input</button>
+  <h1>
+    {{ state?.phaseId }}
+  </h1>
 
-<div *ngIf="state">
-  <div style="display: table;">
+  <input type="number" [(ngModel)]="input" />
+
+  <button (click)="fetchState()">refresh</button>
+  <button (click)="postInput()">post input</button>
+
+
+
+  <div style="display: table; margin-top: 12px;">
     <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
       <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
-        <span *ngIf="exists([x, y])">{{x}}, {{y}}</span>
+        <div class="tile" [class.occupied]="exists([x, y])" [class.available-to-play]="availableToPlay([x, y])"
+          (click)="onTileClick([x, y])">
+        </div>
       </div>
     </div>
   </div>
+
+
+  <!-- <div style="display: flex; gap: 12px;">
+    <div *ngFor="let tile of getCurrentPlayerTiles()">
+      {{ tile[0] }}, {{ tile[1] }}
+    </div>
+  </div> -->
+
+  <div>
+    <div>
+        player index: {{ state.currentPlayerIndex }}
+    </div>
+    <div>
+        player cash : {{ state.cash[state.currentPlayerIndex] }}
+    </div>
+  </div>
+
 
 </div>

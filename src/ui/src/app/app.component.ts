@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { State } from '../../../engine/models'
+import { State, Tile } from '../../../engine/models'
+import { isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -39,7 +40,26 @@ export class AppComponent {
     return array
   }
 
-  exists(tile: [number, number]) {
-    return this.state.boardTiles.some(t => t[0] == tile[0] && t[1] == tile[1])
+  exists(tile: Tile) {
+    return this.state.boardTiles.some(t => isEqualTiles(t, tile))
+  }
+
+  availableToPlay(tile: Tile) {
+    if (this.state.phaseId !== 'build') {
+      return false
+    }
+    return this.getCurrentPlayerTiles().some(t => isEqualTiles(t, tile))
+  }
+
+  getCurrentPlayerTiles() {
+    return this.state.playerTiles[this.state.currentPlayerIndex].tiles
+  }
+
+  onTileClick(tile: Tile) {
+    if (!this.availableToPlay(tile)) {
+      return
+    }
+    this.input = this.getCurrentPlayerTiles().findIndex(t => isEqualTiles(t, tile))
+    this.postInput()
   }
 }

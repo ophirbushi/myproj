@@ -1,14 +1,14 @@
 import { getNextDecidingPlayerIndex } from '../helpers'
-import { State } from '../models'
+import { State, Tile } from '../models'
 
-const applyMergeDecision = (state: State, input: [number, number]): State => {
+const applyMergeDecision = (state: State, tile: Tile): State => {
   return state
 }
 
-export const doMergeDecide = (state: State, input: [number, number]): State => {
+export const doMergeDecide = (state: State, tile: Tile): State => {
   state = {
     ...state,
-    ...applyMergeDecision(state, input),
+    ...applyMergeDecision(state, tile),
   }
   let nextDecidingPlayerIndex = getNextDecidingPlayerIndex(state)
   if (nextDecidingPlayerIndex !== -1) {

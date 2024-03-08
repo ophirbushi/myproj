@@ -1,0 +1,19 @@
+.tile {
+    width: 40px;
+    height: 40px;
+    border: 1px solid black;
+    display: inline-block;
+    margin-right: 8px;
+    box-sizing: border-box;
+}
+
+.tile.occupied {
+    background-color: gray;
+}
+
+.tile.available-to-play {
+  border-style: dashed;
+  cursor: pointer;
+  border-color: blue;
+  border-width: 2px;
+}

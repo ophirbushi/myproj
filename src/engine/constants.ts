@@ -1,6 +1,7 @@
 import { Config } from './models'
 
 export const defaultConfig: Config = {
+  numberOfPlayers: 4,
   hotels: [
     { hotelName: "Riviera", prestige: 0 },
     { hotelName: "Holiday", prestige: 0 },
@@ -12,7 +13,6 @@ export const defaultConfig: Config = {
   ],
   initCashPerPlayer: 5000,
   maxStocks: 24,
-  numberOfPlayers: 2,
   possibleGameEndHotelSize: 42,
   unmergableHotelSize: 11,
   numberOfTilesPerPlayer: 6,

@@ -26,8 +26,7 @@ const output: Output = {
   }
 }
 
-const state = initState(defaultConfig)
-initState(defaultConfig)
+let state = initState(defaultConfig)
 engine.run(state, input, output)
 
 

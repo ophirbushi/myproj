@@ -23,14 +23,19 @@ export const run = async (state: State, input: Input, output: Output) => {
     switch (state.phaseId) {
       case 'build':
         state = doBuild(state, playerInput)
+        break
       case 'establish':
         state = doEstablish(state, playerInput)
+        break
       case 'merge':
         state = doMerge(state, playerInput)
+        break
       case 'mergeDecide':
         state = doMergeDecide(state, playerInput)
+        break
       case 'invest':
         state = doInvest(state, playerInput)
+        break
     }
     output.broadcast({ state, code: OutputMessageCode.SUCCESS, log: 'ok' })
   }
