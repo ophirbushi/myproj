@@ -43,12 +43,12 @@ export const getHotelTilesCount = (state: State, hotelIndex: number): number => 
 
 export const getWhichHotelTileBelongsTo = (state: State, tile: Tile): number => {
   const tileGroup = getTileGroup(state, tile)
-  for (let i = 0; i < state.hotels.length; i++) {
-    const hotel = state.hotels[i]
-    const hotelTile: Tile = [hotel.x, hotel.y]
-    if (tileGroup.some(t => isEqualTiles(t, hotelTile))) {
-      return i
-    }
+  const hotel = state.hotels.find((h) => {
+    const hotelTile: Tile = [h.x, h.y]
+    return tileGroup.some(t => isEqualTiles(t, hotelTile))
+  })
+  if (hotel) {
+    return hotel.hotelIndex
   }
   return -1
 }
