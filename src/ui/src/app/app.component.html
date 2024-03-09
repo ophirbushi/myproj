@@ -1,5 +1,5 @@
 <div class="container" *ngIf="state">
-  <h1>{{ state.phaseId }}</h1>
+  <h1>Player {{state.currentPlayerIndex }}: {{ state.phaseId }}</h1>
   <input type="number" [(ngModel)]="input" />
   <button (click)="postInput()">post input</button>
   <div style="display: table; margin-top: 12px;">
@@ -13,7 +13,8 @@
   </div>
   <div>
     <div> player index: {{ state.currentPlayerIndex }} </div>
-    <div> player cash : {{ state.cash[state.currentPlayerIndex] }} </div>
+    <div> player cash: {{ state.cash[state.currentPlayerIndex] }} </div>
+    <div> tiles left in pile: {{ state.tilesPile.length }} </div>
   </div>
 
   <div *ngIf="state.phaseId == 'establish'" style="display: flex; gap: 4px; align-items: center;">
