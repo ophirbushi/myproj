@@ -45,3 +45,8 @@
 .hotel-6 {
   background-color: orange !important;
 }
+
+.disabled {
+  background-color: gray !important;
+  pointer-events: none;
+}

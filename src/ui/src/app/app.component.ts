@@ -22,6 +22,10 @@ export class AppComponent {
 
   async fetchState() {
     this.state = await fetch('http://localhost:3000/').then(res => res.json())
+    if (this.state.phaseId === 'invest') {
+      await new Promise((res) => setTimeout(res, 1))
+      this.postInput()
+    }
   }
 
   postInput() {
@@ -69,5 +73,14 @@ export class AppComponent {
       return ''
     }
     return 'hotel-' + hotelIndex
+  }
+
+  hotelExistsOnBoard(hotelIndex: number) {
+    return this.state.hotels.some(h => h.hotelIndex === hotelIndex)
+  }
+  
+  establish(hotelIndex: number) {
+    this.input = hotelIndex
+    this.postInput()
   }
 }

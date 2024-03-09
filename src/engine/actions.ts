@@ -41,11 +41,10 @@ export const playerBuildTile = (state: State, tileIndex: number): State => {
 }
 
 export const playerReplaceTile = (state: State, tileIndex: number): State => {
-  return {
-    ...state,
-    ...playerDiscardTile(state, tileIndex),
-    ...playerDrawTile(state),
-  }
+  let newState = state
+  newState = playerDiscardTile(newState, tileIndex)
+  newState = playerDrawTile(newState)
+  return newState
 }
 
 export const playerEstablishHotel = (state: State, hotelIndex: number): State => {

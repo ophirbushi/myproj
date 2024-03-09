@@ -1,42 +1,25 @@
 <div class="container" *ngIf="state">
-
-
-  <h1>
-    {{ state.phaseId }}
-  </h1>
-
+  <h1>{{ state.phaseId }}</h1>
   <input type="number" [(ngModel)]="input" />
-
-  <button (click)="fetchState()">refresh</button>
   <button (click)="postInput()">post input</button>
-
-
-
   <div style="display: table; margin-top: 12px;">
     <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
       <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
-        <div class="tile {{getHotelClass([x,y])}}" [class.occupied]="exists([x, y])" [class.available-to-play]="availableToPlay([x, y])" 
-          (click)="onTileClick([x, y])">
+        <div class="tile {{getHotelClass([x,y])}}" [class.occupied]="exists([x, y])"
+          [class.available-to-play]="availableToPlay([x, y])" (click)="onTileClick([x, y])">
         </div>
       </div>
     </div>
   </div>
-
-
-  <!-- <div style="display: flex; gap: 12px;">
-    <div *ngFor="let tile of getCurrentPlayerTiles()">
-      {{ tile[0] }}, {{ tile[1] }}
-    </div>
-  </div> -->
-
   <div>
-    <div>
-        player index: {{ state.currentPlayerIndex }}
-    </div>
-    <div>
-        player cash : {{ state.cash[state.currentPlayerIndex] }}
-    </div>
+    <div> player index: {{ state.currentPlayerIndex }} </div>
+    <div> player cash : {{ state.cash[state.currentPlayerIndex] }} </div>
   </div>
 
-
+  <div *ngIf="state.phaseId == 'establish'" style="display: flex; gap: 4px; align-items: center;">
+    <button *ngFor="let hotel of state.config.hotels; let i = index" class="btn hotel-{{i}}"
+      [class.disabled]="hotelExistsOnBoard(i)" style="color: white;" (click)="establish(i)">
+      {{hotel.hotelName}}
+    </button>
+  </div>
 </div>
