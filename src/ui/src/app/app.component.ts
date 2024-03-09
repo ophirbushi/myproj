@@ -63,14 +63,6 @@ export class AppComponent {
     this.postInput()
   }
 
-  getHotelName(tile: Tile) {
-    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
-    if (hotelIndex === -1) {
-      return ''
-    }
-    return this.state.config.hotels[this.state.hotels[hotelIndex].hotelIndex].hotelName
-  }
-
   getHotelClass(tile: Tile) {
     const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
     if (hotelIndex === -1) {
