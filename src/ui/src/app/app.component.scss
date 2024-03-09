@@ -1,19 +1,47 @@
 .tile {
-    width: 40px;
-    height: 40px;
-    border: 1px solid black;
-    display: inline-block;
-    margin-right: 8px;
-    box-sizing: border-box;
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 8px;
+  box-sizing: border-box;
 }
 
 .tile.occupied {
-    background-color: gray;
+  background-color: gray;
 }
 
 .tile.available-to-play {
   border-style: dashed;
   cursor: pointer;
-  border-color: blue;
+  border-color: fuchsia;
   border-width: 2px;
+}
+
+.hotel-0 {
+  background-color: blue;
+}
+
+.hotel-1 {
+  background-color: goldenrod;
+}
+
+.hotel-2 {
+  background-color: green;
+}
+
+.hotel-3 {
+  background-color: red;
+}
+
+.hotel-4 {
+  background-color: purple;
+}
+
+.hotel-5 {
+  background-color: black;
+}
+
+.hotel-6 {
+  background-color: orange;
 }

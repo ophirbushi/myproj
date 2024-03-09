@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { State, Tile } from '../../../engine/models'
-import { isEqualTiles } from '../../../engine/helpers'
+import { getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -61,5 +61,21 @@ export class AppComponent {
     }
     this.input = this.getCurrentPlayerTiles().findIndex(t => isEqualTiles(t, tile))
     this.postInput()
+  }
+
+  getHotelName(tile: Tile) {
+    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
+    if (hotelIndex === -1) {
+      return ''
+    }
+    return this.state.config.hotels[this.state.hotels[hotelIndex].hotelIndex].hotelName
+  }
+
+  getHotelClass(tile: Tile) {
+    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
+    if (hotelIndex === -1) {
+      return ''
+    }
+    return 'hotel-' + hotelIndex
   }
 }
