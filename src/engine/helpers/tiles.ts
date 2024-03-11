@@ -12,6 +12,13 @@ const getNeighboringTiles = (state: State, tile: Tile): Tile[] => {
   return state.boardTiles.filter((t) => isNeighboringTile(t, tile))
 }
 
+const isMergingTile = (state: State, tile: Tile): boolean => {
+  if (state.phaseId !== 'merge' && state.phaseId !== 'mergeDecide') {
+    return false
+  }
+  return isEqualTiles(state.boardTiles[state.boardTiles.length - 1], tile)
+}
+
 export const getTileGroup = (state: State, tile: Tile): Tile[] => {
   if (!state.boardTiles.some(t => isEqualTiles(tile, t))) {
     return []
@@ -24,6 +31,7 @@ export const getTileGroup = (state: State, tile: Tile): Tile[] => {
     const unexploredNeighboringTiles = state.boardTiles
       .filter((tile) => isNeighboringTile(tile, next))
       .filter((neighboringTile) => !result.some((resultTile) => isEqualTiles(resultTile, neighboringTile)))
+      .filter((tile => !isMergingTile(state, tile)))
     result.push(...unexploredNeighboringTiles)
     queue.push(...unexploredNeighboringTiles)
     return recursiveIterate(state, queue, result)
@@ -42,6 +50,9 @@ export const getHotelTilesCount = (state: State, hotelIndex: number): number => 
 }
 
 export const getWhichHotelTileBelongsTo = (state: State, tile: Tile): number => {
+  if (isMergingTile(state, tile)) {
+    return -1
+  }
   const tileGroup = getTileGroup(state, tile)
   const hotel = state.hotels.find((h) => {
     const hotelTile: Tile = [h.x, h.y]
