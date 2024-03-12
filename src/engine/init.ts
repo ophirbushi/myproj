@@ -65,6 +65,7 @@ export const initState = (config: Config): State => {
     currentPlayerIndex: 0,
     decidingPlayerIndex: 0,
     phaseId: 'build',
+    mergingHotelIndex: -1
   }
   state = initTilesPile(state)
   state = initCash(state)

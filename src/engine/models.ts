@@ -29,6 +29,7 @@ export interface State {
   phaseId: Phase
   currentPlayerIndex: number
   decidingPlayerIndex: number
+  mergingHotelIndex: number
 }
 
 export interface Input {

@@ -1,7 +1,7 @@
 import { getNextDecidingPlayerIndex } from '../helpers'
-import { State, Tile } from '../models'
+import { State } from '../models'
 
-export const doMerge = (state: State, input: Tile): State => {
+export const doMerge = (state: State, hotelIndex: number): State => {
   return {
     ...state,
     phaseId: 'mergeDecide',
