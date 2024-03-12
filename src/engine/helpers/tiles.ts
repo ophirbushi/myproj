@@ -87,3 +87,12 @@ export const getTileEffect = (state: State, tile: Tile): TileEffect => {
 export const isEqualTiles = (a: Tile, b: Tile): boolean => {
   return a[0] === b[0] && a[1] === b[1]
 }
+
+/** Not including neutral hotels (index -1) */
+export const getWhichHotelsTilesBelongTo = (state: State, tiles: Tile[]): number[] => {
+  return distinct(
+    tiles
+      .map(t => getWhichHotelTileBelongsTo(state, t))
+      .filter(hi => hi > -1)
+  )
+}
