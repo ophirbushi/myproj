@@ -1,5 +1,5 @@
 import { playerBuildTile, playerReplaceTile } from '../actions'
-import { getTileByIndex, getTileEffect } from '../helpers'
+import { getTileByIndex, getTileEffect, isMergeAmbigous } from '../helpers'
 import { State } from '../models'
 
 export const doBuild = (state: State, input: number): State => {
@@ -22,7 +22,7 @@ export const doBuild = (state: State, input: number): State => {
       return {
         ...state,
         ...playerBuildTile(state, input),
-        phaseId: 'merge',
+        phaseId: isMergeAmbigous(state, tile) ? 'merge' : 'mergeDecide',
       }
     case 'establish':
       return {

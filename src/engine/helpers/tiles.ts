@@ -8,7 +8,7 @@ const isNeighboringTile = (a: Tile, b: Tile): boolean => {
   )
 }
 
-const getNeighboringTiles = (state: State, tile: Tile): Tile[] => {
+export const getNeighboringTiles = (state: State, tile: Tile): Tile[] => {
   return state.boardTiles.filter((t) => isNeighboringTile(t, tile))
 }
 
