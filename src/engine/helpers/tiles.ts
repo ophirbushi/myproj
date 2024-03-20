@@ -40,8 +40,8 @@ export const getTileGroup = (state: State, tile: Tile): Tile[] => {
 }
 
 export const getHotelTiles = (state: State, hotelIndex: number): Tile[] => {
-  const hotel = state.hotels[hotelIndex]
-  const startTile: Tile = [hotel.x, hotel.y]
+  const hotel = state.hotels.find(h => h.hotelIndex === hotelIndex)
+  const startTile: Tile = [hotel!.x, hotel!.y]
   return getTileGroup(state, startTile)
 }
 
