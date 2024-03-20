@@ -1,3 +1,4 @@
+import { mergeHotels } from '../actions'
 import { getNextDecidingPlayerIndex } from '../helpers'
 import { State, Tile } from '../models'
 
@@ -19,6 +20,7 @@ export const doMergeDecide = (state: State, tile: Tile): State => {
   }
   return {
     ...state,
+    ...mergeHotels(state),
     phaseId: 'invest'
   }
 }

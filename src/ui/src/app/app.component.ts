@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { State, Tile } from '../../../engine/models'
-import { getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
+import { clone, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -26,6 +26,17 @@ export class AppComponent {
       await new Promise((res) => setTimeout(res, 1))
       this.postInput()
     }
+  }
+
+  getFilteredState(): Partial<State> {
+    const stateClone: Partial<State> = clone(this.state)
+    delete stateClone.config
+    delete stateClone.tilesPile
+    delete stateClone.playerTiles
+    delete stateClone.boardTiles
+    delete stateClone.discardedTiles
+    delete stateClone.stocks
+    return stateClone
   }
 
   postInput() {
@@ -78,7 +89,7 @@ export class AppComponent {
   hotelExistsOnBoard(hotelIndex: number) {
     return this.state.hotels.some(h => h.hotelIndex === hotelIndex)
   }
-  
+
   establish(hotelIndex: number) {
     this.input = hotelIndex
     this.postInput()

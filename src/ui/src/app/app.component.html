@@ -15,6 +15,11 @@
     <div> player index: {{ state.currentPlayerIndex }} </div>
     <div> player cash: {{ state.cash[state.currentPlayerIndex] }} </div>
     <div> tiles left in pile: {{ state.tilesPile.length }} </div>
+
+
+    <div>
+      {{getFilteredState() |json}}
+    </div>
   </div>
 
   <div *ngIf="state.phaseId == 'establish'" style="display: flex; gap: 4px; align-items: center;">
