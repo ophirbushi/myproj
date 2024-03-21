@@ -86,6 +86,19 @@ export class AppComponent {
     return 'hotel-' + hotelIndex
   }
 
+  getOtherClass(tile: Tile) {
+    let classes: string[] = []
+    if (this.exists(tile)) {
+      classes.push('shield-slot')
+    } else {
+      classes.push('empty-slot')
+    }
+    if (this.availableToPlay(tile)) {
+      classes.push('available-to-play rpgui-cursor-point')
+    }
+    return classes.join(' ')
+  }
+
   hotelExistsOnBoard(hotelIndex: number) {
     return this.state.hotels.some(h => h.hotelIndex === hotelIndex)
   }

@@ -7,46 +7,68 @@
   box-sizing: border-box;
 }
 
-.tile.occupied {
+.occupied {
   background-color: gray;
 }
 
-.tile.available-to-play {
+.rpgui-icon {
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+.available-to-play {
   border-style: dashed;
-  cursor: pointer;
   border-color: fuchsia;
   border-width: 2px;
+  opacity: .5;
 }
 
-.hotel-0 {
+.hotel-0::after {
   background-color: blue !important;
+  opacity: 0.5;
 }
 
-.hotel-1 {
+.hotel-1::after {
   background-color: goldenrod !important;
+  opacity: 0.5;
 }
 
-.hotel-2 {
+.hotel-2::after {
   background-color: green !important;
+  opacity: 0.5;
 }
 
-.hotel-3 {
+.hotel-3::after {
   background-color: red !important;
+  opacity: 0.5;
 }
 
-.hotel-4 {
+.hotel-4::after {
   background-color: purple !important;
+  opacity: 0.5;
 }
 
-.hotel-5 {
+.hotel-5::after {
   background-color: black !important;
+  opacity: 0.5;
 }
 
-.hotel-6 {
+.hotel-6::after {
   background-color: orange !important;
+  opacity: 0.5;
 }
 
-.disabled {
+.disabled::after {
   background-color: gray !important;
+  opacity: 0.5;
   pointer-events: none;
 }

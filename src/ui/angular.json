@@ -52,7 +52,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "src/rpgui/dist/rpgui.min.css"
             ],
             "scripts": []
           },
