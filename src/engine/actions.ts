@@ -1,5 +1,6 @@
 import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge } from './helpers'
-import { State } from './models'
+import { getHotelStockPrice } from './helpers/stocks'
+import { State, StockDecision } from './models'
 
 export const playerDrawTile = (state: State): State => {
   const tilesPile = clone(state.tilesPile)
@@ -72,9 +73,26 @@ export const mergeHotels = (state: State): State => {
   }
 }
 
-export const nextPlayer = (state: State): State => {
+export const nextTurn = (state: State): State => {
   return {
     ...state,
-    currentPlayerIndex: (state.currentPlayerIndex + 1) % state.playerTiles.length
+    currentPlayerIndex: (state.currentPlayerIndex + 1) % state.playerTiles.length,
+    mergingHotelIndex: -1,
+    decidingPlayerIndex: -1,
+    phaseId: 'build'
+  }
+}
+
+export const playerBuyStocks = (state: State, decision: StockDecision): State => {
+  const cash = clone(state.cash)
+  const stocks = clone(state.stocks)
+  const stockPrice = getHotelStockPrice(state, decision.hotelIndex)
+  const totalPrice = stockPrice * decision.numberOfStocks
+  cash[state.currentPlayerIndex] -= totalPrice
+  stocks[decision.hotelIndex][state.currentPlayerIndex] += decision.numberOfStocks
+  return {
+    ...state,
+    cash,
+    stocks
   }
 }

@@ -61,6 +61,10 @@ export const getHotelSize = (state: State, hotelIndex: number): number => {
   return getHotelTiles(state, hotelIndex).length
 }
 
+export const getHotelPrestige = (state: State, hotelIndex: number): number => {
+  return state.config.hotels[hotelIndex].prestige
+}
+
 export const getWhichHotelTileBelongsTo = (state: State, tile: Tile): number => {
   if (isMergingTile(state, tile)) {
     return -1

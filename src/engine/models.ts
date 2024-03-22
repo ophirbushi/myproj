@@ -32,6 +32,11 @@ export interface State {
   mergingHotelIndex: number
 }
 
+export interface StockDecision {
+  hotelIndex: number
+  numberOfStocks: number
+}
+
 export interface Input {
   getInput<T>(): Promise<T>
 }
