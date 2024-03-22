@@ -1,6 +1,12 @@
 <div class="rpgui-content rpgui-cursor-default" *ngIf="state">
   <div class="inner rpgui-container framed">
     <h1>Player {{state.currentPlayerIndex }}: {{ state.phaseId }}</h1>
+
+    <div *ngIf="state.phaseId == 'mergeDecide'"
+      style="display: flex; gap: 4px; align-items: center; justify-content: center;">
+      <button (click)="mergeDecideNext()">Next</button>
+    </div>
+
     <div class="container-fluid">
       <div style="display: table; margin-top: 12px;">
         <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
@@ -29,7 +35,8 @@
     </div>
 
     <div class="hotels-legend">
-      <div *ngFor="let hotel of state.config.hotels; let i = index" class="hotels-legend-item {{getHotelLegendClass(i)}}">
+      <div *ngFor="let hotel of state.config.hotels; let i = index"
+        class="hotels-legend-item {{getHotelLegendClass(i)}}">
         {{hotel.hotelName}} {{getHotelSize(i)}}
       </div>
     </div>

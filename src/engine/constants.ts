@@ -15,12 +15,12 @@ export const defaultConfig: Config = {
   maxStocks: 24,
   possibleGameEndHotelSize: 42,
   unmergableHotelSize: 11,
-  numberOfTilesPerPlayer: 12,
+  numberOfTilesPerPlayer: 6,
   priceTable: {
     init: 200,
     step: 100,
     levels: [2, 7, 10, 11, 12, 13, 14, 15, 16, 22, 23, 24],
   },
   boardHeight: 9,
-  boardWidth: 7,
+  boardWidth: 12,
 }

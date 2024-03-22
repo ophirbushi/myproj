@@ -124,6 +124,10 @@ export class AppComponent {
     return this.getHotelSizes()[hotelIndex]
   }
 
+  mergeDecideNext(){
+    this.postInput()
+  }
+
   private getHotelSizes() {
     const cacheEntry = this.cache[JSON.stringify(this.state)]
     if (cacheEntry) {
