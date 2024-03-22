@@ -20,6 +20,10 @@ export const validateInput = (state: State, input: unknown): boolean => {
       if (newState.cash.some(c => c < 0)) {
         return false
       }
+      const totalDecision = stockDecisions.reduce((acc, decision) => acc + decision.numberOfStocks, 0)
+      if (totalDecision > state.config.maxStocksPurchasePerTurn) {
+        return false
+      }
       if (
         Object.values(newState.stocks)
           .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > state.config.maxStocks))

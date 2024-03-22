@@ -9,6 +9,7 @@ export interface Config {
   priceTable: { init: number, step: number, levels: number[] }
   boardWidth: number
   boardHeight: number
+  maxStocksPurchasePerTurn: number
 }
 
 export type Tile = [number, number]

@@ -34,6 +34,18 @@
       </button>
     </div>
 
+    <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
+      <div>
+        <div>Residual cash: {{state.cash[state.currentPlayerIndex]}}</div>
+        <div>Subtotal: {{getSubtotal()}}</div>
+      </div>
+      <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
+        <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>
+        <input [(ngModel)]="stockDecisions[i]" type="number" [min]="0" [max]="state.config.maxStocks">
+      </div>
+      <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex] ">OK</button>
+    </div>
+
     <div class="hotels-legend">
       <div *ngFor="let hotel of state.config.hotels; let i = index"
         class="hotels-legend-item {{getHotelLegendClass(i)}}">

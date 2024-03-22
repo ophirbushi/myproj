@@ -1,4 +1,4 @@
-import { isGameEnd } from './helpers'
+import { getImplicitInput, isGameEnd } from './helpers'
 import { Input, Output, OutputMessageCode, State } from './models'
 import { doBuild } from './phases/build'
 import { doEstablish } from './phases/establish'
@@ -10,14 +10,16 @@ import { validateInput } from './validators'
 export const run = async (state: State, input: Input, output: Output) => {
   output.broadcast({ state, code: OutputMessageCode.ENGINE_START, log: 'start' })
   while (!isGameEnd(state)) {
-    output.broadcast({ state, code: OutputMessageCode.WAITING_FOR_INPUT, log: 'waiting for input' })
-    let inputValid = false
-    let playerInput: any = null
-    while (!inputValid) {
-      playerInput = await input.getInput()
-      inputValid = validateInput(state, playerInput)
-      if (!inputValid) {
-        output.broadcast({ state, code: OutputMessageCode.INVALID_INPUT, log: 'invalid input' })
+    let playerInput: any = getImplicitInput(state)
+    if (playerInput == null) {
+      output.broadcast({ state, code: OutputMessageCode.WAITING_FOR_INPUT, log: 'waiting for input' })
+      let inputValid = false
+      while (!inputValid) {
+        playerInput = await input.getInput()
+        inputValid = validateInput(state, playerInput)
+        if (!inputValid) {
+          output.broadcast({ state, code: OutputMessageCode.INVALID_INPUT, log: 'invalid input' })
+        }
       }
     }
     switch (state.phaseId) {

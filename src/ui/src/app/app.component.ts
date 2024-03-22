@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { State, Tile } from '../../../engine/models'
-import { clone, getHotelSize, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
+import { Component, TrackByFunction } from '@angular/core';
+import { State, StockDecision, Tile } from '../../../engine/models'
+import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -18,19 +18,29 @@ export class AppComponent {
     }
   } = {}
 
+  stockDecisions: { [key: number]: number } = {
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0
+  }
+
+  trackByIndex: TrackByFunction<number> = (index: number) => {
+    return index
+  }
+
   ngOnInit() {
     this.fetchState()
     setInterval(() => {
       this.fetchState()
-    }, 1000)
+    }, 500)
   }
 
   async fetchState() {
     this.state = await fetch('http://localhost:3000/').then(res => res.json())
-    if (this.state.phaseId === 'invest') {
-      await new Promise((res) => setTimeout(res, 1))
-      this.postInput()
-    }
   }
 
   getFilteredState(): Partial<State> {
@@ -45,7 +55,7 @@ export class AppComponent {
   }
 
   postInput() {
-    fetch('http://localhost:3000/input', {
+    return fetch('http://localhost:3000/input', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: +this.input })
@@ -124,8 +134,36 @@ export class AppComponent {
     return this.getHotelSizes()[hotelIndex]
   }
 
-  mergeDecideNext(){
+  mergeDecideNext() {
     this.postInput()
+  }
+
+  getSubtotal() {
+    let subtotal = 0
+    for (let i = 0; i < this.state.config.hotels.length; i++) {
+      if (!this.hotelExistsOnBoard(i)) {
+        continue
+      }
+      subtotal += getHotelStockPrice(this.state, i) * this.stockDecisions[i]
+    }
+    return subtotal
+  }
+
+  postInvest() {
+    const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
+      return {
+        hotelIndex: +key,
+        numberOfStocks: value
+      }
+    })
+
+    this.input = stockDecisions
+
+    this.postInput().then(() => {
+      Object.keys(this.stockDecisions).forEach(key => {
+        this.stockDecisions[+key] = 0
+      })
+    })
   }
 
   private getHotelSizes() {
