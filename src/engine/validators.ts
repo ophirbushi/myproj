@@ -1,11 +1,11 @@
 import { playerBuyStocks } from './actions'
-import { clone, getTileByIndex, isTemporarilyIllegalTile } from './helpers'
+import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge, isTemporarilyIllegalTile } from './helpers'
 import { MergeDecision, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
 export const validateInput = (state: State, input: unknown): boolean => {
   let newState = clone(state)
-  switch (state.phaseId) {
+  switch (newState.phaseId) {
     case 'build':
       const tileIndex = input as number
       if (
@@ -13,12 +13,12 @@ export const validateInput = (state: State, input: unknown): boolean => {
         isNaN(tileIndex) ||
         !Number.isInteger(tileIndex) ||
         tileIndex < 0 ||
-        tileIndex >= state.playerTiles[state.currentPlayerIndex].tiles.length
+        tileIndex >= newState.playerTiles[newState.currentPlayerIndex].tiles.length
       ) {
         return false
       }
-      const tile = getTileByIndex(state, tileIndex)
-      if (isTemporarilyIllegalTile(state, tile)) {
+      const tile = getTileByIndex(newState, tileIndex)
+      if (isTemporarilyIllegalTile(newState, tile)) {
         return false
       }
       break
@@ -27,10 +27,17 @@ export const validateInput = (state: State, input: unknown): boolean => {
       if (!Array.isArray(mergeDecisions)) {
         return false
       }
+      const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(newState, getLastPlayedTile(newState))
+      if (mergeDecisions.some(d => !hotelsInvolvedInMerge.includes(d.hotelIndex))) {
+        return false
+      }
+      if (mergeDecisions.some(d => d.hotelIndex === newState.mergingHotelIndex)) {
+        return false
+      }
       newState = doMergeDecide(newState, mergeDecisions)
       if (
         Object.values(newState.stocks)
-          .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > state.config.maxStocks))
+          .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > newState.config.maxStocks))
       ) {
         return false
       }
@@ -47,12 +54,12 @@ export const validateInput = (state: State, input: unknown): boolean => {
         return false
       }
       const totalDecision = stockDecisions.reduce((acc, decision) => acc + decision.amount, 0)
-      if (totalDecision > state.config.maxStocksPurchasePerTurn) {
+      if (totalDecision > newState.config.maxStocksPurchasePerTurn) {
         return false
       }
       if (
         Object.values(newState.stocks)
-          .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > state.config.maxStocks))
+          .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > newState.config.maxStocks))
       ) {
         return false
       }
