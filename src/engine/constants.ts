@@ -15,7 +15,7 @@ export const defaultConfig: Config = {
   maxStocks: 24,
   maxStocksPurchasePerTurn: 3,
   possibleGameEndHotelSize: 42,
-  unmergableHotelSize: 3,
+  unmergableHotelSize: 11,
   numberOfTilesPerPlayer: 6,
   priceTable: {
     init: 200,

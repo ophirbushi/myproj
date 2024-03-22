@@ -2,6 +2,9 @@ import { State, Tile } from '../models'
 import { getHotelSize, getWhichHotelsInvolvedInMerge } from './tiles'
 
 export const getNextDecidingPlayerIndex = (state: State): number => {
+  if (state.decidingPlayerIndex === -1) {
+    return state.currentPlayerIndex
+  }
   let nextDecidingPlayerIndex = state.decidingPlayerIndex + 1
   if (nextDecidingPlayerIndex >= state.config.numberOfPlayers) {
     nextDecidingPlayerIndex = 0

@@ -34,17 +34,31 @@
       </button>
     </div>
 
-    <div *ngIf="state.phaseId == 'mergeDecide'" style="display: flex; gap: 4px; align-items: center;">
-      <button *ngFor="let hotel of state.config.hotels; let i = index" class="btn hotel-{{i}}"
-        [class.disabled]="hotelExistsOnBoard(i)" style="color: white;" (click)="establish(i)">
-        {{hotel.hotelName}}
-      </button>
+    <div *ngIf="state.phaseId == 'mergeDecide'">
+      decidingPlayerIndex: {{state.decidingPlayerIndex}}
+      <div>
+        <label>Merging hotel: {{state.config.hotels[state.mergingHotelIndex].hotelName}}
+          {{state.stocks[state.mergingHotelIndex][state.decidingPlayerIndex]}} </label>
+      </div>
+
+      <div *ngFor="let hi of getHotelDecisionsHotels()">
+
+        <label> {{state.config.hotels[hi].hotelName}} {{state.stocks[hi][state.decidingPlayerIndex]}} </label>
+
+        <div>
+          <label> Sell </label>
+          <input type="number" [(ngModel)]="mergeDecisions[hi].sell">
+          <label>Convert</label>
+          <input type="number" step="2" [(ngModel)]="mergeDecisions[hi].convert">
+        </div>
+
+        <button (click)="postMergeDecide()">OK</button>
+      </div>
     </div>
 
 
     <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
       <div>
-        <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
         <div>Residual cash: {{state.cash[state.currentPlayerIndex]}}</div>
         <div>Subtotal: {{getSubtotal()}}</div>
       </div>

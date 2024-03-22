@@ -41,6 +41,9 @@ export const validateInput = (state: State, input: unknown): boolean => {
       ) {
         return false
       }
+      if (Object.values(newState.stocks).some(stocks => stocks.some(s => s < 0))) {
+        return false
+      }
       break
     case 'invest':
       const stockDecisions = input as StockDecision[]

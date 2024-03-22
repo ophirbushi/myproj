@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
-import { State, StockDecision, Tile } from '../../../engine/models'
-import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getWhichHotelTileBelongsTo, hotelExistsOnBoard, isEqualTiles } from '../../../engine/helpers'
+import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
+import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -28,15 +28,24 @@ export class AppComponent {
     6: 0
   }
 
+
+  mergeDecisions: { [key: number]: { sell: number, convert: number } } = {
+    0: { sell: 0, convert: 0 },
+    1: { sell: 0, convert: 0 },
+    2: { sell: 0, convert: 0 },
+    3: { sell: 0, convert: 0 },
+    4: { sell: 0, convert: 0 },
+    5: { sell: 0, convert: 0 },
+    6: { sell: 0, convert: 0 },
+  }
+
+
   trackByIndex: TrackByFunction<number> = (index: number) => {
     return index
   }
 
   ngOnInit() {
     this.fetchState()
-    setInterval(() => {
-      this.fetchState()
-    }, 500)
   }
 
   async fetchState() {
@@ -59,6 +68,8 @@ export class AppComponent {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: input ?? +this.input })
+    }).then(() => {
+      this.fetchState()
     })
   }
 
@@ -149,6 +160,11 @@ export class AppComponent {
     return subtotal
   }
 
+  getHotelDecisionsHotels() {
+    return getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
+      .filter(h => h > -1 && h !== this.state.mergingHotelIndex)
+  }
+
   postInvest() {
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
@@ -164,6 +180,26 @@ export class AppComponent {
     this.postInput(stockDecisions).then(() => {
       Object.keys(this.stockDecisions).forEach(key => {
         this.stockDecisions[+key] = 0
+      })
+    })
+  }
+
+  postMergeDecide() {
+    const mergeDecisions: MergeDecision[] = Object.entries(this.mergeDecisions).map(([key, value]) => {
+      return {
+        hotelIndex: +key,
+        sell: value.sell,
+        convert: value.convert
+      }
+    })
+      .filter((decision) => decision.sell > 0 || decision.convert > 0)
+      .filter(decision => this.hotelExistsOnBoard(decision.hotelIndex))
+
+    this.input = mergeDecisions
+
+    this.postInput(mergeDecisions).then(() => {
+      Object.keys(this.mergeDecisions).forEach(key => {
+        this.mergeDecisions[+key] = { sell: 0, convert: 0 }
       })
     })
   }
