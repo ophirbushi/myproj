@@ -54,11 +54,11 @@ export class AppComponent {
     return stateClone
   }
 
-  postInput() {
+  postInput(input?: any) {
     return fetch('http://localhost:3000/input', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ input: +this.input })
+      body: JSON.stringify({ input: input ?? +this.input })
     })
   }
 
@@ -156,10 +156,12 @@ export class AppComponent {
         numberOfStocks: value
       }
     })
+      .filter((decision: StockDecision) => decision.numberOfStocks > 0)
+      .filter(decision => this.hotelExistsOnBoard(decision.hotelIndex))
 
     this.input = stockDecisions
 
-    this.postInput().then(() => {
+    this.postInput(stockDecisions).then(() => {
       Object.keys(this.stockDecisions).forEach(key => {
         this.stockDecisions[+key] = 0
       })
