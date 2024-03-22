@@ -2,7 +2,14 @@ import { State, Tile } from '../models'
 import { getHotelSize, getWhichHotelsInvolvedInMerge } from './tiles'
 
 export const getNextDecidingPlayerIndex = (state: State): number => {
-  return -1
+  let nextDecidingPlayerIndex = state.decidingPlayerIndex + 1
+  if (nextDecidingPlayerIndex >= state.config.numberOfPlayers) {
+    nextDecidingPlayerIndex = 0
+  }
+  if (nextDecidingPlayerIndex === state.currentPlayerIndex) {
+    return -1
+  }
+  return nextDecidingPlayerIndex
 }
 
 export const isGameEnd = (state: State): boolean => {
@@ -22,4 +29,8 @@ export const getMergingHotelIndex = (state: State, tile: Tile): number => {
     return -1
   }
   return largestHotelIndex
+}
+
+export const hotelExistsOnBoard = (state: State, hotelIndex: number): boolean => {
+  return state.hotels.some(h => h.hotelIndex === hotelIndex)
 }

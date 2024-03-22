@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
 import { State, StockDecision, Tile } from '../../../engine/models'
-import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
+import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getWhichHotelTileBelongsTo, hotelExistsOnBoard, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -115,7 +115,7 @@ export class AppComponent {
   }
 
   hotelExistsOnBoard(hotelIndex: number) {
-    return this.state.hotels.some(h => h.hotelIndex === hotelIndex)
+    return hotelExistsOnBoard(this.state, hotelIndex)
   }
 
   establish(hotelIndex: number) {
@@ -153,10 +153,10 @@ export class AppComponent {
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
         hotelIndex: +key,
-        numberOfStocks: value
+        amount: value
       }
     })
-      .filter((decision: StockDecision) => decision.numberOfStocks > 0)
+      .filter((decision: StockDecision) => decision.amount > 0)
       .filter(decision => this.hotelExistsOnBoard(decision.hotelIndex))
 
     this.input = stockDecisions

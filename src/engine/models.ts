@@ -35,7 +35,13 @@ export interface State {
 
 export interface StockDecision {
   hotelIndex: number
-  numberOfStocks: number
+  amount: number
+}
+
+export interface MergeDecision {
+  hotelIndex: number
+  convert: number
+  sell: number
 }
 
 export interface Input {

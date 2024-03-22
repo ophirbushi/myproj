@@ -34,8 +34,17 @@
       </button>
     </div>
 
+    <div *ngIf="state.phaseId == 'mergeDecide'" style="display: flex; gap: 4px; align-items: center;">
+      <button *ngFor="let hotel of state.config.hotels; let i = index" class="btn hotel-{{i}}"
+        [class.disabled]="hotelExistsOnBoard(i)" style="color: white;" (click)="establish(i)">
+        {{hotel.hotelName}}
+      </button>
+    </div>
+
+
     <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
       <div>
+        <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
         <div>Residual cash: {{state.cash[state.currentPlayerIndex]}}</div>
         <div>Subtotal: {{getSubtotal()}}</div>
       </div>

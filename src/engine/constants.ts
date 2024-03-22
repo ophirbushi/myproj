@@ -22,6 +22,6 @@ export const defaultConfig: Config = {
     step: 100,
     levels: [2, 3, 4, 5, 6, 11, 21, 31, 41],
   },
-  boardHeight: 5,
-  boardWidth: 6,
+  boardHeight: 7,
+  boardWidth: 9,
 }

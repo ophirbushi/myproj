@@ -1,15 +1,27 @@
-import { mergeHotels } from '../actions'
+import { mergeHotels, playerConvertStocks, playerSellStocks } from '../actions'
 import { getNextDecidingPlayerIndex } from '../helpers'
-import { State, Tile } from '../models'
+import { MergeDecision, State, StockDecision } from '../models'
 
-const applyMergeDecision = (state: State, tile: Tile): State => {
+const applyMergeDecision = (state: State, mergeDecisions: MergeDecision[]): State => {
+  let newState = state
+  for (const decision of mergeDecisions) {
+    let stockDecision: StockDecision
+    if (decision.sell > 0) {
+      stockDecision = { hotelIndex: decision.hotelIndex, amount: decision.sell }
+      newState = playerSellStocks(newState, stockDecision, state.decidingPlayerIndex)
+    }
+    if (decision.convert > 0) {
+      stockDecision = { hotelIndex: decision.hotelIndex, amount: decision.convert }
+      newState = playerConvertStocks(newState, stockDecision, state.decidingPlayerIndex)
+    }
+  }
   return state
 }
 
-export const doMergeDecide = (state: State, tile: Tile): State => {
+export const doMergeDecide = (state: State, mergeDecisions: MergeDecision[]): State => {
   state = {
     ...state,
-    ...applyMergeDecision(state, tile),
+    ...applyMergeDecision(state, mergeDecisions),
   }
   let nextDecidingPlayerIndex = getNextDecidingPlayerIndex(state)
   if (nextDecidingPlayerIndex !== -1) {
