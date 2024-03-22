@@ -1,5 +1,5 @@
 import { State, Tile } from '../models'
-import { getHotelTilesCount, getNeighboringTiles, getWhichHotelsTilesBelongTo } from './tiles'
+import { getHotelSize, getWhichHotelsInvolvedInMerge } from './tiles'
 
 export const getNextDecidingPlayerIndex = (state: State): number => {
   return -1
@@ -9,21 +9,17 @@ export const isGameEnd = (state: State): boolean => {
   return false
 }
 
+export const sortHotelsBySizeDescOrder = (state: State, hotelIndexes: number[]): number[] => {
+  return hotelIndexes
+    .slice()
+    .sort((a, b) => getHotelSize(state, b) - getHotelSize(state, a))
+}
+
 export const getMergingHotelIndex = (state: State, tile: Tile): number => {
-  const neighboringTiles = getNeighboringTiles(state, tile)
-  const hotelIndexes = getWhichHotelsTilesBelongTo(state, neighboringTiles)
-  const counts = hotelIndexes
-    .map(hi => {
-      return {
-        hotelIndex: hi,
-        count: getHotelTilesCount(state, hi)
-      }
-    })
-    .sort((a, b) => {
-      return b.count - a.count
-    })
-    if (counts[0].count === counts[1].count){
-      return -1
-    }
-    return counts[0].hotelIndex
+  const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, tile)
+  const [largestHotelIndex, secondLargestHotelIndex] = sortHotelsBySizeDescOrder(state, hotelsInvolvedInMerge)
+  if (getHotelSize(state, largestHotelIndex) === getHotelSize(state, secondLargestHotelIndex)) {
+    return -1
+  }
+  return largestHotelIndex
 }

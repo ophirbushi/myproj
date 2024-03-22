@@ -1,5 +1,5 @@
-import { clone, getNeighboringTiles, getTileByIndex, getTileGroup, isEqualTiles } from './helpers'
-import { State, Tile } from './models'
+import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge } from './helpers'
+import { State } from './models'
 
 export const playerDrawTile = (state: State): State => {
   const tilesPile = clone(state.tilesPile)
@@ -49,7 +49,7 @@ export const playerReplaceTile = (state: State, tileIndex: number): State => {
 
 export const playerEstablishHotel = (state: State, hotelIndex: number): State => {
   const hotels = clone(state.hotels)
-  const tile = state.boardTiles[state.boardTiles.length - 1]
+  const tile = getLastPlayedTile(state)
   hotels.push({ hotelIndex, x: tile[0], y: tile[1] })
   return {
     ...state,
@@ -58,16 +58,13 @@ export const playerEstablishHotel = (state: State, hotelIndex: number): State =>
 }
 
 export const mergeHotels = (state: State): State => {
-  const mergingHotelTiles = getNeighboringTiles(state, state.boardTiles[state.boardTiles.length - 1])
-    .map(tile => getTileGroup(state, tile))
-    .reduce((acc, cur) => acc.concat(cur), [])
-    .filter((tile, i, list) => list.findIndex(t => isEqualTiles(t, tile)) === i)
+  const lastTile = getLastPlayedTile(state)
+  const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, lastTile)
   const hotels = clone(state.hotels).filter((hotel) => {
     if (hotel.hotelIndex === state.mergingHotelIndex) {
       return true
     }
-    const hotelTile: Tile = [hotel.x, hotel.y]
-    return !mergingHotelTiles.some(t => isEqualTiles(t, hotelTile))
+    return !hotelsInvolvedInMerge.includes(hotel.hotelIndex)
   })
   return {
     ...state,

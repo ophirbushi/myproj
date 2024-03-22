@@ -1,4 +1,5 @@
 import { State, Tile, TileEffect } from '../models'
+import { getMergingHotelIndex } from './misc'
 import { distinct } from './utils'
 
 const isNeighboringTile = (a: Tile, b: Tile): boolean => {
@@ -8,15 +9,26 @@ const isNeighboringTile = (a: Tile, b: Tile): boolean => {
   )
 }
 
+export const getWhichHotelsInvolvedInMerge = (state: State, tile: Tile): number[] => {
+  const neighboringTiles = getNeighboringTiles(state, tile)
+  const hotelIndexes = getWhichHotelsTilesBelongTo(state, neighboringTiles)
+  return distinct(hotelIndexes).filter((hi) => hi > -1)
+}
+
 export const getNeighboringTiles = (state: State, tile: Tile): Tile[] => {
   return state.boardTiles.filter((t) => isNeighboringTile(t, tile))
+}
+
+export const getLastPlayedTile = (state: State): Tile => {
+  return state.boardTiles[state.boardTiles.length - 1]
 }
 
 const isMergingTile = (state: State, tile: Tile): boolean => {
   if (state.phaseId !== 'merge' && state.phaseId !== 'mergeDecide') {
     return false
   }
-  return isEqualTiles(state.boardTiles[state.boardTiles.length - 1], tile)
+  const lastTile = getLastPlayedTile(state)
+  return isEqualTiles(lastTile, tile)
 }
 
 export const getTileGroup = (state: State, tile: Tile): Tile[] => {
@@ -45,7 +57,7 @@ export const getHotelTiles = (state: State, hotelIndex: number): Tile[] => {
   return getTileGroup(state, startTile)
 }
 
-export const getHotelTilesCount = (state: State, hotelIndex: number): number => {
+export const getHotelSize = (state: State, hotelIndex: number): number => {
   return getHotelTiles(state, hotelIndex).length
 }
 
@@ -95,4 +107,31 @@ export const getWhichHotelsTilesBelongTo = (state: State, tiles: Tile[]): number
       .map(t => getWhichHotelTileBelongsTo(state, t))
       .filter(hi => hi > -1)
   )
+}
+
+export const isTemporarilyIllegalTile = (state: State, tile: Tile): boolean => {
+  const tileEffect = getTileEffect(state, tile)
+  if (tileEffect === 'establish') {
+    return (
+      state.hotels.length === state.config.hotels.length &&
+      state.hotels.some(h => getHotelSize(state, h.hotelIndex) < state.config.unmergableHotelSize)
+    )
+  }
+  return false
+}
+
+export const isPermanentlyIllegalTile = (state: State, tile: Tile): boolean => {
+  const tileEffect = getTileEffect(state, tile)
+  if (tileEffect === 'establish') {
+    return (
+      state.hotels.length === state.config.hotels.length &&
+      state.hotels.every(h => getHotelSize(state, h.hotelIndex) >= state.config.unmergableHotelSize)
+    )
+  } else if (tileEffect === 'merge') {
+    const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, tile)
+    const hotelSizes = hotelsInvolvedInMerge.map(hi => getHotelSize(state, hi))
+    const overTheLimitHotels = hotelSizes.filter(hs => hs >= state.config.unmergableHotelSize)
+    return overTheLimitHotels.length >= 2
+  }
+  return false
 }

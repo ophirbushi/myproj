@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { State, Tile } from '../../../engine/models'
-import { clone, getHotelTilesCount, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
+import { clone, getHotelSize, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -136,7 +136,7 @@ export class AppComponent {
     const hotelSizes = []
     for (let i = 0; i < this.state.config.hotels.length; i++) {
       if (this.state.hotels.find(h => h.hotelIndex === i)) {
-        hotelSizes.push(getHotelTilesCount(this.state, i))
+        hotelSizes.push(getHotelSize(this.state, i))
       } else {
         hotelSizes.push(0)
       }

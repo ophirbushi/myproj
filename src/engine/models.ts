@@ -15,7 +15,7 @@ export type Tile = [number, number]
 
 export type Phase = 'build' | 'establish' | 'merge' | 'mergeDecide' | 'invest' | 'gameEnd'
 
-export type TileEffect = 'replace' | 'merge' | 'establish' | 'noop'
+export type TileEffect = 'merge' | 'establish' | 'noop'
 
 export interface State {
   config: Config
