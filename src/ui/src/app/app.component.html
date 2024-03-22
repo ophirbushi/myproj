@@ -27,5 +27,11 @@
         {{hotel.hotelName}}
       </button>
     </div>
+
+    <div class="hotels-legend">
+      <div *ngFor="let hotel of state.config.hotels; let i = index" class="hotels-legend-item {{getHotelLegendClass(i)}}">
+        {{hotel.hotelName}} {{getHotelSize(i)}}
+      </div>
+    </div>
   </div>
 </div>

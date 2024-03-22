@@ -32,6 +32,40 @@
   opacity: .5;
 }
 
+.hotels-legend-item {
+  color: rgb(173, 173, 173);
+}
+
+
+.hotel-0 {
+  color: blue;
+}
+
+.hotel-1 {
+  color: goldenrod;
+}
+
+.hotel-2 {
+  color: green;
+}
+
+.hotel-3 {
+  color: red;
+}
+
+.hotel-4 {
+  color: purple;
+}
+
+.hotel-5 {
+  color: black;
+}
+
+.hotel-6 {
+  color: orange;
+}
+
+
 .hotel-0::after {
   background-color: blue !important;
   opacity: 0.5;
@@ -66,6 +100,8 @@
   background-color: orange !important;
   opacity: 0.5;
 }
+
+
 
 .disabled::after {
   background-color: gray !important;

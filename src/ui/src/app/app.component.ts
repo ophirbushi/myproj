@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { State, Tile } from '../../../engine/models'
-import { clone, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
+import { clone, getHotelTilesCount, getWhichHotelTileBelongsTo, isEqualTiles } from '../../../engine/helpers'
 
 
 @Component({
@@ -12,6 +12,11 @@ export class AppComponent {
   title = 'ui';
   state!: State
   input: any = null
+  cache: {
+    [key: string]: {
+      hotelSizes: number[]
+    }
+  } = {}
 
   ngOnInit() {
     this.fetchState()
@@ -106,5 +111,33 @@ export class AppComponent {
   establish(hotelIndex: number) {
     this.input = hotelIndex
     this.postInput()
+  }
+
+  getHotelLegendClass(hotelIndex: number) {
+    if (this.state.hotels.find(h => h.hotelIndex === hotelIndex)) {
+      return 'hotel-' + hotelIndex
+    }
+    return ''
+  }
+
+  getHotelSize(hotelIndex: number) {
+    return this.getHotelSizes()[hotelIndex]
+  }
+
+  private getHotelSizes() {
+    const cacheEntry = this.cache[JSON.stringify(this.state)]
+    if (cacheEntry) {
+      return cacheEntry.hotelSizes
+    }
+    const hotelSizes = []
+    for (let i = 0; i < this.state.config.hotels.length; i++) {
+      if (this.state.hotels.find(h => h.hotelIndex === i)) {
+        hotelSizes.push(getHotelTilesCount(this.state, i))
+      } else {
+        hotelSizes.push(0)
+      }
+    }
+    this.cache[JSON.stringify(this.state)] = { hotelSizes }
+    return hotelSizes
   }
 }
