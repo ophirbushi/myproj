@@ -175,7 +175,6 @@ export class AppComponent {
   }
 
   postInvest() {
-    debugger
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
         hotelIndex: +key,
