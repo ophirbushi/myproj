@@ -59,7 +59,7 @@ export class AppComponent {
     delete stateClone.playerTiles
     delete stateClone.boardTiles
     delete stateClone.discardedTiles
-    delete stateClone.stocks
+    // delete stateClone.stocks
     return stateClone
   }
 

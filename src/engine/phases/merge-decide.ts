@@ -15,7 +15,7 @@ const applyMergeDecision = (state: State, mergeDecisions: MergeDecision[]): Stat
       newState = playerConvertStocks(newState, stockDecision, state.decidingPlayerIndex)
     }
   }
-  return state
+  return newState
 }
 
 export const doMergeDecide = (state: State, mergeDecisions: MergeDecision[]): State => {

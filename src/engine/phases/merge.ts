@@ -6,6 +6,6 @@ export const doMerge = (state: State, hotelIndex: number): State => {
     ...state,
     phaseId: 'mergeDecide',
     mergingHotelIndex: hotelIndex,
-    decidingPlayerIndex: getNextDecidingPlayerIndex(state)
+    decidingPlayerIndex: state.currentPlayerIndex
   }
 }
