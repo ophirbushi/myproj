@@ -64,7 +64,7 @@
       </div>
       <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
         <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>
-        <input [(ngModel)]="stockDecisions[i]" type="number" [min]="0" [max]="state.config.maxStocks">
+        <input [(ngModel)]="stockDecisions[hotel.hotelIndex]" type="number" [min]="0" [max]="state.config.maxStocks">
       </div>
       <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
     </div>

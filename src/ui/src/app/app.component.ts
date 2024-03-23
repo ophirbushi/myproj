@@ -97,6 +97,15 @@ export class AppComponent {
   }
 
   onTileClick(tile: Tile) {
+    if (this.state.phaseId === 'merge') {
+      const hi = getWhichHotelTileBelongsTo(this.state, tile);
+      const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
+      if (hotelsInvolvedInMerge.includes(hi)) {
+        this.input = hi
+        this.postInput()
+        return
+      }
+    }
     if (!this.availableToPlay(tile)) {
       return
     }
@@ -166,6 +175,7 @@ export class AppComponent {
   }
 
   postInvest() {
+    debugger
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
         hotelIndex: +key,
@@ -183,6 +193,7 @@ export class AppComponent {
       })
     })
   }
+
 
   postMergeDecide() {
     const mergeDecisions: MergeDecision[] = Object.entries(this.mergeDecisions).map(([key, value]) => {

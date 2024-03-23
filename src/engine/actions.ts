@@ -83,6 +83,18 @@ export const nextTurn = (state: State): State => {
   }
 }
 
+export const givePlayerStockIfRemaining = (state: State, hotelIndex: number, playerIndex: number): State => {
+  const stocks = clone(state.stocks)
+  stocks[hotelIndex][playerIndex]++
+  if (stocks[hotelIndex][playerIndex] > state.config.maxStocks) {
+    return state
+  }
+  return {
+    ...state,
+    stocks
+  }
+}
+
 export const playerBuyStocks = (state: State, decision: StockDecision, playerIndex?: number): State => {
   if (playerIndex == null) {
     playerIndex = state.currentPlayerIndex

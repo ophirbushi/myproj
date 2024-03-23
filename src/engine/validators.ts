@@ -34,6 +34,9 @@ export const validateInput = (state: State, input: unknown): boolean => {
       if (mergeDecisions.some(d => d.hotelIndex === newState.mergingHotelIndex)) {
         return false
       }
+      if (mergeDecisions.some(d => d.convert && d.convert % 2 !== 0)) {
+        return false
+      }
       newState = doMergeDecide(newState, mergeDecisions)
       if (
         Object.values(newState.stocks)
