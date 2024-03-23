@@ -1,0 +1,18 @@
+:host {
+  display: inline-block;
+}
+
+.rpgui-container {
+  &>div {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+.rpgui-container.player-to-move {
+  background: #df823f;
+}
+
+.grayed-out {
+  opacity: 0.5;
+}

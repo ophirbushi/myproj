@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
 import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
-import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
+import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
 
 
 @Component({
@@ -17,6 +17,22 @@ export class AppComponent {
       hotelSizes: number[]
     }
   } = {}
+
+  _players: number[] | null = null
+  get players() {
+    if (!this.state) {
+      return []
+    }
+    if (this._players) {
+      return this._players
+    }
+    let players = []
+    for (let i = 0; i < this.state.config.numberOfPlayers; i++) {
+      players.push(i)
+    }
+    this._players = players
+    return players
+  }
 
   stockDecisions: { [key: number]: number } = {
     0: 0,
@@ -59,7 +75,7 @@ export class AppComponent {
     delete stateClone.playerTiles
     delete stateClone.boardTiles
     delete stateClone.discardedTiles
-    // delete stateClone.stocks
+    delete stateClone.stocks
     return stateClone
   }
 
@@ -121,6 +137,11 @@ export class AppComponent {
     return 'hotel-' + hotelIndex
   }
 
+  getHotelName(tile: Tile): string {
+    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
+    return this.state.config.hotels[hotelIndex]?.hotelName[0] || ''
+  }
+
   getOtherClass(tile: Tile) {
     let classes: string[] = []
     if (this.exists(tile)) {
@@ -136,6 +157,16 @@ export class AppComponent {
 
   hotelExistsOnBoard(hotelIndex: number) {
     return hotelExistsOnBoard(this.state, hotelIndex)
+  }
+
+  onHotelInfoClick(hotelIndex: number) {
+    if (this.isHotelClickable(hotelIndex)) {
+      this.establish(hotelIndex)
+    }
+  }
+
+  isHotelClickable(hi: number) {
+    return this.state.phaseId === 'establish' && !hotelExistsOnBoard(this.state, hi)
   }
 
   establish(hotelIndex: number) {

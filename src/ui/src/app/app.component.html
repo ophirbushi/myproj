@@ -1,37 +1,29 @@
-<div class="rpgui-content rpgui-cursor-default" *ngIf="state">
-  <div class="inner rpgui-container framed">
-    <h1>Player {{state.currentPlayerIndex }}: {{ state.phaseId }}</h1>
-
+<div class="rpgui-content rpgui-cursor-default" *ngIf="state" style="position: relative;">
+  <div class="inner rpgui-container framed" style="position: relative; overflow-y: auto; min-height: 100vh;">
     <div *ngIf="state.phaseId == 'mergeDecide'"
       style="display: flex; gap: 4px; align-items: center; justify-content: center;">
       <button (click)="mergeDecideNext()">Next</button>
     </div>
 
-    <div class="container-fluid">
-      <div style="display: table; margin-top: 12px;">
-        <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
-          <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
-            <div class="rpgui-icon  {{getHotelClass([x,y])}} {{getOtherClass([x, y])}}" (click)="onTileClick([x, y])">
+
+    <div class="container-fluid" style="display: flex; justify-content: space-between; padding: 12px 36px;">
+      <div>
+        <div class="player-infos" style="margin-bottom: 36px;">
+          <app-player-info *ngFor="let pi of players" [state]="state" [playerIndex]="pi"> </app-player-info>
+        </div>
+        <div style="display: table;">
+          <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
+            <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
+              <div class="rpgui-icon  {{getHotelClass([x,y])}} {{getOtherClass([x, y])}}" (click)="onTileClick([x, y])">
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div>
-      <div> player index: {{ state.currentPlayerIndex }} </div>
-      <div> player cash: {{ state.cash[state.currentPlayerIndex] }} </div>
-      <div> tiles left in pile: {{ state.tilesPile.length }} </div>
-      <div>
-        {{getFilteredState() |json}}
+      <div class="hotel-infos">
+        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;" *ngFor="let h of state.config.hotels; let hi = index;"
+          [state]="state" [hotelIndex]="hi" [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
       </div>
-    </div>
-
-    <div *ngIf="state.phaseId == 'establish'" style="display: flex; gap: 4px; align-items: center;">
-      <button *ngFor="let hotel of state.config.hotels; let i = index" class="btn hotel-{{i}}"
-        [class.disabled]="hotelExistsOnBoard(i)" style="color: white;" (click)="establish(i)">
-        {{hotel.hotelName}}
-      </button>
     </div>
 
     <div *ngIf="state.phaseId == 'mergeDecide'">
@@ -40,18 +32,14 @@
         <label>Merging hotel: {{state.config.hotels[state.mergingHotelIndex].hotelName}}
           {{state.stocks[state.mergingHotelIndex][state.decidingPlayerIndex]}} </label>
       </div>
-
       <div *ngFor="let hi of getHotelDecisionsHotels()">
-
         <label> {{state.config.hotels[hi].hotelName}} {{state.stocks[hi][state.decidingPlayerIndex]}} </label>
-
         <div>
           <label> Sell </label>
           <input type="number" [(ngModel)]="mergeDecisions[hi].sell">
           <label>Convert</label>
           <input type="number" step="2" [(ngModel)]="mergeDecisions[hi].convert">
         </div>
-
         <button (click)="postMergeDecide()">OK</button>
       </div>
     </div>
@@ -67,16 +55,9 @@
       </div>
       <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
         <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>
-        <input [(ngModel)]="stockDecisions[hotel.hotelIndex]" type="number" [min]="0" [max]="state.config.maxStocks">
+        <input [(ngModel)]="stockDecisions[hotel.hotelIndex]" type="number" [min]="0" [max]="3">
       </div>
       <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
-    </div>
-
-    <div class="hotels-legend">
-      <div *ngFor="let hotel of state.config.hotels; let i = index"
-        class="hotels-legend-item {{getHotelLegendClass(i)}}">
-        {{hotel.hotelName}} {{getHotelSize(i)}}
-      </div>
     </div>
   </div>
 </div>

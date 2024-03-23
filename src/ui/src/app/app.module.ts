@@ -3,10 +3,14 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
+import { PlayerInfoComponent } from './player-info/player-info.component';
+import { HotelInfoComponent } from './hotel-info/hotel-info.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PlayerInfoComponent,
+    HotelInfoComponent
   ],
   imports: [
     BrowserModule,

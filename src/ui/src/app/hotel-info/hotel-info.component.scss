@@ -1,0 +1,48 @@
+:host {
+  display: inline-block;
+}
+
+.rpgui-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &.is-clickable {
+    background: rgb(0, 162, 255);
+  }
+}
+
+.hotel-0 {
+  background: blue;
+}
+
+.hotel-1 {
+  background: goldenrod;
+}
+
+.hotel-2 {
+  background: green;
+}
+
+.hotel-3 {
+  background: red;
+}
+
+.hotel-4 {
+  background: purple;
+}
+
+.hotel-5 {
+  background: black;
+}
+
+.hotel-6 {
+  background: silver;
+}

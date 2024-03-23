@@ -1,3 +1,15 @@
+.player-infos {
+  display: flex;
+  gap: 12px;
+}
+
+.hotel-infos {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+
 .tile {
   width: 40px;
   height: 40px;
@@ -27,8 +39,8 @@
 
 .available-to-play {
   border-style: dashed;
-  border-color: fuchsia;
-  border-width: 2px;
+  border-color: rgb(0, 162, 255);
+  border-width: 4px;
   opacity: .5;
 }
 
