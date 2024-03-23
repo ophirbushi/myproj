@@ -1,7 +1,7 @@
 import { Config } from './models'
 
 export const defaultConfig: Config = {
-  numberOfPlayers: 2,
+  numberOfPlayers: 4,
   hotels: [
     { hotelName: "Riviera", prestige: 0 },
     { hotelName: "Holiday", prestige: 0 },

@@ -56,6 +56,9 @@
       </div>
     </div>
 
+    <div *ngIf="isPossibleGameEnd()">
+      <button (click)="finish()">End game</button>
+    </div>
 
     <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
       <div>

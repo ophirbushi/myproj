@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
 import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
-import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles } from '../../../engine/helpers'
+import { clone, getHotelPrestige, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
 
 
 @Component({
@@ -169,6 +169,11 @@ export class AppComponent {
     return subtotal
   }
 
+  finish() {
+    this.input = 'finish'
+    this.postInput('finish')
+  }
+
   getHotelDecisionsHotels() {
     return getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
       .filter(h => h > -1 && h !== this.state.mergingHotelIndex)
@@ -193,6 +198,10 @@ export class AppComponent {
     })
   }
 
+
+  isPossibleGameEnd() {
+    return this.state.phaseId == 'build' && isPossibleGameEnd(this.state)
+  }
 
   postMergeDecide() {
     const mergeDecisions: MergeDecision[] = Object.entries(this.mergeDecisions).map(([key, value]) => {
