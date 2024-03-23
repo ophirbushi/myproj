@@ -12,8 +12,9 @@ export const getNextDecidingPlayerIndex = (state: State): number => {
   return nextDecidingPlayerIndex
 }
 
-export const isGameEnd = (state: State): boolean => {
-  return false
+export const isPossibleGameEnd = (state: State): boolean => {
+  const hotelSizes = state.hotels.map(h => getHotelSize(state, h.hotelIndex))
+  return hotelSizes.some(hs => hs >= state.config.possibleGameEndHotelSize)
 }
 
 export const sortHotelsBySizeDescOrder = (state: State, hotelIndexes: number[]): number[] => {

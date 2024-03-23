@@ -1,15 +1,16 @@
-import { getImplicitInput, isGameEnd } from './helpers'
+import { getImplicitInput, isPossibleGameEnd } from './helpers'
 import { Input, Output, OutputMessageCode, State } from './models'
 import { doBuild } from './phases/build'
 import { doEstablish } from './phases/establish'
 import { doInvest } from './phases/invest'
 import { doMerge } from './phases/merge'
 import { doMergeDecide } from './phases/merge-decide'
+import { doWrapUp } from './phases/wrap-up'
 import { validateInput } from './validators'
 
 export const run = async (state: State, input: Input, output: Output) => {
   output.broadcast({ state, code: OutputMessageCode.ENGINE_START, log: 'start' })
-  while (!isGameEnd(state)) {
+  while (state.phaseId !== 'gameEnd') {
     let playerInput: any = getImplicitInput(state)
     if (playerInput == null) {
       output.broadcast({ state, code: OutputMessageCode.WAITING_FOR_INPUT, log: 'waiting for input' })
@@ -24,8 +25,13 @@ export const run = async (state: State, input: Input, output: Output) => {
     }
     switch (state.phaseId) {
       case 'build':
-        state = doBuild(state, playerInput)
-        break
+        if (isPossibleGameEnd(state) && playerInput === 'finish') {
+          state = doWrapUp(state)
+          break
+        } else {
+          state = doBuild(state, playerInput)
+          break
+        }
       case 'establish':
         state = doEstablish(state, playerInput)
         break
@@ -41,4 +47,5 @@ export const run = async (state: State, input: Input, output: Output) => {
     }
     output.broadcast({ state, code: OutputMessageCode.SUCCESS, log: 'ok' })
   }
+  output.broadcast({ state, code: OutputMessageCode.GAME_END, log: 'Game Ended' })
 }

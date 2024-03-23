@@ -1,4 +1,4 @@
-import { playerBuildTile, playerReplaceTile } from '../actions'
+import { handPrizes, playerBuildTile, playerReplaceTile } from '../actions'
 import { getTileByIndex, getTileEffect, getMergingHotelIndex, isPermanentlyIllegalTile } from '../helpers'
 import { State } from '../models'
 
@@ -20,13 +20,25 @@ export const doBuild = (state: State, input: number): State => {
         phaseId: 'invest',
       }
     case 'merge':
+      let newState = { ...state }
       const mergingHotelIndex = getMergingHotelIndex(state, tile)
-      return {
-        ...state,
-        ...playerBuildTile(state, input),
-        mergingHotelIndex,
-        phaseId: mergingHotelIndex === -1 ? 'merge' : 'mergeDecide',
+      if (mergingHotelIndex === -1) {
+        return {
+          ...state,
+          ...playerBuildTile(state, input),
+          mergingHotelIndex,
+          phaseId: 'merge'
+        }
       }
+      newState = playerBuildTile(newState, input)
+      newState = {
+        ...newState,
+        mergingHotelIndex,
+        decidingPlayerIndex: newState.currentPlayerIndex,
+        phaseId: 'mergeDecide'
+      }
+      newState = handPrizes(newState)
+      return newState
     case 'establish':
       return {
         ...state,

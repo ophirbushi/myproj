@@ -1,5 +1,5 @@
 import { playerBuyStocks } from './actions'
-import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge, isTemporarilyIllegalTile } from './helpers'
+import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile } from './helpers'
 import { MergeDecision, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
@@ -7,6 +7,9 @@ export const validateInput = (state: State, input: unknown): boolean => {
   let newState = clone(state)
   switch (newState.phaseId) {
     case 'build':
+      if (isPossibleGameEnd(state) && input === 'finish') {
+        return true
+      }
       const tileIndex = input as number
       if (
         typeof tileIndex !== 'number' ||

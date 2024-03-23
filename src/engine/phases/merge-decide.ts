@@ -1,4 +1,4 @@
-import { handPrizes, mergeHotels, playerConvertStocks, playerSellStocks } from '../actions'
+import { mergeHotels, playerConvertStocks, playerSellStocks } from '../actions'
 import { getNextDecidingPlayerIndex } from '../helpers'
 import { MergeDecision, State, StockDecision } from '../models'
 
@@ -8,11 +8,11 @@ const applyMergeDecision = (state: State, mergeDecisions: MergeDecision[]): Stat
     let stockDecision: StockDecision
     if (decision.sell > 0) {
       stockDecision = { hotelIndex: decision.hotelIndex, amount: decision.sell }
-      newState = playerSellStocks(newState, stockDecision, state.decidingPlayerIndex)
+      newState = playerSellStocks(newState, stockDecision, newState.decidingPlayerIndex)
     }
     if (decision.convert > 0) {
       stockDecision = { hotelIndex: decision.hotelIndex, amount: decision.convert }
-      newState = playerConvertStocks(newState, stockDecision, state.decidingPlayerIndex)
+      newState = playerConvertStocks(newState, stockDecision, newState.decidingPlayerIndex)
     }
   }
   return newState
@@ -31,7 +31,6 @@ export const doMergeDecide = (state: State, mergeDecisions: MergeDecision[]): St
       decidingPlayerIndex: nextDecidingPlayerIndex
     }
   }
-  newState = handPrizes(newState)
   newState = mergeHotels(newState)
   return {
     ...newState,

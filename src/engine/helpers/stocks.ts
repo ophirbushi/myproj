@@ -28,10 +28,14 @@ export const getHotelSecondPrizeAmount = (state: State, hotelIndex: number): num
 export const getPrizeReceivers = (state: State, hotelIndex: number): { firstPrize: number[], secondPrize: number[] } => {
   let firstPrize: number[] = []
   let secondPrize: number[] = []
-  const stockHolders = state.stocks[hotelIndex]
-  const stockHoldersSortedDesc = stockHolders.slice().sort().reverse()
-  firstPrize = stockHoldersSortedDesc.filter(holder => holder && holder === stockHoldersSortedDesc[0])
-  secondPrize = stockHoldersSortedDesc.filter(holder => holder && holder === stockHoldersSortedDesc[1])
+  const stockHolders = state.stocks[hotelIndex].map((amt, pi) => {
+    return { amount: amt, playerIndex: pi }
+  })
+  const stockHoldersSortedDesc = stockHolders.slice().sort((a, b) => {
+    return b.amount - a.amount
+  })
+  firstPrize = stockHoldersSortedDesc.filter(holder => holder.amount && holder.amount === stockHoldersSortedDesc[0].amount).map(holder => holder.playerIndex)
+  secondPrize = stockHoldersSortedDesc.filter(holder => holder.amount && holder.amount === stockHoldersSortedDesc[1].amount).map(holder => holder.playerIndex)
   if (!secondPrize.length) {
     secondPrize = [...firstPrize]
   }

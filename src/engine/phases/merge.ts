@@ -1,11 +1,13 @@
-import { getNextDecidingPlayerIndex } from '../helpers'
+import { handPrizes } from '../actions'
 import { State } from '../models'
 
 export const doMerge = (state: State, hotelIndex: number): State => {
-  return {
+  let newState: State = {
     ...state,
     phaseId: 'mergeDecide',
     mergingHotelIndex: hotelIndex,
     decidingPlayerIndex: state.currentPlayerIndex
   }
+  newState = handPrizes(newState)
+  return newState
 }
