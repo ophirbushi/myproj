@@ -24,3 +24,16 @@ export const getHotelFirstPrizeAmount = (state: State, hotelIndex: number): numb
 export const getHotelSecondPrizeAmount = (state: State, hotelIndex: number): number => {
   return 5 * getHotelStockPrice(state, hotelIndex)
 }
+
+export const getPrizeReceivers = (state: State, hotelIndex: number): { firstPrize: number[], secondPrize: number[] } => {
+  let firstPrize: number[] = []
+  let secondPrize: number[] = []
+  const stockHolders = state.stocks[hotelIndex]
+  const stockHoldersSortedDesc = stockHolders.slice().sort().reverse()
+  firstPrize = stockHoldersSortedDesc.filter(holder => holder && holder === stockHoldersSortedDesc[0])
+  secondPrize = stockHoldersSortedDesc.filter(holder => holder && holder === stockHoldersSortedDesc[1])
+  if (!secondPrize.length) {
+    secondPrize = [...firstPrize]
+  }
+  return { firstPrize, secondPrize }
+}

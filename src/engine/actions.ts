@@ -1,5 +1,5 @@
 import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge } from './helpers'
-import { getHotelStockPrice } from './helpers/stocks'
+import { getHotelFirstPrizeAmount, getHotelSecondPrizeAmount, getHotelStockPrice, getPrizeReceivers } from './helpers/stocks'
 import { State, StockDecision } from './models'
 
 export const playerDrawTile = (state: State): State => {
@@ -72,6 +72,29 @@ export const mergeHotels = (state: State): State => {
     hotels
   }
 }
+
+export const handPrizes = (state: State): State => {
+  const cash = clone(state.cash)
+  const lastTile = getLastPlayedTile(state)
+  const dissolvingHotels = getWhichHotelsInvolvedInMerge(state, lastTile)
+    .filter(hi => hi !== state.mergingHotelIndex)
+  for (const hotelIndex of dissolvingHotels) {
+    const firstPrizeAmt = getHotelFirstPrizeAmount(state, hotelIndex)
+    const secondPrizeAmt = getHotelSecondPrizeAmount(state, hotelIndex)
+    const { firstPrize, secondPrize } = getPrizeReceivers(state, hotelIndex)
+    for (let firstPrizeReceiver of firstPrize) {
+      cash[firstPrizeReceiver] += Math.floor(firstPrizeAmt / firstPrize.length)
+    }
+    for (let secondPrizeReceiver of secondPrize) {
+      cash[secondPrizeReceiver] += Math.floor(secondPrizeAmt / secondPrize.length)
+    }
+  }
+  return {
+    ...state,
+    cash
+  }
+}
+
 
 export const nextTurn = (state: State): State => {
   return {

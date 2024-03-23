@@ -1,9 +1,9 @@
-import { mergeHotels, playerConvertStocks, playerSellStocks } from '../actions'
+import { handPrizes, mergeHotels, playerConvertStocks, playerSellStocks } from '../actions'
 import { getNextDecidingPlayerIndex } from '../helpers'
 import { MergeDecision, State, StockDecision } from '../models'
 
 const applyMergeDecision = (state: State, mergeDecisions: MergeDecision[]): State => {
-  let newState = state
+  let newState = { ...state }
   for (const decision of mergeDecisions) {
     let stockDecision: StockDecision
     if (decision.sell > 0) {
@@ -19,20 +19,22 @@ const applyMergeDecision = (state: State, mergeDecisions: MergeDecision[]): Stat
 }
 
 export const doMergeDecide = (state: State, mergeDecisions: MergeDecision[]): State => {
-  state = {
-    ...state,
-    ...applyMergeDecision(state, mergeDecisions),
+  let newState = { ...state }
+  newState = {
+    ...newState,
+    ...applyMergeDecision(newState, mergeDecisions),
   }
-  let nextDecidingPlayerIndex = getNextDecidingPlayerIndex(state)
+  let nextDecidingPlayerIndex = getNextDecidingPlayerIndex(newState)
   if (nextDecidingPlayerIndex !== -1) {
     return {
-      ...state,
+      ...newState,
       decidingPlayerIndex: nextDecidingPlayerIndex
     }
   }
+  newState = handPrizes(newState)
+  newState = mergeHotels(newState)
   return {
-    ...state,
-    ...mergeHotels(state),
+    ...newState,
     phaseId: 'invest'
   }
 }
