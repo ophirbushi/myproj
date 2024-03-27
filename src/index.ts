@@ -8,25 +8,24 @@ import { resolve } from 'path'
 import * as express from 'express'
 import { EventEmitter } from 'events'
 
-
 const ws = createWriteStream(resolve(__dirname, '../log.txt'), { flags: 'a' })
 
 const broadcast = new EventEmitter()
 
 const input: Input = {
-  getInput: () => {
-    return new Promise(resolve => {
-      broadcast.on('input', (message) => resolve(message))
+  getInput: async () => {
+    return await new Promise(resolve => {
+      broadcast.on('input', (message) => {
+        resolve(message)
+      })
     })
   }
 }
-
 
 const output: Output = {
   broadcast: (message: OutputMessage) => {
     console.log(message.log, { message })
     latestState = message.state
-
     ws.write(JSON.stringify(message.state) + '\n')
   }
 }

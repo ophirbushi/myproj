@@ -6,7 +6,8 @@
   "scripts": {
     "start": "concurrently \"ts-node ./src/index.ts\" \"cd ./src/ui && ng serve\"",
     "server": "ts-node ./src/index.ts",
-    "ui": "cd ./src/ui && ng serve"
+    "ui": "cd ./src/ui && ng serve",
+    "lint": "eslint ./src --ext .ts"
   },
   "author": "",
   "license": "ISC",

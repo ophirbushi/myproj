@@ -3,7 +3,7 @@ export interface Config {
   initCashPerPlayer: number
   maxStocks: number
   unmergableHotelSize: number
-  hotels: { hotelName: string, prestige: number }[]
+  hotels: Array<{ hotelName: string, prestige: number }>
   possibleGameEndHotelSize: number
   numberOfTilesPerPlayer: number
   priceTable: { init: number, step: number, levels: number[] }
@@ -23,9 +23,9 @@ export interface State {
   tilesPile: Tile[]
   boardTiles: Tile[]
   discardedTiles: Tile[]
-  hotels: { hotelIndex: number, x: number, y: number }[]
+  hotels: Array<{ hotelIndex: number, x: number, y: number }>
   cash: number[]
-  playerTiles: { playerIndex: number, tiles: Tile[] }[]
+  playerTiles: Array<{ playerIndex: number, tiles: Tile[] }>
   stocks: { [hotelIndex: number]: number[] }
   phaseId: Phase
   currentPlayerIndex: number
@@ -45,7 +45,7 @@ export interface MergeDecision {
 }
 
 export interface Input {
-  getInput<T>(): Promise<T>
+  getInput: <T>() => Promise<T>
 }
 
 export enum OutputMessageCode {
@@ -63,5 +63,5 @@ export interface OutputMessage {
 }
 
 export interface Output {
-  broadcast(message: OutputMessage): void
+  broadcast: (message: OutputMessage) => void
 }

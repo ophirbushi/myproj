@@ -1,7 +1,6 @@
-import { Component, TrackByFunction } from '@angular/core';
+import { Component, TrackByFunction } from '@angular/core'
 import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
 import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
-
 
 @Component({
   selector: 'app-root',
@@ -9,7 +8,7 @@ import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHot
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'ui';
+  title = 'ui'
   state!: State
   input: any = null
   cache: {
@@ -19,7 +18,7 @@ export class AppComponent {
   } = {}
 
   _players: number[] | null = null
-  get players() {
+  get players () {
     if (!this.state) {
       return []
     }
@@ -44,7 +43,6 @@ export class AppComponent {
     6: 0
   }
 
-
   mergeDecisions: { [key: number]: { sell: number, convert: number } } = {
     0: { sell: 0, convert: 0 },
     1: { sell: 0, convert: 0 },
@@ -55,20 +53,19 @@ export class AppComponent {
     6: { sell: 0, convert: 0 },
   }
 
-
   trackByIndex: TrackByFunction<number> = (index: number) => {
     return index
   }
 
-  ngOnInit() {
+  ngOnInit () {
     this.fetchState()
   }
 
-  async fetchState() {
-    this.state = await fetch('http://localhost:3000/').then(res => res.json())
+  async fetchState () {
+    this.state = await fetch('http://localhost:3000/').then(async res => await res.json())
   }
 
-  getFilteredState(): Partial<State> {
+  getFilteredState (): Partial<State> {
     const stateClone: Partial<State> = clone(this.state)
     delete stateClone.config
     delete stateClone.tilesPile
@@ -79,8 +76,8 @@ export class AppComponent {
     return stateClone
   }
 
-  postInput(input?: any) {
-    return fetch('http://localhost:3000/input', {
+  async postInput (input?: any) {
+    await fetch('http://localhost:3000/input', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: input ?? +this.input })
@@ -89,7 +86,7 @@ export class AppComponent {
     })
   }
 
-  getArrayFromNumber(num: number) {
+  getArrayFromNumber (num: number) {
     let array = new Array(num)
     for (let i = 0; i < num; i++) {
       array[i] = i
@@ -97,24 +94,24 @@ export class AppComponent {
     return array
   }
 
-  exists(tile: Tile) {
+  exists (tile: Tile) {
     return this.state.boardTiles.some(t => isEqualTiles(t, tile))
   }
 
-  availableToPlay(tile: Tile) {
+  availableToPlay (tile: Tile) {
     if (this.state.phaseId !== 'build') {
       return false
     }
     return this.getCurrentPlayerTiles().some(t => isEqualTiles(t, tile))
   }
 
-  getCurrentPlayerTiles() {
+  getCurrentPlayerTiles () {
     return this.state.playerTiles[this.state.currentPlayerIndex].tiles
   }
 
-  onTileClick(tile: Tile) {
+  onTileClick (tile: Tile) {
     if (this.state.phaseId === 'merge') {
-      const hi = getWhichHotelTileBelongsTo(this.state, tile);
+      const hi = getWhichHotelTileBelongsTo(this.state, tile)
       const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
       if (hotelsInvolvedInMerge.includes(hi)) {
         this.input = hi
@@ -129,7 +126,7 @@ export class AppComponent {
     this.postInput()
   }
 
-  getHotelClass(tile: Tile) {
+  getHotelClass (tile: Tile) {
     const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
     if (hotelIndex === -1) {
       return ''
@@ -137,12 +134,12 @@ export class AppComponent {
     return 'hotel-' + hotelIndex
   }
 
-  getHotelName(tile: Tile): string {
+  getHotelName (tile: Tile): string {
     const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
     return this.state.config.hotels[hotelIndex]?.hotelName[0] || ''
   }
 
-  getOtherClass(tile: Tile) {
+  getOtherClass (tile: Tile) {
     let classes: string[] = []
     if (this.exists(tile)) {
       classes.push('shield-slot')
@@ -155,41 +152,41 @@ export class AppComponent {
     return classes.join(' ')
   }
 
-  hotelExistsOnBoard(hotelIndex: number) {
+  hotelExistsOnBoard (hotelIndex: number) {
     return hotelExistsOnBoard(this.state, hotelIndex)
   }
 
-  onHotelInfoClick(hotelIndex: number) {
+  onHotelInfoClick (hotelIndex: number) {
     if (this.isHotelClickable(hotelIndex)) {
       this.establish(hotelIndex)
     }
   }
 
-  isHotelClickable(hi: number) {
+  isHotelClickable (hi: number) {
     return this.state.phaseId === 'establish' && !hotelExistsOnBoard(this.state, hi)
   }
 
-  establish(hotelIndex: number) {
+  establish (hotelIndex: number) {
     this.input = hotelIndex
     this.postInput()
   }
 
-  getHotelLegendClass(hotelIndex: number) {
+  getHotelLegendClass (hotelIndex: number) {
     if (this.state.hotels.find(h => h.hotelIndex === hotelIndex)) {
       return 'hotel-' + hotelIndex
     }
     return ''
   }
 
-  getHotelSize(hotelIndex: number) {
+  getHotelSize (hotelIndex: number) {
     return this.getHotelSizes()[hotelIndex]
   }
 
-  mergeDecideNext() {
+  mergeDecideNext () {
     this.postInput()
   }
 
-  getSubtotal() {
+  getSubtotal () {
     let subtotal = 0
     for (let i = 0; i < this.state.config.hotels.length; i++) {
       if (!this.hotelExistsOnBoard(i)) {
@@ -200,17 +197,17 @@ export class AppComponent {
     return subtotal
   }
 
-  finish() {
+  finish () {
     this.input = 'finish'
     this.postInput('finish')
   }
 
-  getHotelDecisionsHotels() {
+  getHotelDecisionsHotels () {
     return getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
       .filter(h => h > -1 && h !== this.state.mergingHotelIndex)
   }
 
-  postInvest() {
+  postInvest () {
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
         hotelIndex: +key,
@@ -229,12 +226,11 @@ export class AppComponent {
     })
   }
 
-
-  isPossibleGameEnd() {
+  isPossibleGameEnd () {
     return this.state.phaseId == 'build' && isPossibleGameEnd(this.state)
   }
 
-  postMergeDecide() {
+  postMergeDecide () {
     const mergeDecisions: MergeDecision[] = Object.entries(this.mergeDecisions).map(([key, value]) => {
       return {
         hotelIndex: +key,
@@ -254,7 +250,7 @@ export class AppComponent {
     })
   }
 
-  private getHotelSizes() {
+  private getHotelSizes () {
     const cacheEntry = this.cache[JSON.stringify(this.state)]
     if (cacheEntry) {
       return cacheEntry.hotelSizes

@@ -1,6 +1,6 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { State } from '../../../../engine/models';
-import { hotelExistsOnBoard } from '../../../../engine/helpers';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core'
+import { State } from '../../../../engine/models'
+import { hotelExistsOnBoard } from '../../../../engine/helpers'
 
 @Component({
   selector: 'app-player-info',
@@ -18,13 +18,12 @@ export class PlayerInfoComponent implements OnInit, OnChanges {
   isPlayerToMove = false
   hotelsExistingOnBoard: boolean[] = []
 
-
-  ngOnInit(): void {
+  ngOnInit (): void {
     this.playerName = 'Player ' + (this.playerIndex + 1)
     this.hotelNames = this.state.config.hotels.map(h => h.hotelName[0])
   }
 
-  ngOnChanges(): void {
+  ngOnChanges (): void {
     this.playerCash = this.state.cash[this.playerIndex]
     this.playerStocks = Object.values(this.state.stocks).map(hotelStocks => hotelStocks[this.playerIndex])
     this.playerCards = this.state.playerTiles[this.playerIndex].tiles.length
@@ -32,11 +31,11 @@ export class PlayerInfoComponent implements OnInit, OnChanges {
     this.hotelsExistingOnBoard = this.state.config.hotels.map((_, hi) => hotelExistsOnBoard(this.state, hi))
   }
 
-  isGrayedOut(hi: number) {
+  isGrayedOut (hi: number) {
     return !this.hotelsExistingOnBoard[hi]
   }
 
-  private calcIsPlayerToMove(): boolean {
+  private calcIsPlayerToMove (): boolean {
     if (this.state.phaseId === 'mergeDecide') {
       return this.playerIndex === this.state.decidingPlayerIndex
     }
