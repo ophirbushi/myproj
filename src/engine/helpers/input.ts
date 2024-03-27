@@ -8,13 +8,14 @@ export const getImplicitInput = (state: State): any => {
         return [] as StockDecision[]
       }
       break
-    case 'mergeDecide':
+    case 'mergeDecide': {
       const dissolvingHotels = getWhichHotelsInvolvedInMerge(state, getLastPlayedTile(state))
         .filter(hi => hi !== state.mergingHotelIndex)
       if (dissolvingHotels.every(hi => !state.stocks[hi][state.decidingPlayerIndex])) {
         return [] as MergeDecision[]
       }
       break
+    }
     default:
       return null
   }

@@ -1,5 +1,5 @@
-import { State } from '../models';
-import { getHotelPrestige, getHotelSize } from './tiles';
+import { State } from '../models'
+import { getHotelPrestige, getHotelSize } from './tiles'
 
 export const getHotelStockPrice = (state: State, hotelIndex: number): number => {
   const { init, step, levels } = state.config.priceTable
@@ -36,7 +36,7 @@ export const getPrizeReceivers = (state: State, hotelIndex: number): { firstPriz
   })
   firstPrize = stockHoldersSortedDesc.filter(holder => holder.amount && holder.amount === stockHoldersSortedDesc[0].amount).map(holder => holder.playerIndex)
   secondPrize = stockHoldersSortedDesc.filter(holder => holder.amount && holder.amount === stockHoldersSortedDesc[1].amount).map(holder => holder.playerIndex)
-  if (!secondPrize.length) {
+  if (secondPrize.length === 0) {
     secondPrize = [...firstPrize]
   }
   return { firstPrize, secondPrize }

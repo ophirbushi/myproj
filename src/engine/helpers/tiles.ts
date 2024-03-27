@@ -1,5 +1,4 @@
 import { State, Tile, TileEffect } from '../models'
-import { getMergingHotelIndex } from './misc'
 import { distinct } from './utils'
 
 const isNeighboringTile = (a: Tile, b: Tile): boolean => {
@@ -80,8 +79,8 @@ export const getWhichHotelTileBelongsTo = (state: State, tile: Tile): number => 
   return -1
 }
 
-export const getTileByIndex = (state: State, index: number): Tile => {
-  return state.playerTiles[state.currentPlayerIndex].tiles[index]
+export const getTileByIndex = (state: State, playerIndex: number, tileIndex: number): Tile => {
+  return state.playerTiles[playerIndex].tiles[tileIndex]
 }
 
 export const getTileEffect = (state: State, tile: Tile): TileEffect => {
@@ -91,7 +90,7 @@ export const getTileEffect = (state: State, tile: Tile): TileEffect => {
       .map((t) => getWhichHotelTileBelongsTo(state, t))
       .filter((hotelIndex) => hotelIndex > -1)
   )
-  if (neighboringTiles.length && !hotelIndexes.length) {
+  if ((neighboringTiles.length > 0) && (hotelIndexes.length === 0)) {
     return 'establish'
   }
   if (hotelIndexes.length > 1) {

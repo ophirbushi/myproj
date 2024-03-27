@@ -1,0 +1,22 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true
+  },
+  "extends": "standard-with-typescript",
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "@typescript-eslint/consistent-type-imports": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "@typescript-eslint/comma-dangle": "off",
+    "@typescript-eslint/consistent-indexed-object-style": "off",
+    "semi": [
+      "error",
+      "never"
+    ],
+    "prefer-const": "off"
+  }
+}

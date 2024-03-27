@@ -6,7 +6,7 @@ import { doMergeDecide } from './phases/merge-decide'
 export const validateInput = (state: State, input: unknown): boolean => {
   let newState = clone(state)
   switch (newState.phaseId) {
-    case 'build':
+    case 'build': {
       if (isPossibleGameEnd(state) && input === 'finish') {
         return true
       }
@@ -20,12 +20,13 @@ export const validateInput = (state: State, input: unknown): boolean => {
       ) {
         return false
       }
-      const tile = getTileByIndex(newState, tileIndex)
+      const tile = getTileByIndex(newState, newState.currentPlayerIndex, tileIndex)
       if (isTemporarilyIllegalTile(newState, tile)) {
         return false
       }
       break
-    case 'mergeDecide':
+    }
+    case 'mergeDecide': {
       const mergeDecisions = input as MergeDecision[]
       if (!Array.isArray(mergeDecisions)) {
         return false
@@ -51,7 +52,8 @@ export const validateInput = (state: State, input: unknown): boolean => {
         return false
       }
       break
-    case 'invest':
+    }
+    case 'invest': {
       const stockDecisions = input as StockDecision[]
       if (!Array.isArray(stockDecisions)) {
         return false
@@ -73,7 +75,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
         return false
       }
       break
-
+    }
     default:
       break
   }
