@@ -17,18 +17,18 @@ export class HotelInfoComponent implements OnInit, OnChanges {
   hotelSize = 0
   hotelPrice = 0
 
-  ngOnInit (): void {
+  ngOnInit(): void {
     this.hotelName = this.state.config.hotels[this.hotelIndex].hotelName
     this.hotelPrestige = this.getHotelPrestige()
   }
 
-  ngOnChanges (): void {
+  ngOnChanges(): void {
     const isOnBoard = this.isOnBoard = hotelExistsOnBoard(this.state, this.hotelIndex)
     this.hotelSize = !isOnBoard ? 0 : getHotelSize(this.state, this.hotelIndex)
     this.hotelPrice = !isOnBoard ? 0 : getHotelStockPrice(this.state, this.hotelIndex)
   }
 
-  private getHotelPrestige (): string {
+  private getHotelPrestige(): string {
     switch (this.state.config.hotels[this.hotelIndex].prestige) {
       case 0: return '⭐⭐⭐'
       case 1: return '⭐⭐⭐⭐'
