@@ -227,7 +227,7 @@ export class AppComponent {
   }
 
   isPossibleGameEnd () {
-    return this.state.phaseId == 'build' && isPossibleGameEnd(this.state)
+    return this.state.phaseId === 'build' && isPossibleGameEnd(this.state)
   }
 
   postMergeDecide () {
