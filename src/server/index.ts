@@ -3,42 +3,12 @@ import * as cors from 'cors'
 import * as express from 'express'
 import { fileDBAdaptor } from './filedb'
 import { DBAdaptor } from './db'
-import { Input, OutputMessage, State } from '../engine/models'
+import { EventEmitterGameInstance, EventEmitterInput, EventEmitterOutput, OutputMessage, State } from '../engine/models'
 import { validateInput } from '../engine/validators'
 import * as engine from '../engine/engine'
-import { EventEmitter } from 'events'
 import { defaultConfig } from '../engine/constants'
 
 let db: DBAdaptor = fileDBAdaptor
-
-setInterval(() => {
-  ''
-}, 1000)
-
-export interface EventEmitterInput extends Input {
-  eventEmitter: EventEmitter
-  getInput: <T>() => Promise<T>
-  postInput: (input: any) => void
-}
-
-export interface EventEmitterGameInstance extends engine.GameInstance {
-  input: EventEmitterInput
-  output: engine.EventEmitterOutput
-}
-
-const newEventEmitterInput = (): EventEmitterInput => {
-  const inputInstance: EventEmitterInput = {} as any
-  inputInstance.eventEmitter = new EventEmitter()
-  inputInstance.getInput = async () => {
-    return await new Promise((resolve, reject) => {
-      inputInstance.eventEmitter.on('input', resolve)
-    })
-  }
-  inputInstance.postInput = (input) => {
-    inputInstance.eventEmitter.emit('input', input)
-  }
-  return inputInstance
-}
 
 const persistGameState = async (gameId: string, state: State) => {
   await db.set(gameId, state)
@@ -48,14 +18,14 @@ const fetchGameState = async (gameId: string): Promise<State> => {
   return await db.get(gameId)
 }
 
-const getGameInstance = (gameId: string): engine.GameInstance => {
+const getGameInstance = (gameId: string): EventEmitterGameInstance => {
   return games[gameId]
 }
 
 const runGame = (gameId: string, state: State): EventEmitterGameInstance => {
-  const input = newEventEmitterInput()
-  const output = new engine.EventEmitterOutput()
-  const gameInstance = engine.run(gameId, state, input, output) as EventEmitterGameInstance
+  const input = new EventEmitterInput()
+  const output = new EventEmitterOutput()
+  const gameInstance = engine.run(gameId, state, input, output)
   games[gameId] = gameInstance
   const onMessage = (msg: OutputMessage) => {
     persistGameState(gameId, msg.state)
@@ -64,7 +34,7 @@ const runGame = (gameId: string, state: State): EventEmitterGameInstance => {
   return gameInstance
 }
 
-const games: { [gameId: string]: engine.GameInstance } = {}
+const games: { [gameId: string]: EventEmitterGameInstance } = {}
 
 express()
   .use(express.json())

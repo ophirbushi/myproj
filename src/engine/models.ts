@@ -1,3 +1,5 @@
+import { EventEmitter } from 'events'
+
 export interface Config {
   numberOfPlayers: number
   initCashPerPlayer: number
@@ -45,11 +47,6 @@ export interface MergeDecision {
   sell: number
 }
 
-export interface Input {
-  getInput: <T>() => Promise<T>
-  postInput: <T>(input: T) => void
-}
-
 export enum OutputMessageCode {
   ENGINE_START = 0,
   SUCCESS = 1,
@@ -64,6 +61,48 @@ export interface OutputMessage {
   log?: string
 }
 
+export interface Input {
+  getInput: <T>() => Promise<T>
+}
+
 export interface Output {
   broadcast: (message: OutputMessage) => void
+}
+
+export class EventEmitterInput implements Input {
+  eventEmitter = new EventEmitter()
+  getInput = async<T>() => {
+    return await new Promise<T>((resolve, reject) => {
+      this.eventEmitter.on('input', resolve)
+    })
+  }
+  postInput = <T>(input: T) => {
+    this.eventEmitter.emit('input', input)
+  }
+}
+
+export class EventEmitterOutput implements Output {
+  eventEmitter = new EventEmitter()
+  onMessage = (callback: (message: OutputMessage) => void) => {
+    this.eventEmitter.on('message', callback)
+  }
+  broadcast = (message: OutputMessage) => {
+    this.eventEmitter.emit('message', message)
+  }
+}
+
+export interface GameInstance {
+  gameId: string
+  isRunning: boolean
+  isError: boolean
+  state: State
+  input: Input
+  output: Output
+  gameLoop: Promise<void>
+  error?: any
+}
+
+export interface EventEmitterGameInstance extends GameInstance {
+  input: EventEmitterInput
+  output: EventEmitterOutput
 }
