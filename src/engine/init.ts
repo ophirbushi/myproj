@@ -52,8 +52,9 @@ export const initTilesDraw = (state: State): State => {
   return state
 }
 
-export const initState = (config: Config): State => {
+export const initState = <T = any>(config: Config, metadata?: T): State => {
   let state: State = {
+    metadata,
     config,
     cash: [],
     hotels: [],

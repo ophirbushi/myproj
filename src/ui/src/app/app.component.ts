@@ -52,7 +52,7 @@ export class AppComponent {
   }
 
   async fetchState() {
-    this.state = await fetch('http://localhost:3000/').then(async res => await res.json())
+    this.state = await fetch('http://localhost:3000/game/1711713648270/state').then(async res => await res.json())
   }
 
   getFilteredState(): Partial<State> {
@@ -71,7 +71,7 @@ export class AppComponent {
   }
 
   async postInput(input?: any) {
-    await fetch('http://localhost:3000/input', {
+    await fetch('http://localhost:3000/game/1711713648270/input', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input: input ?? +this.input })

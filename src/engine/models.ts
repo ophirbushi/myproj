@@ -18,7 +18,8 @@ export type Phase = 'build' | 'establish' | 'merge' | 'mergeDecide' | 'invest' |
 
 export type TileEffect = 'merge' | 'establish' | 'noop'
 
-export interface State {
+export interface State<T = any> {
+  metadata?: T
   config: Config
   tilesPile: Tile[]
   boardTiles: Tile[]
@@ -46,6 +47,7 @@ export interface MergeDecision {
 
 export interface Input {
   getInput: <T>() => Promise<T>
+  postInput: <T>(input: T) => void
 }
 
 export enum OutputMessageCode {
