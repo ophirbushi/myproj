@@ -1,5 +1,5 @@
 import { getImplicitInput, isPossibleGameEnd } from './helpers'
-import { EventEmitterGameInstance, EventEmitterInput, EventEmitterOutput, Input, Output, OutputMessageCode, State } from './models'
+import { GameInstance, Input, Output, OutputMessageCode, State } from './models'
 import { doBuild } from './phases/build'
 import { doEstablish } from './phases/establish'
 import { doInvest } from './phases/invest'
@@ -50,8 +50,8 @@ const gameLoop = async (state: State, input: Input, output: Output) => {
   output.broadcast({ state, code: OutputMessageCode.GAME_END, log: 'Game Ended' })
 }
 
-export const run = (gameId: string, state: State, input: EventEmitterInput, output: EventEmitterOutput): EventEmitterGameInstance => {
-  const gameInstance: EventEmitterGameInstance = {
+export const run = (gameId: string, state: State, input: Input, output: Output): GameInstance => {
+  const gameInstance: GameInstance = {
     gameId,
     isRunning: true,
     isError: false,

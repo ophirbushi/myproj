@@ -3,10 +3,11 @@ import * as cors from 'cors'
 import * as express from 'express'
 import { fileDBAdaptor } from './filedb'
 import { DBAdaptor } from './db'
-import { EventEmitterGameInstance, EventEmitterInput, EventEmitterOutput, OutputMessage, State } from '../engine/models'
+import { GameInstance, OutputMessage, State } from '../engine/models'
 import { validateInput } from '../engine/validators'
 import * as engine from '../engine/engine'
 import { defaultConfig } from '../engine/constants'
+import { EventEmitterInput, EventEmitterOutput } from './io'
 
 let db: DBAdaptor = fileDBAdaptor
 
@@ -18,11 +19,11 @@ const fetchGameState = async (gameId: string): Promise<State> => {
   return await db.get(gameId)
 }
 
-const getGameInstance = (gameId: string): EventEmitterGameInstance => {
+const getGameInstance = (gameId: string): GameInstance => {
   return games[gameId]
 }
 
-const runGame = (gameId: string, state: State): EventEmitterGameInstance => {
+const runGame = (gameId: string, state: State): GameInstance => {
   const input = new EventEmitterInput()
   const output = new EventEmitterOutput()
   const gameInstance = engine.run(gameId, state, input, output)
@@ -34,7 +35,7 @@ const runGame = (gameId: string, state: State): EventEmitterGameInstance => {
   return gameInstance
 }
 
-const games: { [gameId: string]: EventEmitterGameInstance } = {}
+const games: { [gameId: string]: GameInstance } = {}
 
 const newGame = async (req: express.Request, res: express.Response) => {
   try {

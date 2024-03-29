@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events'
-
 export interface Config {
   numberOfPlayers: number
   initCashPerPlayer: number
@@ -63,32 +61,12 @@ export interface OutputMessage {
 
 export interface Input {
   getInput: <T>() => Promise<T>
+  postInput: <T>(input: T) => void
 }
 
 export interface Output {
   broadcast: (message: OutputMessage) => void
-}
-
-export class EventEmitterInput implements Input {
-  eventEmitter = new EventEmitter()
-  getInput = async<T>() => {
-    return await new Promise<T>((resolve, reject) => {
-      this.eventEmitter.on('input', resolve)
-    })
-  }
-  postInput = <T>(input: T) => {
-    this.eventEmitter.emit('input', input)
-  }
-}
-
-export class EventEmitterOutput implements Output {
-  eventEmitter = new EventEmitter()
-  onMessage = (callback: (message: OutputMessage) => void) => {
-    this.eventEmitter.on('message', callback)
-  }
-  broadcast = (message: OutputMessage) => {
-    this.eventEmitter.emit('message', message)
-  }
+  onMessage: (callback: (message: OutputMessage) => void) => void
 }
 
 export interface GameInstance {
@@ -100,9 +78,4 @@ export interface GameInstance {
   output: Output
   gameLoop: Promise<void>
   error?: any
-}
-
-export interface EventEmitterGameInstance extends GameInstance {
-  input: EventEmitterInput
-  output: EventEmitterOutput
 }
