@@ -2,21 +2,21 @@ import { NgModule } from '@angular/core'
 import { BrowserModule } from '@angular/platform-browser'
 
 import { AppComponent } from './app.component'
-import { FormsModule } from '@angular/forms'
-import { PlayerInfoComponent } from './player-info/player-info.component'
-import { HotelInfoComponent } from './hotel-info/hotel-info.component'
-import { MergeDecisionsComponent } from './merge-decisions/merge-decisions.component'
+import { RouterModule } from '@angular/router'
 
 @NgModule({
   declarations: [
     AppComponent,
-    PlayerInfoComponent,
-    HotelInfoComponent,
-    MergeDecisionsComponent
+
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    RouterModule.forRoot([
+      {
+        path: 'game/:gameId',
+        loadChildren: () => import('./game/game.module').then(m => m.GameModule)
+      }
+    ])
   ],
   providers: [],
   bootstrap: [AppComponent]

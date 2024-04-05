@@ -1,0 +1,122 @@
+.player-infos {
+  display: flex;
+  gap: 12px;
+}
+
+.hotel-infos {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+}
+
+
+.tile {
+  width: 40px;
+  height: 40px;
+  border: 1px solid black;
+  display: inline-block;
+  margin-right: 8px;
+  box-sizing: border-box;
+}
+
+.occupied {
+  background-color: gray;
+}
+
+.rpgui-icon {
+  position: relative;
+
+  &:after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+  }
+}
+
+.available-to-play {
+  border-style: dashed;
+  border-color: rgb(0, 162, 255);
+  border-width: 4px;
+  opacity: .5;
+}
+
+.hotels-legend-item {
+  color: rgb(122, 122, 122);
+}
+
+
+.hotel-0 {
+  color: blue;
+}
+
+.hotel-1 {
+  color: goldenrod;
+}
+
+.hotel-2 {
+  color: green;
+}
+
+.hotel-3 {
+  color: red;
+}
+
+.hotel-4 {
+  color: purple;
+}
+
+.hotel-5 {
+  color: black;
+}
+
+.hotel-6 {
+  color: silver;
+}
+
+
+.hotel-0::after {
+  background-color: blue !important;
+  opacity: 0.5;
+}
+
+.hotel-1::after {
+  background-color: goldenrod !important;
+  opacity: 0.5;
+}
+
+.hotel-2::after {
+  background-color: green !important;
+  opacity: 0.5;
+}
+
+.hotel-3::after {
+  background-color: red !important;
+  opacity: 0.5;
+}
+
+.hotel-4::after {
+  background-color: purple !important;
+  opacity: 0.5;
+}
+
+.hotel-5::after {
+  background-color: black !important;
+  opacity: 0.5;
+}
+
+.hotel-6::after {
+  background-color: silver !important;
+  opacity: 0.5;
+}
+
+
+
+.disabled::after {
+  background-color: gray !important;
+  opacity: 0.5;
+  pointer-events: none;
+}

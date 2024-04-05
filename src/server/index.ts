@@ -70,7 +70,7 @@ const getGameState = async (req: express.Request, res: express.Response) => {
 const postGameInput = async (req: express.Request, res: express.Response) => {
   const input = req.body.input
   const gameId = req.params.gameId
-  if (!input || !gameId) {
+  if (input == null || !gameId) {
     res.status(400).send({ error: 'missing input or gameId' })
     return
   }
@@ -78,7 +78,6 @@ const postGameInput = async (req: express.Request, res: express.Response) => {
     const gameInstance = getGameInstance(gameId)
     if (!gameInstance) {
       res.status(404).send({ error: 'game not found' })
-      return
     }
     if (!gameInstance.isRunning) {
       res.status(400).send({ error: 'game not running', gameError: gameInstance.error })

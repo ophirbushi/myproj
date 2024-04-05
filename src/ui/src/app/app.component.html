@@ -1,44 +1,7 @@
-<div class="rpgui-content rpgui-cursor-default" *ngIf="state" style="position: relative;">
-  <div class="inner rpgui-container framed" style="position: relative; overflow-y: auto; min-height: 100vh;">
-    <div class="container-fluid" style="display: flex; justify-content: space-between; padding: 12px 36px;">
-      <div>
-        <div class="player-infos" style="margin-bottom: 36px;">
-          <app-player-info *ngFor="let pi of players" [state]="state" [playerIndex]="pi"> </app-player-info>
-        </div>
-        <div style="display: table;">
-          <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
-            <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
-              <div class="rpgui-icon  {{getHotelClass([x,y])}} {{getOtherClass([x, y])}}" (click)="onTileClick([x, y])">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <app-merge-decisions style="display: flex; flex-direction: column; gap: 12px; align-self: center;"
-        *ngIf="state.phaseId === 'mergeDecide'" [state]="state"
-        (decide)="onMergeDecisions($event)"></app-merge-decisions>
+app
 
-      <div class="hotel-infos">
-        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;"
-          *ngFor="let h of state.config.hotels; let hi = index;" [state]="state" [hotelIndex]="hi"
-          [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
-      </div>
-    </div>
+<router-outlet>
 
-    <div *ngIf="isPossibleGameEnd()">
-      <button (click)="finish()">End game</button>
-    </div>
+</router-outlet> 
 
-    <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
-      <div>
-        <div>Residual cash: {{state.cash[state.currentPlayerIndex]}}</div>
-        <div>Subtotal: {{getSubtotal()}}</div>
-      </div>
-      <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
-        <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>
-        <input [(ngModel)]="stockDecisions[hotel.hotelIndex]" type="number" [min]="0" [max]="3">
-      </div>
-      <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
-    </div>
-  </div>
-</div>
+<footer>footer</footer>
