@@ -1,13 +1,13 @@
 import { handPrizes, playerBuildTile, playerReplaceTile } from '../actions'
 import { getTileByIndex, getTileEffect, getMergingHotelIndex, isPermanentlyIllegalTile } from '../helpers'
-import { State } from '../models'
+import { Output, State } from '../models'
 
-export const doBuild = (state: State, input: number): State => {
+export const doBuild = (state: State, input: number, output: Output): State => {
   const tile = getTileByIndex(state, input)
   if (isPermanentlyIllegalTile(state, tile)) {
     return {
       ...state,
-      ...playerReplaceTile(state, input),
+      ...playerReplaceTile(state, input, output),
       phaseId: 'build',
     }
   }
@@ -16,7 +16,7 @@ export const doBuild = (state: State, input: number): State => {
     case 'noop':
       return {
         ...state,
-        ...playerBuildTile(state, input),
+        ...playerBuildTile(state, input, output),
         phaseId: 'invest',
       }
     case 'merge':
@@ -25,24 +25,24 @@ export const doBuild = (state: State, input: number): State => {
       if (mergingHotelIndex === -1) {
         return {
           ...state,
-          ...playerBuildTile(state, input),
+          ...playerBuildTile(state, input, output),
           mergingHotelIndex,
           phaseId: 'merge'
         }
       }
-      newState = playerBuildTile(newState, input)
+      newState = playerBuildTile(newState, input, output)
       newState = {
         ...newState,
         mergingHotelIndex,
         decidingPlayerIndex: newState.currentPlayerIndex,
         phaseId: 'mergeDecide'
       }
-      newState = handPrizes(newState)
+      newState = handPrizes(newState, output)
       return newState
     case 'establish':
       return {
         ...state,
-        ...playerBuildTile(state, input),
+        ...playerBuildTile(state, input, output),
         phaseId: 'establish',
       }
   }

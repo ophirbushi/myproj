@@ -63,5 +63,5 @@ export interface OutputMessage {
 }
 
 export interface Output {
-  broadcast(message: OutputMessage): void
+  broadcast(message: OutputMessage | string): void
 }

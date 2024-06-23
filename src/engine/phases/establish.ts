@@ -1,10 +1,10 @@
 import { givePlayerStockIfRemaining, playerEstablishHotel } from '../actions'
-import { State } from '../models'
+import { Output, State } from '../models'
 
-export const doEstablish = (state: State, hotelIndex: number): State => {
+export const doEstablish = (state: State, hotelIndex: number, output: Output): State => {
   let newState = state
-  newState = playerEstablishHotel(newState, hotelIndex)
-  newState = givePlayerStockIfRemaining(newState, hotelIndex, newState.currentPlayerIndex)
+  newState = playerEstablishHotel(newState, hotelIndex, output)
+  newState = givePlayerStockIfRemaining(newState, hotelIndex, newState.currentPlayerIndex, output)
   return {
     ...newState,
     phaseId: 'invest',

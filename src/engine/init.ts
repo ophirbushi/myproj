@@ -1,6 +1,6 @@
 import { playerBuildTile, playerDrawTile } from './actions'
 import { shuffleArray } from './helpers'
-import { Config, State, Tile } from './models'
+import { Config, Output, State, Tile } from './models'
 
 const initCash = (state: State): State => {
   const cash: number[] = []
@@ -40,19 +40,19 @@ const initStocks = (state: State): State => {
   return { ...state, stocks }
 }
 
-export const initTilesDraw = (state: State): State => {
+export const initTilesDraw = (state: State, output: Output): State => {
   for (let i = 0; i < state.config.numberOfPlayers; i++) {
     state.currentPlayerIndex = i
     for (let j = 0; j < state.config.numberOfTilesPerPlayer + 1; j++) {
-      state = playerDrawTile(state)
+      state = playerDrawTile(state, output)
     }
-    state = playerBuildTile(state, 0)
+    state = playerBuildTile(state, 0, output)
   }
   state.currentPlayerIndex = 0
   return state
 }
 
-export const initState = (config: Config): State => {
+export const initState = (config: Config, output: Output): State => {
   let state: State = {
     config,
     cash: [],
@@ -71,7 +71,7 @@ export const initState = (config: Config): State => {
   state = initCash(state)
   state = initPlayerTiles(state)
   state = initStocks(state)
-  state = initTilesDraw(state)
+  state = initTilesDraw(state, output)
   return state
 }
 

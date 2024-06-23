@@ -1,13 +1,13 @@
 import { playerSellStocks } from '../actions'
 import { clone, getHotelFirstPrizeAmount, getHotelSecondPrizeAmount, getPrizeReceivers } from '../helpers'
-import { State } from '../models'
+import { Output, State } from '../models'
 
-export const doWrapUp = (state: State): State => {
+export const doWrapUp = (state: State, output: Output): State => {
   let newState = { ...state }
   for (let h of newState.hotels) {
     for (let pi = 0; pi < newState.config.numberOfPlayers; pi++) {
       const amount = newState.stocks[h.hotelIndex][pi]
-      newState = playerSellStocks(newState, { hotelIndex: h.hotelIndex, amount }, pi)
+      newState = playerSellStocks(newState, { hotelIndex: h.hotelIndex, amount }, output, pi)
     }
   }
   const cash = clone(newState.cash)

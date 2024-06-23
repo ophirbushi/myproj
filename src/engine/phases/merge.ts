@@ -1,13 +1,13 @@
 import { handPrizes } from '../actions'
-import { State } from '../models'
+import { Output, State } from '../models'
 
-export const doMerge = (state: State, hotelIndex: number): State => {
+export const doMerge = (state: State, hotelIndex: number, output: Output): State => {
   let newState: State = {
     ...state,
     phaseId: 'mergeDecide',
     mergingHotelIndex: hotelIndex,
     decidingPlayerIndex: state.currentPlayerIndex
   }
-  newState = handPrizes(newState)
+  newState = handPrizes(newState, output)
   return newState
 }

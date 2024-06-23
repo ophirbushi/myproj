@@ -1,9 +1,9 @@
 import { playerBuyStocks } from './actions'
 import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile } from './helpers'
-import { MergeDecision, State, StockDecision } from './models'
+import { MergeDecision, Output, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
-export const validateInput = (state: State, input: unknown): boolean => {
+export const validateInput = (state: State, input: unknown, output: Output): boolean => {
   let newState = clone(state)
   switch (newState.phaseId) {
     case 'build':
@@ -40,7 +40,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
       if (mergeDecisions.some(d => d.convert && d.convert % 2 !== 0)) {
         return false
       }
-      newState = doMergeDecide(newState, mergeDecisions)
+      newState = doMergeDecide(newState, mergeDecisions, output)
       if (
         Object.values(newState.stocks)
           .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > newState.config.maxStocks))
@@ -57,7 +57,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
         return false
       }
       for (const decision of stockDecisions) {
-        newState = playerBuyStocks(newState, decision)
+        newState = playerBuyStocks(newState, decision, output)
       }
       if (newState.cash.some(c => c < 0)) {
         return false

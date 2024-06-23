@@ -17,7 +17,7 @@ export const run = async (state: State, input: Input, output: Output) => {
       let inputValid = false
       while (!inputValid) {
         playerInput = await input.getInput()
-        inputValid = validateInput(state, playerInput)
+        inputValid = validateInput(state, playerInput, output)
         if (!inputValid) {
           output.broadcast({ state, code: OutputMessageCode.INVALID_INPUT, log: 'invalid input' })
         }
@@ -26,23 +26,23 @@ export const run = async (state: State, input: Input, output: Output) => {
     switch (state.phaseId) {
       case 'build':
         if (isPossibleGameEnd(state) && playerInput === 'finish') {
-          state = doWrapUp(state)
+          state = doWrapUp(state, output)
           break
         } else {
-          state = doBuild(state, playerInput)
+          state = doBuild(state, playerInput, output)
           break
         }
       case 'establish':
-        state = doEstablish(state, playerInput)
+        state = doEstablish(state, playerInput, output)
         break
       case 'merge':
-        state = doMerge(state, playerInput)
+        state = doMerge(state, playerInput, output)
         break
       case 'mergeDecide':
-        state = doMergeDecide(state, playerInput)
+        state = doMergeDecide(state, playerInput, output)
         break
       case 'invest':
-        state = doInvest(state, playerInput)
+        state = doInvest(state, playerInput, output)
         break
     }
     output.broadcast({ state, code: OutputMessageCode.SUCCESS, log: 'ok' })
