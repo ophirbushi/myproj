@@ -1,10 +1,11 @@
 import { handPrizes, playerBuildTile, playerReplaceTile } from '../actions'
 import { getTileByIndex, getTileEffect, getMergingHotelIndex, isPermanentlyIllegalTile } from '../helpers'
-import { State } from '../models'
+import { Output, State } from '../models'
 
-export const doBuild = (state: State, input: number): State => {
+export const doBuild = (state: State, input: number, output: Output): State => {
   const tile = getTileByIndex(state, input)
   if (isPermanentlyIllegalTile(state, tile)) {
+    output.broadcast({ code: 5, state, log: `<current-player> replaced a tile` })
     return {
       ...state,
       ...playerReplaceTile(state, input),
@@ -14,6 +15,7 @@ export const doBuild = (state: State, input: number): State => {
   const effect = getTileEffect(state, tile)
   switch (effect) {
     case 'noop':
+      output.broadcast({ code: 5, state, log: `<current-player> placed ${tile}` })
       return {
         ...state,
         ...playerBuildTile(state, input),
@@ -23,6 +25,7 @@ export const doBuild = (state: State, input: number): State => {
       let newState = { ...state }
       const mergingHotelIndex = getMergingHotelIndex(state, tile)
       if (mergingHotelIndex === -1) {
+        output.broadcast({ code: 5, state, log: `<current-player> placed ${tile}` })
         return {
           ...state,
           ...playerBuildTile(state, input),
@@ -31,6 +34,7 @@ export const doBuild = (state: State, input: number): State => {
         }
       }
       newState = playerBuildTile(newState, input)
+      output.broadcast({ code: 5, state, log: `<current-player> placed ${tile}` })
       newState = {
         ...newState,
         mergingHotelIndex,
@@ -40,6 +44,7 @@ export const doBuild = (state: State, input: number): State => {
       newState = handPrizes(newState)
       return newState
     case 'establish':
+      output.broadcast({ code: 5, state, log: `<current-player> placed ${tile}` })
       return {
         ...state,
         ...playerBuildTile(state, input),

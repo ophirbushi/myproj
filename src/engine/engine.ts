@@ -29,11 +29,11 @@ export const run = async (state: State, input: Input, output: Output) => {
           state = doWrapUp(state)
           break
         } else {
-          state = doBuild(state, playerInput)
+          state = doBuild(state, playerInput, output)
           break
         }
       case 'establish':
-        state = doEstablish(state, playerInput)
+        state = doEstablish(state, playerInput, output)
         break
       case 'merge':
         state = doMerge(state, playerInput)

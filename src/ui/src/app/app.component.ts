@@ -12,6 +12,7 @@ export class AppComponent {
   title = 'ui';
   state!: State
   input: any = null
+  log: string[] = []
   cache: {
     [key: string]: {
       hotelSizes: number[]
@@ -65,7 +66,10 @@ export class AppComponent {
   }
 
   async fetchState() {
-    this.state = await fetch('http://localhost:3000/').then(res => res.json())
+    fetch('http://localhost:3000/').then(res => res.json()).then(({ state, log }) => {
+      this.state = state
+      this.log = (log || []).map((l: string) => l.replace('<current-player>', `Player ${state.currentPlayerIndex}`))
+    })
   }
 
   getFilteredState(): Partial<State> {

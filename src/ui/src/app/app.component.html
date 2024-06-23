@@ -5,7 +5,6 @@
       <button (click)="mergeDecideNext()">Next</button>
     </div>
 
-
     <div class="container-fluid" style="display: flex; justify-content: space-between; padding: 12px 36px;">
       <div>
         <div class="player-infos" style="margin-bottom: 36px;">
@@ -20,9 +19,13 @@
           </div>
         </div>
       </div>
+
+      <app-game-log [log]="log"></app-game-log>
+
       <div class="hotel-infos">
-        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;" *ngFor="let h of state.config.hotels; let hi = index;"
-          [state]="state" [hotelIndex]="hi" [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
+        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;"
+          *ngFor="let h of state.config.hotels; let hi = index;" [state]="state" [hotelIndex]="hi"
+          [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
       </div>
     </div>
 

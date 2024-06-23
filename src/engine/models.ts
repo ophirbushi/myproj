@@ -53,7 +53,8 @@ export enum OutputMessageCode {
   SUCCESS = 1,
   WAITING_FOR_INPUT = 2,
   INVALID_INPUT = 3,
-  GAME_END = 4
+  GAME_END = 4,
+  GAME_LOG = 5
 }
 
 export interface OutputMessage {

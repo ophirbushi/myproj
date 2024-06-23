@@ -21,12 +21,15 @@ const input: Input = {
   }
 }
 
+const log: string[] = []
 
 const output: Output = {
   broadcast: (message: OutputMessage) => {
+    if (message.log && message.code === 5) {
+      log.push(message.log.replace('<current-player>', `Player ${message.state.currentPlayerIndex}`))
+    }
     console.log(message.log, { message })
     latestState = message.state
-
     ws.write(JSON.stringify(message.state) + '\n')
   }
 }
@@ -43,7 +46,7 @@ express()
   .use(express.json())
   .use(cors())
   .get('/', (req, res) => {
-    res.send(latestState)
+    res.send({ state: latestState, log })
   })
   .post('/input', (req, res) => {
     const input = req.body.input
