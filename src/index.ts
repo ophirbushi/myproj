@@ -23,6 +23,9 @@ const output: Output = {
     if (typeof message === 'string') {
       console.log(message)
       logs.push(message)
+      if (logs.length > 50) {
+        logs.shift()
+      }
     } else {
       latestState = message.state
       ws.write(JSON.stringify(message.state) + '\n')
@@ -36,7 +39,7 @@ express()
   .use(express.json())
   .use(cors())
   .get('/', (req, res) => {
-    res.send({ state, logs })
+    res.send({ state: latestState, logs })
   })
   .post('/input', (req, res) => {
     const input = req.body.input

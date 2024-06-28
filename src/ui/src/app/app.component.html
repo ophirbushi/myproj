@@ -1,11 +1,5 @@
 <div class="rpgui-content rpgui-cursor-default" *ngIf="state" style="position: relative;">
   <div class="inner rpgui-container framed" style="position: relative; overflow-y: auto; min-height: 100vh;">
-    <div *ngIf="state.phaseId == 'mergeDecide'"
-      style="display: flex; gap: 4px; align-items: center; justify-content: center;">
-      <button (click)="mergeDecideNext()">Next</button>
-    </div>
-
-
     <div class="container-fluid" style="display: flex; justify-content: space-between; padding: 12px 36px;">
       <div>
         <div class="player-infos" style="margin-bottom: 36px;">
@@ -20,27 +14,16 @@
           </div>
         </div>
       </div>
-      <div class="hotel-infos">
-        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;" *ngFor="let h of state.config.hotels; let hi = index;"
-          [state]="state" [hotelIndex]="hi" [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
-      </div>
-    </div>
 
-    <div *ngIf="state.phaseId == 'mergeDecide'">
-      decidingPlayerIndex: {{state.decidingPlayerIndex}}
-      <div>
-        <label>Merging hotel: {{state.config.hotels[state.mergingHotelIndex].hotelName}}
-          {{state.stocks[state.mergingHotelIndex][state.decidingPlayerIndex]}} </label>
+      <div style="display: flex; gap: 20px; flex-direction: column;">
+          <app-game-log [logs]="logs"></app-game-log>
+          <app-merge-decisions *ngIf="state.phaseId === 'mergeDecide'" [state]="state" (postInput)="onMergeDecide($event)"></app-merge-decisions>
       </div>
-      <div *ngFor="let hi of getHotelDecisionsHotels()">
-        <label> {{state.config.hotels[hi].hotelName}} {{state.stocks[hi][state.decidingPlayerIndex]}} </label>
-        <div>
-          <label> Sell </label>
-          <input type="number" [(ngModel)]="mergeDecisions[hi].sell">
-          <label>Convert</label>
-          <input type="number" step="2" [(ngModel)]="mergeDecisions[hi].convert">
-        </div>
-        <button (click)="postMergeDecide()">OK</button>
+
+      <div class="hotel-infos">
+        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;"
+          *ngFor="let h of state.config.hotels; let hi = index;" [state]="state" [hotelIndex]="hi"
+          [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
       </div>
     </div>
 
@@ -50,8 +33,8 @@
 
     <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
       <div>
-        <div>Residual cash: {{state.cash[state.currentPlayerIndex]}}</div>
-        <div>Subtotal: {{getSubtotal()}}</div>
+        <div>Residual cash: {{state.cash[state.currentPlayerIndex] | number}}</div>
+        <div>Subtotal: {{getSubtotal() | number}}</div>
       </div>
       <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
         <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>

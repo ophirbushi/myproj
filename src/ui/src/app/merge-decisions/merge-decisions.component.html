@@ -1,0 +1,16 @@
+<label> Deciding player: Player {{state.decidingPlayerIndex + 1}} </label>
+
+<div *ngFor="let hi of getHotelDecisionsHotels()">
+  <label> {{state.config.hotels[hi].hotelName}} {{state.stocks[hi][state.decidingPlayerIndex]}} </label>
+  <div style="display: flex; gap: 20px; align-items: center; flex-direction: row; justify-content: flex-start;">
+    <div>
+      <label> Sell </label>
+      <input type="number" [(ngModel)]="mergeDecisions[hi].sell">
+    </div>
+    <div>
+      <label>Convert</label>
+      <input type="number" step="2" [(ngModel)]="mergeDecisions[hi].convert">
+    </div>
+  </div>
+  <button (click)="postMergeDecide()">OK</button>
+</div>

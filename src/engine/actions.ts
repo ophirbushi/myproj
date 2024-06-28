@@ -14,7 +14,7 @@ export const playerDrawTile = (state: State, output: Output): State => {
   if (tile !== undefined) {
     playerTiles[state.currentPlayerIndex].tiles.push(tile)
   }
-  output.broadcast(`${getPlayerName(state)} drawn a tile.`)
+  output.broadcast(`${getPlayerName(state)} drew a tile.`)
   return {
     ...state,
     tilesPile,

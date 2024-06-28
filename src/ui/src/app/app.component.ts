@@ -2,7 +2,6 @@ import { Component, TrackByFunction } from '@angular/core';
 import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
 import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
 
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,6 +16,7 @@ export class AppComponent {
       hotelSizes: number[]
     }
   } = {}
+  logs: string[] = []
 
   _players: number[] | null = null
   get players() {
@@ -44,18 +44,6 @@ export class AppComponent {
     6: 0
   }
 
-
-  mergeDecisions: { [key: number]: { sell: number, convert: number } } = {
-    0: { sell: 0, convert: 0 },
-    1: { sell: 0, convert: 0 },
-    2: { sell: 0, convert: 0 },
-    3: { sell: 0, convert: 0 },
-    4: { sell: 0, convert: 0 },
-    5: { sell: 0, convert: 0 },
-    6: { sell: 0, convert: 0 },
-  }
-
-
   trackByIndex: TrackByFunction<number> = (index: number) => {
     return index
   }
@@ -65,7 +53,9 @@ export class AppComponent {
   }
 
   async fetchState() {
-    this.state = await fetch('http://localhost:3000/').then(res => res.json())
+    const { state, logs } = (await fetch('http://localhost:3000/').then(res => res.json()))
+    this.state = state
+    this.logs = logs
   }
 
   getFilteredState(): Partial<State> {
@@ -155,9 +145,10 @@ export class AppComponent {
     return classes.join(' ')
   }
 
-  hotelExistsOnBoard(hotelIndex: number) {
-    return hotelExistsOnBoard(this.state, hotelIndex)
+  onMergeDecide(mergeDecisions: MergeDecision[]) {
+    this.postInput(mergeDecisions)
   }
+
 
   onHotelInfoClick(hotelIndex: number) {
     if (this.isHotelClickable(hotelIndex)) {
@@ -185,14 +176,10 @@ export class AppComponent {
     return this.getHotelSizes()[hotelIndex]
   }
 
-  mergeDecideNext() {
-    this.postInput()
-  }
-
   getSubtotal() {
     let subtotal = 0
     for (let i = 0; i < this.state.config.hotels.length; i++) {
-      if (!this.hotelExistsOnBoard(i)) {
+      if (!hotelExistsOnBoard(this.state, (i))) {
         continue
       }
       subtotal += getHotelStockPrice(this.state, i) * this.stockDecisions[i]
@@ -205,11 +192,6 @@ export class AppComponent {
     this.postInput('finish')
   }
 
-  getHotelDecisionsHotels() {
-    return getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
-      .filter(h => h > -1 && h !== this.state.mergingHotelIndex)
-  }
-
   postInvest() {
     const stockDecisions: StockDecision[] = Object.entries(this.stockDecisions).map(([key, value]) => {
       return {
@@ -218,7 +200,7 @@ export class AppComponent {
       }
     })
       .filter((decision: StockDecision) => decision.amount > 0)
-      .filter(decision => this.hotelExistsOnBoard(decision.hotelIndex))
+      .filter(decision => hotelExistsOnBoard(this.state, decision.hotelIndex))
 
     this.input = stockDecisions
 
@@ -229,29 +211,8 @@ export class AppComponent {
     })
   }
 
-
   isPossibleGameEnd() {
     return this.state.phaseId == 'build' && isPossibleGameEnd(this.state)
-  }
-
-  postMergeDecide() {
-    const mergeDecisions: MergeDecision[] = Object.entries(this.mergeDecisions).map(([key, value]) => {
-      return {
-        hotelIndex: +key,
-        sell: value.sell,
-        convert: value.convert
-      }
-    })
-      .filter((decision) => decision.sell > 0 || decision.convert > 0)
-      .filter(decision => this.hotelExistsOnBoard(decision.hotelIndex))
-
-    this.input = mergeDecisions
-
-    this.postInput(mergeDecisions).then(() => {
-      Object.keys(this.mergeDecisions).forEach(key => {
-        this.mergeDecisions[+key] = { sell: 0, convert: 0 }
-      })
-    })
   }
 
   private getHotelSizes() {
