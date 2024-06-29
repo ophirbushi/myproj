@@ -5,14 +5,7 @@
         <div class="player-infos" style="margin-bottom: 36px;">
           <app-player-info *ngFor="let pi of players" [state]="state" [playerIndex]="pi"> </app-player-info>
         </div>
-        <div style="display: table;">
-          <div style="display: table-row;" *ngFor="let y of getArrayFromNumber(state.config.boardHeight)">
-            <div style="display: table-cell;" *ngFor="let x of getArrayFromNumber(state.config.boardWidth)">
-              <div class="rpgui-icon  {{getHotelClass([x,y])}} {{getOtherClass([x, y])}}" (click)="onTileClick([x, y])">
-              </div>
-            </div>
-          </div>
-        </div>
+        <app-board [state]="state" (tileClick)="onTileClick($event)"></app-board>
       </div>
 
       <div style="display: flex; gap: 20px; flex-direction: column;">

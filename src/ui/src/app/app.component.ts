@@ -79,29 +79,6 @@ export class AppComponent {
     })
   }
 
-  getArrayFromNumber(num: number) {
-    let array = new Array(num)
-    for (let i = 0; i < num; i++) {
-      array[i] = i
-    }
-    return array
-  }
-
-  exists(tile: Tile) {
-    return this.state.boardTiles.some(t => isEqualTiles(t, tile))
-  }
-
-  availableToPlay(tile: Tile) {
-    if (this.state.phaseId !== 'build') {
-      return false
-    }
-    return this.getCurrentPlayerTiles().some(t => isEqualTiles(t, tile))
-  }
-
-  getCurrentPlayerTiles() {
-    return this.state.playerTiles[this.state.currentPlayerIndex].tiles
-  }
-
   onTileClick(tile: Tile) {
     if (this.state.phaseId === 'merge') {
       const hi = getWhichHotelTileBelongsTo(this.state, tile);
@@ -119,31 +96,18 @@ export class AppComponent {
     this.postInput()
   }
 
-  getHotelClass(tile: Tile) {
-    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
-    if (hotelIndex === -1) {
-      return ''
+
+  private availableToPlay(tile: Tile) {
+    if (this.state.phaseId !== 'build') {
+      return false
     }
-    return 'hotel-' + hotelIndex
+    return this.getCurrentPlayerTiles().some(t => isEqualTiles(t, tile))
   }
 
-  getHotelName(tile: Tile): string {
-    const hotelIndex = getWhichHotelTileBelongsTo(this.state, tile)
-    return this.state.config.hotels[hotelIndex]?.hotelName[0] || ''
+  private getCurrentPlayerTiles() {
+    return this.state.playerTiles[this.state.currentPlayerIndex].tiles
   }
 
-  getOtherClass(tile: Tile) {
-    let classes: string[] = []
-    if (this.exists(tile)) {
-      classes.push('shield-slot')
-    } else {
-      classes.push('empty-slot')
-    }
-    if (this.availableToPlay(tile)) {
-      classes.push('available-to-play rpgui-cursor-point')
-    }
-    return classes.join(' ')
-  }
 
   onMergeDecide(mergeDecisions: MergeDecision[]) {
     this.postInput(mergeDecisions)

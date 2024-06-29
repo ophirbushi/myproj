@@ -7,6 +7,7 @@ import { PlayerInfoComponent } from './player-info/player-info.component';
 import { HotelInfoComponent } from './hotel-info/hotel-info.component';
 import { GameLogComponent } from './game-log/game-log.component';
 import { MergeDecisionsComponent } from './merge-decisions/merge-decisions.component';
+import { BoardComponent } from './board/board.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { MergeDecisionsComponent } from './merge-decisions/merge-decisions.compo
     PlayerInfoComponent,
     HotelInfoComponent,
     GameLogComponent,
-    MergeDecisionsComponent
+    MergeDecisionsComponent,
+    BoardComponent
   ],
   imports: [
     BrowserModule,
