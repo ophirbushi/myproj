@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "vite ./ui",
-    "server": "ts-node ./src/index.ts",
+    "server": "ts-node ./server/index.ts",
     "ui": "cd ./src/ui && ng serve"
   },
   "author": "",
@@ -17,10 +17,12 @@
     "htm": "^3.1.1",
     "preact": "^10.22.0",
     "preact-router": "^4.1.2",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/ws": "^8.5.10",
     "concurrently": "^8.2.2",
     "vite": "^5.3.2"
   }

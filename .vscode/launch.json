@@ -5,7 +5,20 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
+      "name": "server",
+      "request": "launch",
+      "runtimeArgs": [
+        "run-script",
+        "server"
+      ],
+      "runtimeExecutable": "npm",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+    {
+      "name": "start",
       "request": "launch",
       "runtimeArgs": [
         "run-script",
@@ -16,20 +29,6 @@
         "<node_internals>/**"
       ],
       "type": "node"
-    },
-    {
-      "name": "ts-node",
-      "type": "node",
-      "request": "launch",
-      "args": [
-        "${relativeFile}"
-      ],
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "cwd": "${workspaceRoot}",
-      "internalConsoleOptions": "openOnSessionStart"
     }
   ]
 }
