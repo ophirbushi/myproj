@@ -30,7 +30,24 @@ export const Home = () => {
         'http://localhost:3000/new-game',
         { method: 'post', body: JSON.stringify({ playerName }), headers: { 'Content-Type': 'application/json' } }
       ).then(res => res.json())
-      route(`/new-game?playerName=${playerName}&gameId=${gameId}`)
+      route(`/game?playerName=${playerName}&gameId=${gameId}`)
+    } catch (err) {
+      console.error(err)
+      alert('Oops')
+    }
+  }
+  const onJoinGameClick = async () => {
+    let gameId: string | number | null = prompt('Please enter game ID')
+    if (!gameId) {
+      return;
+    }
+    gameId = +gameId.trim()
+    try {
+      await fetch(
+        'http://localhost:3000/join-game',
+        { method: 'post', body: JSON.stringify({ playerName, gameId }), headers: { 'Content-Type': 'application/json' } }
+      ).then(res => res.json())
+      route(`/game?playerName=${playerName}&gameId=${gameId}`)
     } catch (err) {
       console.error(err)
       alert('Oops')
@@ -46,7 +63,7 @@ export const Home = () => {
     </div>
     <div style="display: flex; align-items: center; gap: 1rem;">
       <button class="btn btn-primary" type="button" disabled=${!isFormValid} onClick=${onNewGameClick}>New Game</button>
-      <button class="btn btn-secondary" type="button" disabled=${!isFormValid}>Join Game</button>
+      <button class="btn btn-secondary" type="button" disabled=${!isFormValid} onClick=${onJoinGameClick}>Join Game</button>
     </div>
   </div>
 </div>`

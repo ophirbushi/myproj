@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "vite ./ui",
-    "server": "ts-node ./server/index.ts",
+    "server": "ts-node ./server/server.ts",
     "ui": "cd ./src/ui && ng serve"
   },
   "author": "",

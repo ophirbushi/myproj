@@ -18,31 +18,25 @@ class Game {
 }
 
 const games: { [gameId: number]: Game } = {}
+const wsClients: WebSocket[] = []
 
 let gameIdCounter = 0
 
-const broadcastToGame = (gameId: number, message: any) => {
-  wss.clients.forEach((client: WebSocket & { gameId?: number }) => {
-    if (client.readyState === 1 && client.gameId === gameId) {
+const broadcastToGame = (message: any) => {
+  wsClients.forEach((client) => {
+    if (client.readyState === 1) {
       client.send(JSON.stringify(message))
     }
   })
 }
 
-wss.on('connection', (ws: WebSocket & { gameId?: number }, req) => {
-  const params = new URLSearchParams(req.url?.split('?')[1])
-  const gameId = parseInt(params.get('gameId') || '0')
-  const game = games[gameId]
-  if (!game) {
-    ws.close()
-    return
-  }
-  ws.gameId = gameId
-  ws.send(JSON.stringify({
-    type: 'initial-state',
-    players: game.players,
-    started: game.started
-  }))
+wss.on('connection', (ws: WebSocket) => {
+  wsClients.push(ws)
+  console.log('Client connected', wsClients)
+  ws.once('close', () => {
+    wsClients.splice(wsClients.indexOf(ws), 1)
+    console.log('Client disconnected', wsClients)
+  })
 })
 
 app.use(express.json())
@@ -51,6 +45,18 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
   next()
+})
+
+app.get('/game', async (req, res) => {
+  const { gameId } = req.query
+  if (!gameId) {
+    return res.status(400).send({ error: '"gameId" query parameter is missing' })
+  }
+  const game = games[+gameId]
+  if (!game) {
+    return res.status(404).send({ error: `could not find a game with gameId: ${gameId}` })
+  }
+  res.send({ game })
 })
 
 app.options('/new-game')
@@ -80,7 +86,9 @@ app.post('/join-game', async (req, res) => {
   if (game.players.includes(playerName)) {
     return res.send({ message: `Player ${playerName} is already in game ${gameId}` })
   }
-  broadcastToGame(gameId, {
+  game.players.push(playerName)
+  broadcastToGame({
+    gameId,
     type: 'player-joined',
     players: game.players
   })

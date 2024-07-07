@@ -16,19 +16,6 @@
         "<node_internals>/**"
       ],
       "type": "node"
-    },
-    {
-      "name": "start",
-      "request": "launch",
-      "runtimeArgs": [
-        "run-script",
-        "start"
-      ],
-      "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node"
     }
   ]
 }

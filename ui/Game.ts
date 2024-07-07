@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'preact/hooks'
 import { css, html } from './utils'
-import { PlayerJoinedMessage, wsAddListener } from './ws'
 
-css`#WaitingRoom {
+css`#Game {
   display: flex;
   gap: 1rem;
   flex-direction: column;
@@ -12,21 +11,19 @@ css`#WaitingRoom {
 }
 `
 
-export const WaitingRoom = ({ wsMessage }: { wsMessage: { type: string } }) => {
+export const Game = () => {
   const urlParams = new URLSearchParams(window.location.search);
   const playerName = urlParams.get('playerName');
   const gameId = urlParams.get('gameId');
-  const [players, setPlayers] = useState([playerName] as string[])
+
   useEffect(() => {
-    if (wsMessage.type !== 'player-joined') {
-      return
-    }
-    const { payload } = wsMessage as PlayerJoinedMessage
-    setPlayers(payload.players)
-  }, [wsMessage])
+    fetch(`http://localhost:3000/game?gameId=${gameId}`)
+  }, [])
+  const [players, setPlayers] = useState([playerName] as string[])
   const notEnoughPlayers = players.length < 3
 
-  return html`<form id="WaitingRoom">
+  return html`<div id="Game">
+ 
   <div class="content">
     <h2>Game ${gameId} waiting room</h2>
     <ul>
@@ -35,5 +32,5 @@ export const WaitingRoom = ({ wsMessage }: { wsMessage: { type: string } }) => {
     ${notEnoughPlayers ? html`<p>Waiting for more players to join...</p>` : ''}
     <button type="button" class="btn btn-primary" disabled=${notEnoughPlayers}>Start game</button>
   </div>
-</form>`
+</div>`
 }
