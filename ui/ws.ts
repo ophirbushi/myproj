@@ -1,3 +1,5 @@
+import { GameStateMessage } from '../server/server'
+
 export interface MessageCallback<T> {
   callbackId: string
   callback: (message: T) => void
@@ -8,12 +10,7 @@ export interface Message<T> {
   payload: T
 }
 
-export interface PlayerJoinedPayload {
-  gameId: string
-  players: string[]
-}
-
-export type PlayerJoinedMessage = Message<PlayerJoinedPayload>
+export type PlayerJoinedMessage = Message<GameStateMessage>
 
 const callbacks = new Map<string, Array<MessageCallback<any>>>()
 

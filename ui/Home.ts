@@ -27,7 +27,7 @@ export const Home = () => {
   const onNewGameClick = async () => {
     try {
       const { gameId } = await fetch(
-        'http://localhost:3000/new-game',
+        'http://localhost:3000/game',
         { method: 'post', body: JSON.stringify({ playerName }), headers: { 'Content-Type': 'application/json' } }
       ).then(res => res.json())
       route(`/game?playerName=${playerName}&gameId=${gameId}`)
@@ -42,16 +42,7 @@ export const Home = () => {
       return;
     }
     gameId = +gameId.trim()
-    try {
-      await fetch(
-        'http://localhost:3000/join-game',
-        { method: 'post', body: JSON.stringify({ playerName, gameId }), headers: { 'Content-Type': 'application/json' } }
-      ).then(res => res.json())
-      route(`/game?playerName=${playerName}&gameId=${gameId}`)
-    } catch (err) {
-      console.error(err)
-      alert('Oops')
-    }
+    route(`/game?playerName=${playerName}&gameId=${gameId}`)
   }
   return html`<div id="Home">
   <div class="content">

@@ -17,12 +17,21 @@ class Game {
   }
 }
 
+export interface GameStateMessage {
+  type: string
+  gameId: number
+  players: string[]
+  state: State | null
+  started: boolean
+  message: string
+}
+
 const games: { [gameId: number]: Game } = {}
 const wsClients: WebSocket[] = []
 
 let gameIdCounter = 0
 
-const broadcastToGame = (message: any) => {
+const broadcastToGame = (message: GameStateMessage) => {
   wsClients.forEach((client) => {
     if (client.readyState === 1) {
       client.send(JSON.stringify(message))
@@ -44,8 +53,11 @@ app.use(express.json())
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, PUT, GET, DELETE, OPTIONS')
   next()
 })
+
+app.options('/game')
 
 app.get('/game', async (req, res) => {
   const { gameId } = req.query
@@ -59,8 +71,7 @@ app.get('/game', async (req, res) => {
   res.send({ game })
 })
 
-app.options('/new-game')
-app.post('/new-game', async (req, res) => {
+app.post('/game', async (req, res) => {
   const { playerName } = req.body
   if (!playerName) {
     return res.status(400).send({ error: '"playerName" parameter is missing in request body' })
@@ -70,8 +81,7 @@ app.post('/new-game', async (req, res) => {
   res.send({ gameId })
 })
 
-app.options('/join-game')
-app.post('/join-game', async (req, res) => {
+app.put('/game', async (req, res) => {
   const { gameId, playerName } = req.body
   if (!gameId) {
     return res.status(400).send({ error: '"gameId" parameter is missing in request body' })
@@ -83,16 +93,24 @@ app.post('/join-game', async (req, res) => {
   if (!game) {
     return res.status(404).send({ error: `could not find a game with gameId: ${gameId}` })
   }
-  if (game.players.includes(playerName)) {
-    return res.send({ message: `Player ${playerName} is already in game ${gameId}` })
+  if (game.started) {
+    return res.status(400).send({ message: `Game ${gameId} has already started` })
   }
-  game.players.push(playerName)
-  broadcastToGame({
+  let message = ''
+  if (!game.players.includes(playerName)) {
+    game.players.push(playerName)
+    message = `Player ${playerName} joined game ${gameId}`
+  }
+  const gameStateMessage: GameStateMessage = {
     gameId,
     type: 'player-joined',
-    players: game.players
-  })
-  res.send({ message: `Player ${playerName} joined game ${gameId}` })
+    players: game.players,
+    started: game.started,
+    state: game.gameState,
+    message
+  }
+  broadcastToGame(gameStateMessage)
+  res.send(gameStateMessage)
 })
 
 server.listen(PORT, () => {
