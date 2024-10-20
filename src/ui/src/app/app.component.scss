@@ -44,45 +44,44 @@
     color: silver;
   }
 
-
   .hotel-0::after {
     background-color: blue !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-1::after {
     background-color: goldenrod !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-2::after {
     background-color: green !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-3::after {
     background-color: red !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-4::after {
     background-color: purple !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-5::after {
     background-color: black !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .hotel-6::after {
     background-color: silver !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
   }
 
   .disabled::after {
     background-color: gray !important;
-    opacity: 0.5;
+    opacity: 0.5 !important;
     pointer-events: none;
   }
 
