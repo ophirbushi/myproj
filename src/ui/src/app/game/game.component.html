@@ -1,0 +1,39 @@
+<div class="rpgui-content rpgui-cursor-default" *ngIf="state" style="position: relative;">
+  <div class="inner rpgui-container framed" style="position: relative; overflow-y: auto; min-height: 100vh;">
+    <div class="container-fluid" style="display: flex; justify-content: space-between; padding: 12px 36px;">
+      <div>
+        <div class="player-infos" style="margin-bottom: 36px;">
+          <app-player-info *ngFor="let pi of players" [state]="state" [playerIndex]="pi"> </app-player-info>
+        </div>
+        <app-board [state]="state" (tileClick)="onTileClick($event)"></app-board>
+      </div>
+
+      <div style="display: flex; gap: 20px; flex-direction: column;">
+          <app-game-log [logs]="logs"></app-game-log>
+          <app-merge-decisions *ngIf="state.phaseId === 'mergeDecide'" [state]="state" (postInput)="onMergeDecide($event)"></app-merge-decisions>
+      </div>
+
+      <div class="hotel-infos">
+        <app-hotel-info (click)="onHotelInfoClick(hi)" style="display: block; width: 280px;"
+          *ngFor="let h of state.config.hotels; let hi = index;" [state]="state" [hotelIndex]="hi"
+          [isClickable]="isHotelClickable(hi)"> </app-hotel-info>
+      </div>
+    </div>
+
+    <div *ngIf="isPossibleGameEnd()">
+      <button (click)="finish()">End game</button>
+    </div>
+
+    <div *ngIf="state.phaseId == 'invest'" style="display: flex; gap: 4px; align-items: center;">
+      <div>
+        <div>Residual cash: {{state.cash[state.currentPlayerIndex] | number}}</div>
+        <div>Subtotal: {{getSubtotal() | number}}</div>
+      </div>
+      <div *ngFor="let hotel of state.hotels; trackBy: trackByIndex; let i = index" class="btn hotel-{{i}}">
+        <label>{{state.config.hotels[hotel.hotelIndex].hotelName}}</label>
+        <input [(ngModel)]="stockDecisions[hotel.hotelIndex]" type="number" [min]="0" [max]="3">
+      </div>
+      <button [disabled]="getSubtotal() > state.cash[state.currentPlayerIndex]" (click)="postInvest()">OK</button>
+    </div>
+  </div>
+</div>

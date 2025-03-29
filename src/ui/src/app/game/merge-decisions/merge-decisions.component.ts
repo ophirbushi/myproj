@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MergeDecision, State } from '../../../../engine/models';
-import { getLastPlayedTile, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard } from '../../../../engine/helpers';
+import { MergeDecision, State } from '../../../../../engine/models';
+import { getLastPlayedTile, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 @Component({
   selector: 'app-merge-decisions',

@@ -3,24 +3,20 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { FormsModule } from '@angular/forms';
-import { PlayerInfoComponent } from './player-info/player-info.component';
-import { HotelInfoComponent } from './hotel-info/hotel-info.component';
-import { GameLogComponent } from './game-log/game-log.component';
-import { MergeDecisionsComponent } from './merge-decisions/merge-decisions.component';
-import { BoardComponent } from './board/board.component';
+import { RouterModule } from '@angular/router';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    PlayerInfoComponent,
-    HotelInfoComponent,
-    GameLogComponent,
-    MergeDecisionsComponent,
-    BoardComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    RouterModule.forRoot([
+      { path: '', pathMatch: 'full', redirectTo: 'home' },
+      { path: 'home', loadChildren: () => import('./game-setup/game-setup.module').then(m => m.GameSetupModule) },
+      { path: 'game', loadChildren: () => import('./game/game.module').then(m => m.GameModule) },
+    ])
   ],
   providers: [],
   bootstrap: [AppComponent]

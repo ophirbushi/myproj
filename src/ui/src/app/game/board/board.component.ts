@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { State, Tile } from '../../../../engine/models';
-import { getWhichHotelTileBelongsTo, isEqualTiles } from '../../../../engine/helpers';
+import { State, Tile } from '../../../../../engine/models';
+import { getWhichHotelTileBelongsTo, isEqualTiles } from '../../../../../engine/helpers';
 
 @Component({
   selector: 'app-board',

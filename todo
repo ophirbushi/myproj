@@ -1,6 +1,6 @@
+- UI - add setup menu
 - only current player can send input (UI)
 - only current player can send input (server)
 - implement basic server
 - improve UI (responsive)
 - engine - add unit tests
-- UI - add setup menu

@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { State } from '../../../../engine/models';
-import { getHotelSize, getHotelStockPrice, hotelExistsOnBoard } from '../../../../engine/helpers';
+import { State } from '../../../../../engine/models';
+import { getHotelSize, getHotelStockPrice, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 @Component({
   selector: 'app-hotel-info',
