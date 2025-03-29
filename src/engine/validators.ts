@@ -1,9 +1,11 @@
 import { playerBuyStocks } from './actions'
-import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile } from './helpers'
+import { clone, getLastPlayedTile, getTileByIndex, getHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile } from './helpers'
 import { MergeDecision, Output, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
-export const validateInput = (state: State, input: unknown, output: Output): boolean => {
+const noopOutput: Output = { broadcast: () => { } }
+
+export const validateInput = (state: State, input: unknown): boolean => {
   let newState = clone(state)
   switch (newState.phaseId) {
     case 'build':
@@ -30,7 +32,7 @@ export const validateInput = (state: State, input: unknown, output: Output): boo
       if (!Array.isArray(mergeDecisions)) {
         return false
       }
-      const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(newState, getLastPlayedTile(newState))
+      const hotelsInvolvedInMerge = getHotelsInvolvedInMerge(newState, getLastPlayedTile(newState))
       if (mergeDecisions.some(d => !hotelsInvolvedInMerge.includes(d.hotelIndex))) {
         return false
       }
@@ -40,7 +42,7 @@ export const validateInput = (state: State, input: unknown, output: Output): boo
       if (mergeDecisions.some(d => d.convert && d.convert % 2 !== 0)) {
         return false
       }
-      newState = doMergeDecide(newState, mergeDecisions, output)
+      newState = doMergeDecide(newState, mergeDecisions, noopOutput)
       if (
         Object.values(newState.stocks)
           .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > newState.config.maxStocks))
@@ -57,7 +59,7 @@ export const validateInput = (state: State, input: unknown, output: Output): boo
         return false
       }
       for (const decision of stockDecisions) {
-        newState = playerBuyStocks(newState, decision, output)
+        newState = playerBuyStocks(newState, decision, noopOutput)
       }
       if (newState.cash.some(c => c < 0)) {
         return false

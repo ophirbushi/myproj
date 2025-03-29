@@ -1,5 +1,5 @@
 import { MergeDecision, State, StockDecision } from '../models'
-import { getLastPlayedTile, getWhichHotelsInvolvedInMerge } from './tiles'
+import { getLastPlayedTile, getHotelsInvolvedInMerge, getDissolvingHotels } from './tiles'
 
 export const getImplicitInput = (state: State): any => {
   switch (state.phaseId) {
@@ -9,8 +9,7 @@ export const getImplicitInput = (state: State): any => {
       }
       break
     case 'mergeDecide':
-      const dissolvingHotels = getWhichHotelsInvolvedInMerge(state, getLastPlayedTile(state))
-        .filter(hi => hi !== state.mergingHotelIndex)
+      const dissolvingHotels = getDissolvingHotels(state, getLastPlayedTile(state))
       if (dissolvingHotels.every(hi => !state.stocks[hi][state.decidingPlayerIndex])) {
         return [] as MergeDecision[]
       }

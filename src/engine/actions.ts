@@ -1,4 +1,4 @@
-import { clone, getLastPlayedTile, getTileByIndex, getWhichHotelsInvolvedInMerge } from './helpers'
+import { clone, getLastPlayedTile, getTileByIndex, getHotelsInvolvedInMerge, getDissolvingHotels, getHotelName } from './helpers'
 import { getHotelFirstPrizeAmount, getHotelSecondPrizeAmount, getHotelStockPrice, getPrizeReceivers } from './helpers/stocks'
 import { Output, State, StockDecision } from './models'
 
@@ -69,7 +69,7 @@ export const playerEstablishHotel = (state: State, hotelIndex: number, output: O
 
 export const mergeHotels = (state: State, output: Output): State => {
   const lastTile = getLastPlayedTile(state)
-  const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, lastTile)
+  const hotelsInvolvedInMerge = getHotelsInvolvedInMerge(state, lastTile)
   const hotels = clone(state.hotels).filter((hotel) => {
     if (hotel.hotelIndex === state.mergingHotelIndex) {
       return true
@@ -77,11 +77,10 @@ export const mergeHotels = (state: State, output: Output): State => {
     return !hotelsInvolvedInMerge.includes(hotel.hotelIndex)
   })
   try {
-    output.broadcast(`Hotels ${[hotelsInvolvedInMerge
-      .filter(hi => hi !== state.mergingHotelIndex)
+    output.broadcast(`Hotels ${[getDissolvingHotels(state, lastTile)
       .map(hi => state.config.hotels[hi].hotelName)
       .join(', ')
-    ]} merged into ${state.config.hotels[state.mergingHotelIndex].hotelName}.`)
+    ]} merged into ${getHotelName(state, state.mergingHotelIndex)}.`)
   } catch (err) {
     console.error('mergeHotels() Error trying to broadcast message', err)
   }
@@ -94,8 +93,7 @@ export const mergeHotels = (state: State, output: Output): State => {
 export const handPrizes = (state: State, output: Output): State => {
   const cash = clone(state.cash)
   const lastTile = getLastPlayedTile(state)
-  const dissolvingHotels = getWhichHotelsInvolvedInMerge(state, lastTile)
-    .filter(hi => hi !== state.mergingHotelIndex)
+  const dissolvingHotels = getDissolvingHotels(state, lastTile)
   for (const hotelIndex of dissolvingHotels) {
     const firstPrizeAmt = getHotelFirstPrizeAmount(state, hotelIndex)
     const secondPrizeAmt = getHotelSecondPrizeAmount(state, hotelIndex)

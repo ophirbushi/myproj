@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MergeDecision, State } from '../../../../../engine/models';
-import { getLastPlayedTile, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard } from '../../../../../engine/helpers';
+import { getLastPlayedTile, getHotelsInvolvedInMerge, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 @Component({
   selector: 'app-merge-decisions',
@@ -22,7 +22,7 @@ export class MergeDecisionsComponent {
   }
 
   getHotelDecisionsHotels() {
-    return getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
+    return getHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
       .filter(h => h > -1 && h !== this.state.mergingHotelIndex)
   }
 

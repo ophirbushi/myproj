@@ -1,5 +1,5 @@
 import { State, Tile } from '../models'
-import { getHotelSize, getWhichHotelsInvolvedInMerge } from './tiles'
+import { getHotelSize, getHotelsInvolvedInMerge } from './tiles'
 
 export const getNextDecidingPlayerIndex = (state: State): number => {
   let nextDecidingPlayerIndex = state.decidingPlayerIndex + 1
@@ -24,7 +24,7 @@ export const sortHotelsBySizeDescOrder = (state: State, hotelIndexes: number[]):
 }
 
 export const getMergingHotelIndex = (state: State, tile: Tile): number => {
-  const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, tile)
+  const hotelsInvolvedInMerge = getHotelsInvolvedInMerge(state, tile)
   const [largestHotelIndex, secondLargestHotelIndex] = sortHotelsBySizeDescOrder(state, hotelsInvolvedInMerge)
   if (getHotelSize(state, largestHotelIndex) === getHotelSize(state, secondLargestHotelIndex)) {
     return -1
@@ -34,4 +34,8 @@ export const getMergingHotelIndex = (state: State, tile: Tile): number => {
 
 export const hotelExistsOnBoard = (state: State, hotelIndex: number): boolean => {
   return state.hotels.some(h => h.hotelIndex === hotelIndex)
+}
+
+export const getHotelName = (state: State, hotelIndex: number): string => {
+  return state.config.hotels[hotelIndex].hotelName
 }

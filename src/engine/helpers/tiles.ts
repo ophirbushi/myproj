@@ -9,10 +9,16 @@ const isNeighboringTile = (a: Tile, b: Tile): boolean => {
   )
 }
 
-export const getWhichHotelsInvolvedInMerge = (state: State, tile: Tile): number[] => {
+export const getHotelsInvolvedInMerge = (state: State, tile: Tile): number[] => {
   const neighboringTiles = getNeighboringTiles(state, tile)
   const hotelIndexes = getWhichHotelsTilesBelongTo(state, neighboringTiles)
   return distinct(hotelIndexes).filter((hi) => hi > -1)
+}
+
+/** Get all hotels who are going to be merged into the merging hotel */
+export const getDissolvingHotels = (state: State, tile: Tile): number[] => {
+  return getHotelsInvolvedInMerge(state, tile)
+    .filter(hi => hi !== state.mergingHotelIndex)
 }
 
 export const getNeighboringTiles = (state: State, tile: Tile): Tile[] => {
@@ -132,7 +138,7 @@ export const isPermanentlyIllegalTile = (state: State, tile: Tile): boolean => {
       state.hotels.every(h => getHotelSize(state, h.hotelIndex) >= state.config.unmergableHotelSize)
     )
   } else if (tileEffect === 'merge') {
-    const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(state, tile)
+    const hotelsInvolvedInMerge = getHotelsInvolvedInMerge(state, tile)
     const hotelSizes = hotelsInvolvedInMerge.map(hi => getHotelSize(state, hi))
     const overTheLimitHotels = hotelSizes.filter(hs => hs >= state.config.unmergableHotelSize)
     return overTheLimitHotels.length >= 2

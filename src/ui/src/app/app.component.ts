@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
 import { MergeDecision, State, StockDecision, Tile } from '../../../engine/models'
-import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
+import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../engine/helpers'
 
 @Component({
   selector: 'app-root',

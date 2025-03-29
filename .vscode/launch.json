@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "command": "npm run server",
+      "name": "Run npm server",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
       "name": "Launch via NPM",
       "request": "launch",
       "runtimeArgs": [

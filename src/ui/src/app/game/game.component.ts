@@ -1,6 +1,6 @@
 import { Component, TrackByFunction } from '@angular/core';
 import { MergeDecision, State, StockDecision, Tile } from '../../../../engine/models'
-import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getWhichHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../../engine/helpers'
+import { clone, getHotelSize, getHotelStockPrice, getLastPlayedTile, getWhichHotelTileBelongsTo, getHotelsInvolvedInMerge, hotelExistsOnBoard, isEqualTiles, isPossibleGameEnd } from '../../../../engine/helpers'
 
 @Component({
   selector: 'app-game',
@@ -82,7 +82,7 @@ export class GameComponent {
   onTileClick(tile: Tile) {
     if (this.state.phaseId === 'merge') {
       const hi = getWhichHotelTileBelongsTo(this.state, tile);
-      const hotelsInvolvedInMerge = getWhichHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
+      const hotelsInvolvedInMerge = getHotelsInvolvedInMerge(this.state, getLastPlayedTile(this.state))
       if (hotelsInvolvedInMerge.includes(hi)) {
         this.input = hi
         this.postInput()

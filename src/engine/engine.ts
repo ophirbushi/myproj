@@ -17,7 +17,7 @@ export const run = async (state: State, input: Input, output: Output) => {
       let inputValid = false
       while (!inputValid) {
         playerInput = await input.getInput()
-        inputValid = validateInput(state, playerInput, output)
+        inputValid = validateInput(state, playerInput)
         if (!inputValid) {
           output.broadcast({ state, code: OutputMessageCode.INVALID_INPUT, log: 'invalid input' })
         }
