@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Drawer,
@@ -16,22 +16,13 @@ import HotelsInfo from "./HotelsInfo";
 import GameLog from "./GameLog";
 import HotelsInfoMini from './HotelsInfoMini';
 
-export default function Game({
-  gameState,
-  gameId,
-}: {
-  gameState: State;
-  gameId: string | undefined;
-}) {
+export default function Game({ gameState }: { gameState: State }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  // const isMobile = true;
 
   const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    console.log(gameState, gameId);
-  }, []);
 
   return (
     <Box display="flex" flexDirection="column" height="100vh">
