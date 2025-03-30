@@ -1,5 +1,4 @@
 import { State, Tile, TileEffect } from '../models'
-import { getMergingHotelIndex } from './misc'
 import { distinct } from './utils'
 
 const isNeighboringTile = (a: Tile, b: Tile): boolean => {
@@ -144,4 +143,8 @@ export const isPermanentlyIllegalTile = (state: State, tile: Tile): boolean => {
     return overTheLimitHotels.length >= 2
   }
   return false
+}
+
+export const getTileKey = (tile: Tile): string => {
+  return `${tile[0]}-${tile[1]}`
 }

@@ -2,7 +2,8 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "lib": ["ES2015"]
   },
   "exclude": [
     "node_modules"

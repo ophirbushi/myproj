@@ -1,13 +1,27 @@
 import { Box } from "@mui/material";
-import { type State } from '../../../../../engine/models';
-import { useEffect, useState } from 'react';
+import { State, Tile, } from '../../../../../engine/models';
+import { getTileGroup, getTileKey } from '../../../../../engine/helpers';
+import { useEffect, useMemo, useState } from 'react';
+import { hotelColors } from '../utils/hotelConfig';
 
-export default function GameBoard({ gameState }: { gameState: State }) {
+export default function GameBoard({ gameState, isMobile }: { gameState: State, isMobile: boolean }) {
+  const boardWidth = gameState.config.boardWidth;
+  const boardHeight = gameState.config.boardHeight;
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [tileSize, setTileSize] = useState(22);
 
-  const boardWidth = gameState.config.boardWidth;
-  const boardHeight = gameState.config.boardHeight;
+  const derivedState = useMemo(() => {
+    const hotelIndexMap: { [tileKey: string]: number } = {};
+    for (const hotel of gameState.hotels) {
+      const tiles = getTileGroup(gameState, [hotel.x, hotel.y]);
+      for (const tile of tiles) {
+        const tileKey = getTileKey(tile);
+        hotelIndexMap[tileKey] = hotel.hotelIndex;
+      }
+    }
+    return { hotelIndexMap };
+  }, [gameState]);
 
   useEffect(() => {
     const calculateTileSize = () => {
@@ -29,6 +43,43 @@ export default function GameBoard({ gameState }: { gameState: State }) {
       window.removeEventListener("resize", calculateTileSize); // Cleanup listener
     };
   }, []);
+
+  const getLabelCell = (type: 'col' | 'row', index: number, content: string) => {
+    return (
+      <Box
+        key={`${type}-${index}`}
+        width={tileSize}
+        height={tileSize}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        fontWeight="bold"
+        sx={{
+          userSelect: 'none'
+        }}
+      >
+        {content}
+      </Box>
+    );
+  }
+
+  const getTileLabelAndColor = (tile: Tile | undefined, hotelIndex: number): { label: string, color: string } => {
+    if (!tile) {
+      return {
+        label: '',
+        color: 'transparent'
+      };
+    }
+    const hotelName = hotelIndex === -1 ? 'Neutral' : gameState.config.hotels[hotelIndex].hotelName;
+    let label = hotelName[0].toUpperCase() + (hotelName[1] ? hotelName[1].toLowerCase() : '');
+    if (isMobile) {
+      label = label[0];
+    }
+    return {
+      label,
+      color: hotelColors[hotelIndex]
+    };
+  };
 
   return (
     <Box
@@ -52,47 +103,17 @@ export default function GameBoard({ gameState }: { gameState: State }) {
 
         // Top-left corner (empty)
         if (x === 0 && y === 0) {
-          return <Box key={`empty`} width={tileSize} height={tileSize} />;
+          return <Box key='empty' width={tileSize} height={tileSize} />;
         }
 
         // Column labels (top row)
         if (y === 0) {
-          return (
-            <Box
-              key={`col-${x}`}
-              width={tileSize}
-              height={tileSize}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontWeight="bold"
-              sx={{
-                userSelect: 'none'
-              }}
-            >
-              {String.fromCharCode(64 + x)} {/* Convert 1 -> 'A', 2 -> 'B', etc. */}
-            </Box>
-          );
+          return getLabelCell('col', x, String.fromCharCode(64 + x));
         }
 
         // Row labels (left column)
         if (x === 0) {
-          return (
-            <Box
-              key={`row-${y}`}
-              width={tileSize}
-              height={tileSize}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontWeight="bold"
-              sx={{
-                userSelect: 'none'
-              }}
-            >
-              {y} {/* Row number */}
-            </Box>
-          );
+          return getLabelCell('row', y, y.toString());
         }
 
         // Game tiles
@@ -100,6 +121,10 @@ export default function GameBoard({ gameState }: { gameState: State }) {
         const tileY = y - 1; // Adjust for labels
         const tile = gameState.boardTiles.find((t) => t[0] === tileX && t[1] === tileY);
 
+        const tileKey = getTileKey([tileX, tileY]);
+
+        const hotelIndex = derivedState.hotelIndexMap[tileKey] ?? -1;
+        const { label, color } = getTileLabelAndColor(tile, hotelIndex);
         return (
           <Box
             key={`${tileX}-${tileY}`}
@@ -110,13 +135,13 @@ export default function GameBoard({ gameState }: { gameState: State }) {
             justifyContent="center"
             border="1px solid #999"
             fontSize="0.75rem"
-            bgcolor={tile ? "lightblue" : "transparent"}
+            bgcolor={color}
             sx={{ cursor: "pointer", userSelect: "none" }}
             onClick={() => {
               // handle tile click
             }}
           >
-            {tile ? `T` : ""}
+            {label}
           </Box>
         );
       })}

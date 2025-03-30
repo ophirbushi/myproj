@@ -77,7 +77,7 @@ export default function Game({ gameState }: { gameState: State }) {
           alignItems="center"
           overflow="auto"
         >
-          <GameBoard gameState={gameState} />
+          <GameBoard gameState={gameState} isMobile={isMobile} />
         </Box>
 
         {/* Right Panel / Drawer */}
