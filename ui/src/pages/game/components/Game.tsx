@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Drawer,
-  IconButton,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
 
 import { State } from '../../../../../engine/models';
 
