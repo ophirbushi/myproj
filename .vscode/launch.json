@@ -5,37 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "npm run server",
-      "name": "Run npm server",
+      "command": "cd ui && npm run dev:open",
+      "name": "Run UI",
       "request": "launch",
       "type": "node-terminal"
     },
     {
-      "name": "Launch via NPM",
+      "command": "cd server && npm run start",
+      "name": "Run Server",
       "request": "launch",
-      "runtimeArgs": [
-        "run-script",
-        "start"
-      ],
-      "runtimeExecutable": "npm",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node"
-    },
-    {
-      "name": "ts-node",
-      "type": "node",
-      "request": "launch",
-      "args": [
-        "${relativeFile}"
-      ],
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register"
-      ],
-      "cwd": "${workspaceRoot}",
-      "internalConsoleOptions": "openOnSessionStart"
+      "type": "node-terminal"
     }
   ]
 }
