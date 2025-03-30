@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "command": "cd ui && npm run dev:open",
+      "command": "cd ui && npm run dev",
       "name": "Run UI",
       "request": "launch",
       "type": "node-terminal"
