@@ -14,6 +14,7 @@ import TileHandBar from "./TileHandBar";
 import PhaseBanner from "./PhaseBanner";
 import HotelsInfo from "./HotelsInfo";
 import GameLog from "./GameLog";
+import HotelsInfoMini from './HotelsInfoMini';
 
 export default function Game({
   gameState,
@@ -59,9 +60,7 @@ export default function Game({
               }}
               onClick={() => setLeftDrawerOpen(true)}
             >
-              {gameState.config.hotels.slice(0, 3).map((h, idx: number) => (
-                <Box key={idx} fontSize={10}>{`${h.hotelName}`}</Box>
-              ))}
+              <HotelsInfoMini gameState={gameState} />
             </Box>
             <Drawer
               anchor="left"
