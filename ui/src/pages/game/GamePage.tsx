@@ -8,5 +8,5 @@ export default function GamePage() {
   // const { gameId } = useParams();
   // TODO: fetch real game state based on gameId
 
-  return <Game gameState={sampleState} />;
+  return <Game gameState={sampleState} localPlayerIndex={0} />;
 }

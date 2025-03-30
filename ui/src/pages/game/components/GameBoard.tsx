@@ -1,10 +1,23 @@
 import { Box } from "@mui/material";
 import { State, Tile, } from '../../../../../engine/models';
-import { getTileGroup, getTileKey } from '../../../../../engine/helpers';
+import { getTileGroup, getTileKey, isEqualTiles } from '../../../../../engine/helpers';
 import { useEffect, useMemo, useState } from 'react';
 import { hotelColors } from '../utils/hotelConfig';
+import { getShortenedHotelName } from '../utils/hotelUtils';
 
-export default function GameBoard({ gameState, isMobile }: { gameState: State, isMobile: boolean }) {
+export interface GameBoardProps {
+  gameState: State;
+  isMobile: boolean;
+  selectedTile: Tile | null;
+  hoveredTile: Tile | null;
+  setSelectedTile: (tile: Tile | null) => any;
+  setHoveredTile: (tile: Tile | null) => any;
+  localPlayerTiles: Tile[]
+}
+
+export default function GameBoard(
+  { gameState, isMobile, selectedTile, hoveredTile, setSelectedTile, setHoveredTile, localPlayerTiles }: GameBoardProps
+) {
   const boardWidth = gameState.config.boardWidth;
   const boardHeight = gameState.config.boardHeight;
 
@@ -63,21 +76,28 @@ export default function GameBoard({ gameState, isMobile }: { gameState: State, i
     );
   }
 
-  const getTileLabelAndColor = (tile: Tile | undefined, hotelIndex: number): { label: string, color: string } => {
+  const getTileLabelAndColor = (tile: Tile | null, hotelIndex: number, isSelected: boolean, isHovered: boolean): { label: string, color: string } => {
+    let color = '';
+    if (isHovered) {
+      color = '#aad5ff';
+    }
+    if (isSelected) {
+      color = '#1976d2';
+    }
     if (!tile) {
       return {
         label: '',
-        color: 'transparent'
+        color: color || 'transparent'
       };
     }
     const hotelName = hotelIndex === -1 ? 'Neutral' : gameState.config.hotels[hotelIndex].hotelName;
-    let label = hotelName[0].toUpperCase() + (hotelName[1] ? hotelName[1].toLowerCase() : '');
+    let label = getShortenedHotelName(hotelName);
     if (isMobile) {
       label = label[0];
     }
     return {
       label,
-      color: hotelColors[hotelIndex]
+      color: color || hotelColors[hotelIndex]
     };
   };
 
@@ -89,6 +109,7 @@ export default function GameBoard({ gameState, isMobile }: { gameState: State, i
       gap={1}
       bgcolor="white"
       p={2}
+      borderRadius={2}
       sx={{
         border: "1px solid #ccc",
         aspectRatio: `${boardWidth + 1} / ${boardHeight + 1}`,
@@ -119,12 +140,21 @@ export default function GameBoard({ gameState, isMobile }: { gameState: State, i
         // Game tiles
         const tileX = x - 1; // Adjust for labels
         const tileY = y - 1; // Adjust for labels
-        const tile = gameState.boardTiles.find((t) => t[0] === tileX && t[1] === tileY);
+        const tile = gameState.boardTiles.find((t) => t[0] === tileX && t[1] === tileY) || null;
 
         const tileKey = getTileKey([tileX, tileY]);
 
+        const isSelected = selectedTile && isEqualTiles([tileX, tileY], selectedTile) || false;
+        const isHovered = hoveredTile && isEqualTiles([tileX, tileY], hoveredTile) || false;
+
+        const isLocalPlayerTile = localPlayerTiles.find(t => isEqualTiles(t, [tileX, tileY]));
+
         const hotelIndex = derivedState.hotelIndexMap[tileKey] ?? -1;
-        const { label, color } = getTileLabelAndColor(tile, hotelIndex);
+        const { label, color } = getTileLabelAndColor(tile, hotelIndex, isSelected, isHovered);
+
+        const borderColor = isLocalPlayerTile ? '#1976d2' : '#999';
+        const borderWidth = isLocalPlayerTile ? '3px' : '1px';
+
         return (
           <Box
             key={`${tileX}-${tileY}`}
@@ -133,13 +163,14 @@ export default function GameBoard({ gameState, isMobile }: { gameState: State, i
             display="flex"
             alignItems="center"
             justifyContent="center"
-            border="1px solid #999"
+            border={borderWidth + ' solid ' + borderColor}
             fontSize="0.75rem"
             bgcolor={color}
             sx={{ cursor: "pointer", userSelect: "none" }}
-            onClick={() => {
-              // handle tile click
-            }}
+            borderRadius={2}
+            onClick={() => isLocalPlayerTile && setSelectedTile([tileX, tileY])}
+            onMouseEnter={() => isLocalPlayerTile && setHoveredTile([tileX, tileY])}
+            onMouseLeave={() => setHoveredTile(null)}
           >
             {label}
           </Box>

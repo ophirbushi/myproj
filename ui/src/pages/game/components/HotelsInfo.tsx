@@ -1,7 +1,8 @@
 import { type State } from '../../../../../engine/models';
+import HotelsInfoMini from './HotelsInfoMini';
 
 export default function HotelsInfo({ gameState }: { gameState: State }) {
-  return <div>
-    Hotels Info...
-  </div>;
+  return (
+    <HotelsInfoMini gameState={gameState} fontSize={18} />
+  )
 }
