@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
-  Button,
   Drawer,
   useMediaQuery,
   useTheme,
@@ -13,26 +12,44 @@ import GameBoard from "./GameBoard";
 import PlayerBar from "./PlayerBar";
 import TileHandBar from "./TileHandBar";
 import PhaseBanner from "./PhaseBanner";
-import HotelsInfo from "./HotelsInfo";
+// import HotelsInfo from "./HotelsInfo";
 import GameLog from "./GameLog";
 import HotelsInfoMini from './HotelsInfoMini';
 import { LocalPlayerIndex } from '../models/game.models';
 import { getActivePlayerIndex } from '../utils/localPlayer';
 import { isPermanentlyIllegalTile, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
+import { fetchGameState, postGameInput } from '../services/gameBackendService';
 
-export default function Game(
-  { gameState, localPlayerIndex }: { gameState: State, localPlayerIndex: LocalPlayerIndex }
-) {
+interface GameProps {
+  localPlayerIndex: LocalPlayerIndex;
+}
+
+export default function Game({ localPlayerIndex }: GameProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // const isMobile = true;
+  const [gameState, setGameState] = useState<State | null>(null);
+  const [logs, setLogs] = useState<string[]>([]);
 
   const [leftDrawerOpen, setLeftDrawerOpen] = useState(false);
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
 
+  useEffect(() => {
+    fetchGameState().then(({ state, logs }) => {
+      setGameState(state);
+      setLogs(logs);
+    });
+  }, []);
+
   const derivedState = useMemo(() => {
+    if (!gameState) {
+      return {
+        localPlayerTiles: [],
+        localPlayerUnplayableTiles: []
+      };
+    }
     let localPlayerTiles: Tile[] = [];
     let localPlayerUnplayableTiles: Tile[] = [];
 
@@ -54,7 +71,14 @@ export default function Game(
     };
   }, [gameState, localPlayerIndex]);
 
-  const sendTilePlacement = (tile: Tile) => {
+  const postIndexInput = async (index: number) => {
+    const { state, logs } = await postGameInput(index);
+    setGameState(state);
+    setLogs(logs);
+  };
+
+  if (!gameState) {
+    return <div>Loading...</div>;
   }
 
   return (
@@ -83,7 +107,7 @@ export default function Game(
               }}
               onClick={() => setLeftDrawerOpen(true)}
             >
-              <HotelsInfoMini gameState={gameState} />
+              <HotelsInfoMini gameState={gameState} postInput={postIndexInput} />
             </Box>
             <Drawer
               anchor="left"
@@ -91,13 +115,13 @@ export default function Game(
               onClose={() => setLeftDrawerOpen(false)}
             >
               <Box width={240} p={2}>
-                <HotelsInfo gameState={gameState} />
+                <HotelsInfoMini gameState={gameState} postInput={postIndexInput} fontSize={18} />
               </Box>
             </Drawer>
           </>
         ) : (
           <Box width={240} p={2} >
-            <HotelsInfo gameState={gameState} />
+            <HotelsInfoMini gameState={gameState} postInput={postIndexInput} fontSize={18} />
           </Box>
         )}
 
@@ -149,14 +173,14 @@ export default function Game(
               open={rightDrawerOpen}
               onClose={() => setRightDrawerOpen(false)}
             >
-              <Box width={240} p={2}>
-                <GameLog gameState={gameState} />
+              <Box width={320} p={2} display="flex" flexDirection="column" height="100%" justifyContent={"center"}>
+                <GameLog logs={logs} />
               </Box>
             </Drawer>
           </>
         ) : (
-          <Box width={240} p={2}>
-            <GameLog gameState={gameState} />
+          <Box width={320} p={2} display="flex" flexDirection="column" height="100%" justifyContent={"center"}>
+            <GameLog logs={logs} />
           </Box>
         )}
       </Box>
@@ -168,7 +192,7 @@ export default function Game(
           unplayableTiles={derivedState.localPlayerUnplayableTiles}
           selectedTile={selectedTile}
           onSelect={(tile) => setSelectedTile(tile)}
-          sendTilePlacement={sendTilePlacement}
+          sendTilePlacement={postIndexInput}
           hoveredTile={hoveredTile}
           setHoveredTile={setHoveredTile}
         />

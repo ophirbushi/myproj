@@ -2,8 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitReturns": true,
-    "lib": ["ES2018"]
+    "noImplicitReturns": true
   },
   "exclude": [
     "node_modules"

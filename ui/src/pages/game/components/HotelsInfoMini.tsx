@@ -5,7 +5,13 @@ import { getShortenedHotelName } from '../utils/hotelUtils';
 import { getHotelSize } from '../../../../../engine/helpers';
 import { useMemo } from 'react';
 
-export default function HotelsInfoMini({ gameState, fontSize = 10 }: { gameState: State, fontSize?: number }) {
+interface HotelsInfoMiniParams {
+  gameState: State
+  postInput: (input: number) => any,
+  fontSize?: number
+}
+
+export default function HotelsInfoMini({ gameState, postInput, fontSize = 10 }: HotelsInfoMiniParams) {
   const derivedState = useMemo(() => {
     const hotelSizes: { [hotelIndex: number]: number } = {};
     const hotelColors: { [hotelIndex: number]: string } = {};
@@ -50,7 +56,7 @@ export default function HotelsInfoMini({ gameState, fontSize = 10 }: { gameState
       const prestige = derivedState.hotelPrestiges[idx];
       return (
         <Box key={idx} padding={.8} fontSize={fontSize} bgcolor={bgcolor} borderRadius={2}
-          textAlign={'center'} sx={{ userSelect: 'none' }}>
+          textAlign={'center'} sx={{ userSelect: 'none' }} onClick={() => postInput(idx)}>
           <span> {hotelName} </span>
           <span> ({hotelSize}) </span>
           <span> {prestige} </span>

@@ -7,6 +7,7 @@ import { createWriteStream } from 'fs'
 import { resolve } from 'path'
 import * as express from 'express'
 import { EventEmitter } from 'events'
+import { type FetchStateResponse } from '../shared/contract'
 
 const logs: string[] = []
 const ws = createWriteStream(resolve(__dirname, '../log.txt'), { flags: 'a' })
@@ -39,7 +40,8 @@ express()
   .use(express.json())
   .use(cors())
   .get('/', (req, res) => {
-    res.send({ state: latestState, logs })
+    const response: FetchStateResponse = { state: latestState, logs }
+    res.send(response)
   })
   .post('/input', (req, res) => {
     const input = req.body.input

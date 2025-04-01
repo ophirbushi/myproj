@@ -8,7 +8,7 @@ interface TileHandBarProps {
   onSelect: (tile: Tile | null) => void;
   unplayableTiles?: Tile[];
   label?: string; // For ALL mode or debug
-  sendTilePlacement: (tile: Tile) => any
+  sendTilePlacement: (tileIndex: number) => any
   hoveredTile: Tile | null
   setHoveredTile: (tile: Tile | null) => any
 }
@@ -81,7 +81,12 @@ export default function TileHandBar({
         color="primary"
         onClick={() => {
           if (selectedTile) {
-            sendTilePlacement(selectedTile);
+            const tileIndex = tiles.findIndex(t => isSameTile(t, selectedTile));
+            if (tileIndex === -1) {
+              console.error("Selected tile not found in hand");
+              return;
+            }
+            sendTilePlacement(tileIndex);
           }
         }}
         disabled={!selectedTile}
