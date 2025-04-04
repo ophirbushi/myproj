@@ -10,7 +10,8 @@ interface TileHandBarProps {
   label?: string; // For ALL mode or debug
   sendTilePlacement: (tileIndex: number) => any
   hoveredTile: Tile | null
-  setHoveredTile: (tile: Tile | null) => any
+  setHoveredTile: (tile: Tile | null) => any,
+  isBuildPhase: boolean
 }
 
 function tileToLabel([x, y]: Tile): string {
@@ -29,10 +30,11 @@ export default function TileHandBar({
   label,
   sendTilePlacement,
   hoveredTile,
-  setHoveredTile
+  setHoveredTile,
+  isBuildPhase
 }: TileHandBarProps) {
   return (
-    <Paper elevation={3} sx={{ p: 1, overflowX: "auto", display: 'flex', justifyContent: 'space-evenly' }}>
+    <Paper className={isBuildPhase ? '' : 'isDisabled'} elevation={3} sx={{ p: 1, overflowX: "auto", display: 'flex', justifyContent: 'space-evenly' }}>
       <Stack spacing={1}>
         {label && (
           <Typography variant="caption" fontWeight={600}>

@@ -7,6 +7,6 @@ export default function GamePage() {
 
 
   return (
-    <Game localPlayerIndex={0} />
+    <Game localPlayerIndex={'all'} />
   );
 }

@@ -10,6 +10,12 @@ import { EventEmitter } from 'events'
 import { type FetchStateResponse } from '../shared/contract'
 
 const logs: string[] = []
+const statesLog: State[] = []
+
+const setLatestState = (state: State) => statesLog.push(state)
+const getLatestState = () => statesLog[statesLog.length - 1]
+const goBackOneState = () => statesLog.splice(statesLog.length - 1)
+
 const ws = createWriteStream(resolve(__dirname, '../log.txt'), { flags: 'a' })
 const broadcast = new EventEmitter()
 const input: Input = {
@@ -28,24 +34,32 @@ const output: Output = {
         logs.shift()
       }
     } else {
-      latestState = message.state
+      setLatestState(message.state)
       ws.write(JSON.stringify(message.state) + '\n')
     }
   }
 }
 const state = initState(defaultConfig, output)
+statesLog.push(state)
 engine.run(state, input, output)
-let latestState: State = state
+
+
 express()
   .use(express.json())
   .use(cors())
   .get('/', (req, res) => {
-    const response: FetchStateResponse = { state: latestState, logs }
+    const response: FetchStateResponse = { state: getLatestState(), logs }
     res.send(response)
   })
   .post('/input', (req, res) => {
     const input = req.body.input
     broadcast.emit('input', input)
     res.send('ok')
+  })
+  .post('/back', (req, res) => {
+    console.log('/back endpoint called')
+    broadcast.emit('going back one state')
+    goBackOneState()
+    res.send({ state: getLatestState(), logs })
   })
   .listen(3000)

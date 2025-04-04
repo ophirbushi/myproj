@@ -8,7 +8,7 @@
       "command": "cd ui && npm run dev",
       "name": "Run UI",
       "request": "launch",
-      "type": "node-terminal"
+      "type": "node-terminal",
     },
     {
       "command": "cd server && npm run start",

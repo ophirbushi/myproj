@@ -33,3 +33,21 @@ export const postGameInput = async <T>(input: T) => {
   }
 };
 
+export const postGoBackOneState = async (): Promise<FetchStateResponse> => {
+  try {
+    const response = await fetch(`${BACKEND_BASE_URL}/back`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({})
+    });
+    if (!response.ok) {
+      throw response;
+    }
+    return fetchGameState();
+  } catch (error) {
+    console.error('Error posting go back one state:', error);
+    throw error;
+  }
+};

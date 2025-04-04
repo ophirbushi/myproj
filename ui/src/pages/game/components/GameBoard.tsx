@@ -147,11 +147,13 @@ export default function GameBoard(
         const isSelected = selectedTile && isEqualTiles([tileX, tileY], selectedTile) || false;
         const isHovered = hoveredTile && isEqualTiles([tileX, tileY], hoveredTile) || false;
 
-        const isLocalPlayerTile = localPlayerTiles.find(t => isEqualTiles(t, [tileX, tileY]));
-
         const hotelIndex = derivedState.hotelIndexMap[tileKey] ?? -1;
         const { label, color } = getTileLabelAndColor(tile, hotelIndex, isSelected, isHovered);
 
+        let isLocalPlayerTile = false;
+        if (gameState.phaseId === 'build') {
+          isLocalPlayerTile = localPlayerTiles.some(t => isEqualTiles(t, [tileX, tileY]));
+        }
         const borderColor = isLocalPlayerTile ? '#1976d2' : '#999';
         const borderWidth = isLocalPlayerTile ? '3px' : '1px';
 

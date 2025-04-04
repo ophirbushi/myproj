@@ -75,6 +75,18 @@ export const validateInput = (state: State, input: unknown): boolean => {
         return false
       }
       break
+    case 'establish':
+      const hotelIndex = input as number
+      if (
+        typeof hotelIndex !== 'number' ||
+        isNaN(hotelIndex) ||
+        !Number.isInteger(hotelIndex) ||
+        hotelIndex < 0 ||
+        newState.hotels.some(h => h.hotelIndex === hotelIndex)
+      ) {
+        return false
+      }
+      break
 
     default:
       break

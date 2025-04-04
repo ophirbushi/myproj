@@ -71,3 +71,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.isDisabled {
+  opacity: .7;
+  pointer-events: none;
+}
