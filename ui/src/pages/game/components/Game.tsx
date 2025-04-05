@@ -98,7 +98,6 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
   }
 
   const {
-    activePlayerIndex,
     isLocalPlayerTurn,
     localPlayerIndex,
     localPlayerTiles,

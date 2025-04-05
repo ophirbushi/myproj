@@ -10,7 +10,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import UndoIcon from "@mui/icons-material/Undo";
 import CloseIcon from "@mui/icons-material/Close";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { State, StockDecision } from '../../../../../engine/models';
 import { getHotelStockPrice, getHowManyStocksLeftForHotel, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
@@ -48,7 +48,6 @@ export default function BuyStocks({
         maxBuyCount
       };
     }
-
     hotelCount = gameState.config.hotels.length;
     playerCash = gameState.cash[localPlayerIndex];
     hotelNames = gameState.config.hotels.map(hotel => hotel.hotelName);
@@ -74,6 +73,7 @@ export default function BuyStocks({
     };
   }, [gameState, localPlayerIndex]);
   const [selection, setSelection] = useState<number[]>(Array(hotelCount).fill(0));
+
   const totalStocks = selection.reduce((a, b) => a + b, 0);
   const totalCost = selection.reduce((sum, count, i) => sum + count * hotelPrices[i], 0);
   const canAfford = totalCost <= playerCash;
@@ -86,11 +86,16 @@ export default function BuyStocks({
   };
   const reset = () => setSelection(Array(hotelCount).fill(0));
 
+  useEffect(() => {
+    reset();
+  }, [gameState, localPlayerIndex]);
+
   const handleConfirm = () => {
-    onConfirm(selection.map<StockDecision>((amount, hotelIndex) => ({
+    const stockDecisions = selection.map<StockDecision>((amount, hotelIndex) => ({
       hotelIndex,
       amount
-    })));
+    })).filter((decision => decision.amount > 0));
+    onConfirm(stockDecisions);
     reset();
   };
 
@@ -100,8 +105,14 @@ export default function BuyStocks({
       open={open}
       onClose={onClose}
       onOpen={() => { }}
-      PaperProps={{
-        sx: { p: 2, borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+      slotProps={{
+        paper: {
+          sx: {
+            p: 2,
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12
+          }
+        }
       }}
     >
       <Box>
@@ -119,31 +130,31 @@ export default function BuyStocks({
         <Stack spacing={1} mb={2}>
           {hotelPrices.map((price, i) => (
             price ?
-            <Box key={i} display="flex" alignItems="center" justifyContent="space-between">
-              <Typography>
-                {hotelNames[i]} — ${price} × {selection[i]} = ${selection[i] * price}
-              </Typography>
-              <Box>
-                <IconButton
-                  size="small"
-                  disabled={selection[i] === 0}
-                  onClick={() => updateSelection(i, -1)}
-                >
-                  <RemoveIcon />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  disabled={
-                    selection[i] >= availableStocks[i] ||
-                    totalStocks >= maxBuyCount ||
-                    totalCost + price > playerCash
-                  }
-                  onClick={() => updateSelection(i, +1)}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Box>
-            </Box> : null
+              <Box key={i} display="flex" alignItems="center" justifyContent="space-between">
+                <Typography>
+                  {hotelNames[i]} — ${price} × {selection[i]} = ${selection[i] * price}
+                </Typography>
+                <Box>
+                  <IconButton
+                    size="small"
+                    disabled={selection[i] === 0}
+                    onClick={() => updateSelection(i, -1)}
+                  >
+                    <RemoveIcon />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    disabled={
+                      selection[i] >= availableStocks[i] ||
+                      totalStocks >= maxBuyCount ||
+                      totalCost + price > playerCash
+                    }
+                    onClick={() => updateSelection(i, +1)}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Box>
+              </Box> : null
           ))}
         </Stack>
 
