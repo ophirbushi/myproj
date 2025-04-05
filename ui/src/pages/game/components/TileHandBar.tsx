@@ -1,4 +1,4 @@
-import { Box, Typography, Paper, Stack, Button } from "@mui/material";
+import { Typography, Paper, Stack, Button } from "@mui/material";
 
 type Tile = [number, number];
 

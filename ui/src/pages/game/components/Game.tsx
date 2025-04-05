@@ -20,12 +20,13 @@ import { getActivePlayerIndex } from '../utils/localPlayer';
 import { isPermanentlyIllegalTile, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
 import { fetchGameState, postGameInput, postGoBackOneState } from '../services/gameBackendService';
 import { FetchStateResponse } from '../../../../../shared/contract';
+import BuyStocks from './BuyStocks';
 
 interface GameProps {
-  localPlayerIndex: LocalPlayerIndex;
+  localPlayer: LocalPlayerIndex;
 }
 
-export default function Game({ localPlayerIndex }: GameProps) {
+export default function Game({ localPlayer: localPlayer }: GameProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // const isMobile = true;
@@ -58,36 +59,51 @@ export default function Game({ localPlayerIndex }: GameProps) {
   }, []);
 
   const derivedState = useMemo(() => {
-    if (!gameState) {
-      return {
-        localPlayerTiles: [],
-        localPlayerUnplayableTiles: []
-      };
-    }
+    let activePlayerIndex = -1;
+    let isLocalPlayerTurn = false;
+    let localPlayerIndex = typeof localPlayer === 'number' ? localPlayer : -1;
     let localPlayerTiles: Tile[] = [];
     let localPlayerUnplayableTiles: Tile[] = [];
-
-    if (localPlayerIndex != null) {
-      let playerIndex = -1;
-      if (localPlayerIndex === 'all') {
-        playerIndex = getActivePlayerIndex(gameState);
-      } else {
-        playerIndex = localPlayerIndex;
-      }
-      localPlayerTiles = gameState.playerTiles[playerIndex].tiles;
+    if (!gameState) {
+      return {
+        activePlayerIndex,
+        localPlayerIndex,
+        isLocalPlayerTurn,
+        localPlayerTiles,
+        localPlayerUnplayableTiles
+      };
+    }
+    activePlayerIndex = getActivePlayerIndex(gameState);
+    if (localPlayer === 'all') {
+      localPlayerIndex = activePlayerIndex;
+    }
+    if (localPlayerIndex > -1) {
+      isLocalPlayerTurn = localPlayerIndex === activePlayerIndex;
+      localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
       localPlayerUnplayableTiles = localPlayerTiles.filter((tile) => {
         return isTemporarilyIllegalTile(gameState, tile) || isPermanentlyIllegalTile(gameState, tile);
       });
     }
     return {
+      activePlayerIndex,
+      localPlayerIndex,
+      isLocalPlayerTurn,
       localPlayerTiles,
-      localPlayerUnplayableTiles
+      localPlayerUnplayableTiles,
     };
-  }, [gameState, localPlayerIndex]);
+  }, [gameState, localPlayer]);
 
   if (!gameState) {
     return <div>Loading...</div>;
   }
+
+  const {
+    activePlayerIndex,
+    isLocalPlayerTurn,
+    localPlayerIndex,
+    localPlayerTiles,
+    localPlayerUnplayableTiles
+  } = derivedState;
 
   return (
     <>
@@ -150,9 +166,10 @@ export default function Game({ localPlayerIndex }: GameProps) {
               setSelectedTile={setSelectedTile}
               hoveredTile={hoveredTile}
               setHoveredTile={setHoveredTile}
-              localPlayerTiles={derivedState.localPlayerTiles}
+              localPlayerTiles={localPlayerTiles}
             />
           </Box>
+
 
           {/* Right Panel / Drawer */}
           {isMobile ? (
@@ -200,8 +217,8 @@ export default function Game({ localPlayerIndex }: GameProps) {
         {/* Tile Hand Bar */}
         <Box p={1} bgcolor="grey.200">
           <TileHandBar
-            tiles={derivedState.localPlayerTiles}
-            unplayableTiles={derivedState.localPlayerUnplayableTiles}
+            tiles={localPlayerTiles}
+            unplayableTiles={localPlayerUnplayableTiles}
             selectedTile={selectedTile}
             onSelect={(tile) => setSelectedTile(tile)}
             sendTilePlacement={postInput}
@@ -210,6 +227,16 @@ export default function Game({ localPlayerIndex }: GameProps) {
             isBuildPhase={gameState.phaseId === 'build'}
           />
         </Box>
+
+        <BuyStocks open={isLocalPlayerTurn && gameState.phaseId === 'invest'}
+          hotelNames={gameState.config.hotels.map(h => h.hotelName)}
+          playerCash={gameState.cash[activePlayerIndex]}
+          maxBuyCount={gameState.config.maxStocksPurchasePerTurn}
+          hotelPrices={[100, 100, 100, 100, 100, 100, 100]}
+          onClose={() => postInput([])}
+          availableStocks={[24, 24, 24, 24, 24, 24, 24]}
+          onConfirm={() => postInput([])}
+        ></BuyStocks>
       </Box>
     </>
   );
