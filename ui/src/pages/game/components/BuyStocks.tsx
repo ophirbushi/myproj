@@ -10,30 +10,63 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import UndoIcon from "@mui/icons-material/Undo";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { State, StockDecision } from '../../../../../engine/models';
+import { getHowManyStocksLeftForHotel } from '../../../../../engine/helpers';
 
 interface BuyStocksProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (selection: number[]) => void;
-  playerCash: number;
-  hotelPrices: number[];
-  availableStocks: number[];
-  hotelNames: string[];
-  maxBuyCount?: number;
+  onConfirm: (decisions: StockDecision[]) => void;
+  gameState: State;
+  localPlayerIndex: number;
 }
 
 export default function BuyStocks({
   open,
   onClose,
   onConfirm,
-  playerCash,
-  hotelPrices,
-  availableStocks,
-  hotelNames,
-  maxBuyCount = 3,
+  gameState,
+  localPlayerIndex
 }: BuyStocksProps) {
-  const hotelCount = hotelPrices.length;
+
+  const { hotelPrices, playerCash, availableStocks, hotelCount, hotelNames, maxBuyCount } = useMemo(() => {
+    let hotelPrices: number[] = [];
+    let playerCash: number = 0;
+    let hotelCount = 0;
+    let availableStocks: number[] = [];
+    let hotelNames: string[] = [];
+    let maxBuyCount = 0;
+
+    if (!gameState || localPlayerIndex < 0) {
+      return {
+        hotelPrices,
+        playerCash,
+        availableStocks,
+        hotelCount,
+        hotelNames,
+        maxBuyCount
+      };
+    }
+
+    hotelCount = gameState.config.hotels.length;
+    playerCash = gameState.cash[localPlayerIndex];
+    hotelNames = gameState.config.hotels.map(hotel => hotel.hotelName);
+    maxBuyCount = gameState.config.maxStocksPurchasePerTurn;
+    availableStocks = gameState.config.hotels.map((_, hotelIndex) => {
+      return getHowManyStocksLeftForHotel(gameState, hotelIndex);
+    });
+
+    return {
+      hotelPrices,
+      playerCash,
+      availableStocks,
+      hotelCount,
+      hotelNames,
+      maxBuyCount
+    };
+  }, [gameState, localPlayerIndex]);
+
   const [selection, setSelection] = useState<number[]>(Array(hotelCount).fill(0));
 
   const totalStocks = selection.reduce((a, b) => a + b, 0);
@@ -51,7 +84,10 @@ export default function BuyStocks({
   const reset = () => setSelection(Array(hotelCount).fill(0));
 
   const handleConfirm = () => {
-    onConfirm(selection);
+    onConfirm(selection.map<StockDecision>((amount, hotelIndex) => ({
+      hotelIndex,
+      amount
+    })));
     reset();
   };
 
@@ -60,7 +96,7 @@ export default function BuyStocks({
       anchor="bottom"
       open={open}
       onClose={onClose}
-      onOpen={() => {}}
+      onOpen={() => { }}
       PaperProps={{
         sx: { p: 2, borderTopLeftRadius: 12, borderTopRightRadius: 12 },
       }}

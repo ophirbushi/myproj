@@ -129,12 +129,12 @@ export const nextTurn = (state: State, output: Output): State => {
 
 export const givePlayerStockIfRemaining = (state: State, hotelIndex: number, playerIndex: number, output: Output): State => {
   const stocks = clone(state.stocks)
-  stocks[hotelIndex][playerIndex]++
-  if (stocks[hotelIndex][playerIndex] > state.config.maxStocks) {
-    output.broadcast(`${state.config.hotels[hotelIndex].hotelName} has no more stocks available to hand.`)
-    return state
+  if (stocks[hotelIndex].reduce((acc, cur) => acc + cur, 0) < state.config.maxStocks) {
+    stocks[hotelIndex][playerIndex]++
+    output.broadcast(`${getPlayerName(state, playerIndex)} received 1 ${state.config.hotels[hotelIndex].hotelName} stock.`)
+  } else {
+    output.broadcast(`No more stocks are left for ${state.config.hotels[hotelIndex].hotelName}.`)
   }
-  output.broadcast(`${getPlayerName(state, playerIndex)} received 1 ${state.config.hotels[hotelIndex].hotelName} stock.`)
   return {
     ...state,
     stocks

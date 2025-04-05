@@ -1,5 +1,5 @@
 import { playerBuyStocks } from './actions'
-import { clone, getLastPlayedTile, getTileByIndex, getHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile } from './helpers'
+import { clone, getLastPlayedTile, getTileByIndex, getHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile, getHowManyStocksLeftForHotel } from './helpers'
 import { MergeDecision, Output, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
@@ -68,12 +68,6 @@ export const validateInput = (state: State, input: unknown): boolean => {
       if (totalDecision > newState.config.maxStocksPurchasePerTurn) {
         return false
       }
-      if (
-        Object.values(newState.stocks)
-          .some(hotelStocks => hotelStocks.some(playerStocks => playerStocks > newState.config.maxStocks))
-      ) {
-        return false
-      }
       break
     case 'establish':
       const hotelIndex = input as number
@@ -90,6 +84,9 @@ export const validateInput = (state: State, input: unknown): boolean => {
 
     default:
       break
+  }
+  if (newState.config.hotels.some((_, hotelIndex) => getHowManyStocksLeftForHotel(newState, hotelIndex) < 0)) {
+    return false
   }
   return true
 }

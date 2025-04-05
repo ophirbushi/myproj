@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { State, Tile } from '../../../../../engine/models';
+import { State, StockDecision, Tile } from '../../../../../engine/models';
 
 import GameBoard from "./GameBoard";
 import PlayerBar from "./PlayerBar";
@@ -228,14 +228,12 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
           />
         </Box>
 
-        <BuyStocks open={isLocalPlayerTurn && gameState.phaseId === 'invest'}
-          hotelNames={gameState.config.hotels.map(h => h.hotelName)}
-          playerCash={gameState.cash[activePlayerIndex]}
-          maxBuyCount={gameState.config.maxStocksPurchasePerTurn}
-          hotelPrices={[100, 100, 100, 100, 100, 100, 100]}
+        <BuyStocks
+          open={isLocalPlayerTurn && gameState.phaseId === 'invest'}
           onClose={() => postInput([])}
-          availableStocks={[24, 24, 24, 24, 24, 24, 24]}
-          onConfirm={() => postInput([])}
+          onConfirm={(decisions: StockDecision[]) => postInput(decisions)}
+          localPlayerIndex={localPlayerIndex}
+          gameState={gameState}
         ></BuyStocks>
       </Box>
     </>

@@ -41,3 +41,7 @@ export const getPrizeReceivers = (state: State, hotelIndex: number): { firstPriz
   }
   return { firstPrize, secondPrize }
 }
+
+export const getHowManyStocksLeftForHotel = (state: State, hotelIndex: number): number => {
+  return state.config.maxStocks - state.stocks[hotelIndex].reduce((acc, playerStocksCount) => acc + playerStocksCount, 0)
+}
