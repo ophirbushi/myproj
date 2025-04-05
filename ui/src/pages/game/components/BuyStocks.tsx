@@ -12,7 +12,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import CloseIcon from "@mui/icons-material/Close";
 import { useMemo, useState } from "react";
 import { State, StockDecision } from '../../../../../engine/models';
-import { getHowManyStocksLeftForHotel } from '../../../../../engine/helpers';
+import { getHotelStockPrice, getHowManyStocksLeftForHotel, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 interface BuyStocksProps {
   open: boolean;
@@ -56,6 +56,13 @@ export default function BuyStocks({
     availableStocks = gameState.config.hotels.map((_, hotelIndex) => {
       return getHowManyStocksLeftForHotel(gameState, hotelIndex);
     });
+    hotelPrices = gameState.config.hotels
+      .map((_, hotelIndex) => {
+        if (!hotelExistsOnBoard(gameState, hotelIndex)) {
+          return 0;
+        }
+        return getHotelStockPrice(gameState, hotelIndex);
+      });
 
     return {
       hotelPrices,
@@ -66,13 +73,10 @@ export default function BuyStocks({
       maxBuyCount
     };
   }, [gameState, localPlayerIndex]);
-
   const [selection, setSelection] = useState<number[]>(Array(hotelCount).fill(0));
-
   const totalStocks = selection.reduce((a, b) => a + b, 0);
   const totalCost = selection.reduce((sum, count, i) => sum + count * hotelPrices[i], 0);
   const canAfford = totalCost <= playerCash;
-
   const updateSelection = (i: number, delta: number) => {
     setSelection((prev) => {
       const next = [...prev];
@@ -80,7 +84,6 @@ export default function BuyStocks({
       return next;
     });
   };
-
   const reset = () => setSelection(Array(hotelCount).fill(0));
 
   const handleConfirm = () => {
@@ -115,6 +118,7 @@ export default function BuyStocks({
 
         <Stack spacing={1} mb={2}>
           {hotelPrices.map((price, i) => (
+            price ?
             <Box key={i} display="flex" alignItems="center" justifyContent="space-between">
               <Typography>
                 {hotelNames[i]} — ${price} × {selection[i]} = ${selection[i] * price}
@@ -139,7 +143,7 @@ export default function BuyStocks({
                   <AddIcon />
                 </IconButton>
               </Box>
-            </Box>
+            </Box> : null
           ))}
         </Stack>
 
