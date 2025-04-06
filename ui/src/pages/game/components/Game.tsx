@@ -106,9 +106,6 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
 
   return (
     <>
-      <button onClick={() => postInput([])}>Send stock decision</button>
-      <button onClick={() => goBackOneState()}>Back</button>
-
       <Box display="flex" flexDirection="column" height="90vh">
         <PhaseBanner gameState={gameState} localPlayerIndex={localPlayerIndex} />
         <PlayerBar gameState={gameState} localPlayerIndex={localPlayerIndex} />
@@ -134,7 +131,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
                 }}
                 onClick={() => setLeftDrawerOpen(true)}
               >
-                <HotelsInfoMini gameState={gameState} postInput={postInput} />
+                <HotelsInfoMini gameState={gameState} postInput={postInput} localPlayerIndex={localPlayerIndex} />
               </Box>
               <Drawer
                 anchor="left"
@@ -142,13 +139,13 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
                 onClose={() => setLeftDrawerOpen(false)}
               >
                 <Box width={240} p={2}>
-                  <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18} />
+                  <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18} localPlayerIndex={localPlayerIndex} />
                 </Box>
               </Drawer>
             </>
           ) : (
             <Box width={240} p={2} >
-              <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18} />
+              <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18}  localPlayerIndex={localPlayerIndex}/>
             </Box>
           )}
 
