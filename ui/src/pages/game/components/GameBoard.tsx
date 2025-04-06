@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { State, Tile, } from '../../../../../engine/models';
 import { getTileGroup, getTileKey, isEqualTiles } from '../../../../../engine/helpers';
 import { useEffect, useMemo, useState } from 'react';
-import { hotelColors } from '../utils/hotelConfig';
+import { darkHotels, hotelColors } from '../utils/hotelConfig';
 import { getShortenedHotelName } from '../utils/hotelUtils';
 
 export interface GameBoardProps {
@@ -76,7 +76,7 @@ export default function GameBoard(
     );
   }
 
-  const getTileLabelAndColor = (tile: Tile | null, hotelIndex: number, isSelected: boolean, isHovered: boolean): { label: string, color: string } => {
+  const getTileLabelAndColor = (tile: Tile | null, hotelIndex: number, isSelected: boolean, isHovered: boolean): { label: string, color: string, textColor: string } => {
     let color = '';
     if (isHovered) {
       color = '#aad5ff';
@@ -87,7 +87,8 @@ export default function GameBoard(
     if (!tile) {
       return {
         label: '',
-        color: color || 'transparent'
+        color: color || 'transparent',
+        textColor: 'auto'
       };
     }
     const hotelName = hotelIndex === -1 ? 'Neutral' : gameState.config.hotels[hotelIndex].hotelName;
@@ -97,7 +98,8 @@ export default function GameBoard(
     }
     return {
       label,
-      color: color || hotelColors[hotelIndex]
+      color: color || hotelColors[hotelIndex],
+      textColor: darkHotels[hotelIndex] ? 'white' : 'auto'
     };
   };
 
@@ -148,7 +150,7 @@ export default function GameBoard(
         const isHovered = hoveredTile && isEqualTiles([tileX, tileY], hoveredTile) || false;
 
         const hotelIndex = derivedState.hotelIndexMap[tileKey] ?? -1;
-        const { label, color } = getTileLabelAndColor(tile, hotelIndex, isSelected, isHovered);
+        const { label, color, textColor } = getTileLabelAndColor(tile, hotelIndex, isSelected, isHovered);
 
         let isLocalPlayerTile = false;
         if (gameState.phaseId === 'build') {
@@ -168,6 +170,7 @@ export default function GameBoard(
             border={borderWidth + ' solid ' + borderColor}
             fontSize="0.75rem"
             bgcolor={color}
+            color={textColor}
             sx={{ cursor: "pointer", userSelect: "none" }}
             borderRadius={2}
             onClick={() => isLocalPlayerTile && setSelectedTile([tileX, tileY])}

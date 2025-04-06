@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { type State } from '../../../../../engine/models';
-import { hotelColors as HOTEL_COLORS } from '../utils/hotelConfig';
+import { darkHotels, hotelColors as HOTEL_COLORS } from '../utils/hotelConfig';
 import { getShortenedHotelName } from '../utils/hotelUtils';
 import { getHotelSize } from '../../../../../engine/helpers';
 import { useMemo } from 'react';
@@ -17,10 +17,7 @@ interface HotelsInfoMiniParams {
 export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex, fontSize = 10 }: HotelsInfoMiniParams) {
   const derivedState = useMemo(() => {
     const hotelSizes: { [hotelIndex: number]: number } = {};
-    const hotelColors: {
-      [hotelIndex:
-        number]: string
-    } = {};
+    const hotelColors: { [hotelIndex: number]: string } = {};
     const hotelNames: { [hotelIndex: number]: string } = {};
     const hotelPrestiges: { [hotelIndex: number]: string } = {};
     const onBoardHotels: { [hotelIndex: number]: true } = {};
@@ -76,6 +73,7 @@ export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex,
             padding={1}
             fontSize={fontSize}
             bgcolor={bgcolor}
+            color={darkHotels[idx] ? 'white' : 'auto'}
             borderRadius={2}
             textAlign="center"
             sx={{

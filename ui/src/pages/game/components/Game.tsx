@@ -145,7 +145,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
             </>
           ) : (
             <Box width={240} p={2} >
-              <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18}  localPlayerIndex={localPlayerIndex}/>
+              <HotelsInfoMini gameState={gameState} postInput={postInput} fontSize={18} localPlayerIndex={localPlayerIndex} />
             </Box>
           )}
 
@@ -230,6 +230,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
           onConfirm={(decisions: StockDecision[]) => postInput(decisions)}
           localPlayerIndex={localPlayerIndex}
           gameState={gameState}
+          isMobile={isMobile}
         ></BuyStocks>
       </Box>
     </>

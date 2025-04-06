@@ -5,6 +5,7 @@ import {
   Stack,
   IconButton,
   SwipeableDrawer,
+  Modal,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -20,6 +21,7 @@ interface BuyStocksProps {
   onConfirm: (decisions: StockDecision[]) => void;
   gameState: State;
   localPlayerIndex: number;
+  isMobile: boolean;
 }
 
 export default function BuyStocks({
@@ -27,7 +29,8 @@ export default function BuyStocks({
   onClose,
   onConfirm,
   gameState,
-  localPlayerIndex
+  localPlayerIndex,
+  isMobile
 }: BuyStocksProps) {
 
   const { hotelPrices, playerCash, availableStocks, hotelCount, hotelNames, maxBuyCount } = useMemo(() => {
@@ -99,35 +102,119 @@ export default function BuyStocks({
     reset();
   };
 
-  return (
-    <SwipeableDrawer
-      anchor="bottom"
-      open={open}
-      onClose={onClose}
-      onOpen={() => { }}
-      slotProps={{
-        paper: {
-          sx: {
-            p: 2,
-            borderTopLeftRadius: 12,
-            borderTopRightRadius: 12
+  if (isMobile) {
+    return (
+      <SwipeableDrawer
+        anchor="bottom"
+        open={open}
+        onClose={onClose}
+        onOpen={() => { }}
+        slotProps={{
+          paper: {
+            sx: {
+              p: 2,
+              borderTopLeftRadius: 12,
+              borderTopRightRadius: 12
+            }
           }
+        }}
+      >
+        <Box>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+            <Typography variant="h6">Buy Stocks</Typography>
+            {/* <IconButton onClick={onClose}>
+              <CloseIcon />
+            </IconButton> */}
+          </Box>
+
+          <Typography variant="body2" mb={1}>
+            💵 Cash: ${playerCash} | 🧾 Total: ${totalCost} | 🧮 Remaining: ${playerCash - totalCost}
+          </Typography>
+
+          <Stack spacing={1} mb={2}>
+            {hotelPrices.map((price, i) => (
+              price ?
+                <Box key={i} display="flex" alignItems="center" justifyContent="space-between">
+                  <Typography>
+                    {hotelNames[i]} — ${price} × {selection[i]} = ${selection[i] * price}
+                  </Typography>
+                  <Box>
+                    <IconButton
+                      size="small"
+                      disabled={selection[i] === 0}
+                      onClick={() => updateSelection(i, -1)}
+                    >
+                      <RemoveIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      disabled={
+                        selection[i] >= availableStocks[i] ||
+                        totalStocks >= maxBuyCount ||
+                        totalCost + price > playerCash
+                      }
+                      onClick={() => updateSelection(i, +1)}
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+                </Box> : null
+            ))}
+          </Stack>
+
+          <Box display="flex" justifyContent="space-between">
+            <Button onClick={reset} startIcon={<UndoIcon />} color="inherit">
+              Clear
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              variant="contained"
+              disabled={!canAfford}
+            >
+              Confirm
+            </Button>
+          </Box>
+        </Box>
+      </SwipeableDrawer>
+    );
+  }
+
+  return (
+    <Modal
+      open={open}
+      onClose={(_, reason) => {
+        if (reason !== "backdropClick") {
+          onClose();
         }
-      }}
+      }} aria-labelledby="buy-stocks-modal-title"
+      aria-describedby="buy-stocks-modal-description"
     >
-      <Box>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-          <Typography variant="h6">Buy Stocks</Typography>
-          <IconButton onClick={onClose}>
+      <Box
+        sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '90%',
+          maxWidth: 500,
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          boxShadow: 24,
+          p: 3,
+        }}
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography id="buy-stocks-modal-title" variant="h6">Buy Stocks</Typography>
+          {/* <IconButton onClick={onClose}>
             <CloseIcon />
-          </IconButton>
+          </IconButton> */}
         </Box>
 
-        <Typography variant="body2" mb={1}>
+        <Typography id="buy-stocks-modal-description" variant="body2" mb={2}>
           💵 Cash: ${playerCash} | 🧾 Total: ${totalCost} | 🧮 Remaining: ${playerCash - totalCost}
         </Typography>
 
-        <Stack spacing={1} mb={2}>
+        <Stack spacing={2} mb={3}>
           {hotelPrices.map((price, i) => (
             price ?
               <Box key={i} display="flex" alignItems="center" justifyContent="space-between">
@@ -165,12 +252,12 @@ export default function BuyStocks({
           <Button
             onClick={handleConfirm}
             variant="contained"
-            disabled={!canAfford || totalStocks === 0}
+            disabled={!canAfford}
           >
-            Confirm Purchase
+            Confirm
           </Button>
         </Box>
       </Box>
-    </SwipeableDrawer>
+    </Modal>
   );
 }
