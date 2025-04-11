@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, SxProps, Typography } from '@mui/material';
 import { Input, type State } from '../../../../../engine/models';
 import { darkHotels, hotelColors as HOTEL_COLORS } from '../utils/hotelConfig';
 import { getShortenedHotelName } from '../utils/hotelUtils';
@@ -12,9 +12,10 @@ interface HotelsInfoMiniParams {
   postInput: (input: Input<number>) => any
   fontSize?: number
   localPlayerIndex: LocalPlayerIndex
+  sx?: SxProps
 }
 
-export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex, fontSize = 10 }: HotelsInfoMiniParams) {
+export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex, fontSize = 10, sx = {} }: HotelsInfoMiniParams) {
   const derivedState = useMemo(() => {
     const hotelSizes: { [hotelIndex: number]: number } = {};
     const hotelColors: { [hotelIndex: number]: string } = {};
@@ -63,7 +64,7 @@ export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex,
   }, [gameState]);
 
   return (
-    <Box display="flex" flexWrap="wrap" flexDirection={'column'} gap={3} marginTop={7}>
+    <Box display="flex" flexWrap="wrap" flexDirection={'column'} gap={3} marginTop={7} sx={sx}>
       {gameState.config.hotels.map((hotel, idx) => {
         const hotelName = derivedState.hotelNames[idx];
         const hotelSize = derivedState.hotelSizes[idx];

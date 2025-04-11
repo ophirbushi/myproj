@@ -24,11 +24,7 @@ import BuyStocks from './BuyStocks';
 import MergeDecisions from './MergerDecisions';
 import GameOver from './GameOver';
 
-interface GameProps {
-  localPlayer: LocalPlayerIndex;
-}
-
-export default function Game({ localPlayer: localPlayer }: GameProps) {
+export default function Game({ localPlayer: localPlayer }: { localPlayer: LocalPlayerIndex }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // const isMobile = true;
@@ -51,11 +47,6 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
     const res = await postGameInput(input);
     updateGameStateAndLogs(res);
   };
-
-  // const goBackOneState = async () => {
-  //   const res = await postGoBackOneState();
-  //   updateGameStateAndLogs(res);
-  // };
 
   useEffect(() => {
     fetchGameState().then((res) => updateGameStateAndLogs(res));
