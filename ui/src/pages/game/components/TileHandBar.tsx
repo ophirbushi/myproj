@@ -8,6 +8,7 @@ interface TileHandBarProps {
   selectedTile: Tile | null;
   onSelect: (tile: Tile | null) => void;
   unplayableTiles?: Tile[];
+  replaceableTiles?: Tile[];
   label?: string; // For ALL mode or debug
   sendTilePlacement: (tileIndex: Input<number>) => any
   hoveredTile: Tile | null
@@ -29,12 +30,13 @@ export default function TileHandBar({
   selectedTile,
   onSelect,
   unplayableTiles = [],
+  replaceableTiles = [],
   label,
   sendTilePlacement,
   hoveredTile,
   setHoveredTile,
   isBuildPhase,
-  playerIndex
+  playerIndex,
 }: TileHandBarProps) {
   return (
     <Paper className={isBuildPhase ? '' : 'isDisabled'} elevation={3} sx={{ p: 1, overflowX: "auto", display: 'flex', justifyContent: 'space-evenly' }}>
@@ -50,6 +52,7 @@ export default function TileHandBar({
             const isSelected = selectedTile && isSameTile(tile, selectedTile);
             const isHovered = hoveredTile && isSameTile(tile, hoveredTile);
             const isDisabled = unplayableTiles.some(t => isSameTile(t, tile));
+            const isReplaceable = replaceableTiles.some(t => isSameTile(t, tile));
 
             let opacity = 1;
 
@@ -64,6 +67,8 @@ export default function TileHandBar({
                 key={i}
                 variant={isSelected ? "contained" : "outlined"}
                 color={isDisabled ? "inherit" : "primary"}
+                title={isReplaceable ? 'This tile is replaceable' : ''}
+
                 disabled={isDisabled}
                 onClick={() => isSelected ? onSelect(null) : onSelect(tile)}
                 onMouseEnter={() => setHoveredTile(tile)}
@@ -73,6 +78,7 @@ export default function TileHandBar({
                   px: 1,
                   fontSize: "0.8rem",
                   opacity,
+                  backgroundColor: isReplaceable ? 'var(--bs-pink)' : 'auto'
                 }}
               >
                 {label}
@@ -91,7 +97,7 @@ export default function TileHandBar({
               console.error("Selected tile not found in hand");
               return;
             }
-            sendTilePlacement({playerIndex,  data: tileIndex});
+            sendTilePlacement({ playerIndex, data: tileIndex });
           }
         }}
         disabled={!selectedTile}

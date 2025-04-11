@@ -28,26 +28,13 @@ export default function MergeDecisions({
   gameState,
   localPlayerIndex,
 }: MergeDecisionsProps) {
-
-  console.log('localPlayerIndex', localPlayerIndex)
-
   const [decisions, setDecisions] = useState<MergeDecision[]>([]);
-
   const { stocks, config } = gameState;
-
   const { defunctHotelNames, initialDecisions } = useMemo(() => {
     const defunctHotelIndices = getDissolvingHotels(gameState, gameState.boardTiles[gameState.boardTiles.length - 1]);
     const defunctHotelNames = defunctHotelIndices.map(hotelIndex => gameState.config.hotels[hotelIndex].hotelName);
-    const initialDecisions = defunctHotelIndices.map((hotelIndex) => ({
-      hotelIndex,
-      convert: 0,
-      sell: 0,
-    }));
-    return {
-      defunctHotelIndices,
-      defunctHotelNames,
-      initialDecisions
-    };
+    const initialDecisions = defunctHotelIndices.map((hotelIndex) => ({ hotelIndex, convert: 0, sell: 0 }));
+    return { defunctHotelIndices, defunctHotelNames, initialDecisions };
   }, [gameState]);
 
   useEffect(() => {
@@ -75,47 +62,49 @@ export default function MergeDecisions({
           Player #{localPlayerIndex + 1}, choose how to handle your shares for each defunct hotel.
         </Typography>
         <Stack spacing={2}>
-          {decisions.map((d, i) => {
-            const hotelName = config.hotels[d.hotelIndex].hotelName;
-            const owned = stocks[d.hotelIndex][localPlayerIndex];
-            const remaining = owned - d.convert * 2 - d.sell;
+          {decisions
+            .filter(d => stocks[d.hotelIndex][localPlayerIndex])
+            .map((d, i) => {
+              const hotelName = config.hotels[d.hotelIndex].hotelName;
+              const owned = stocks[d.hotelIndex][localPlayerIndex];
+              const remaining = owned - d.convert * 2 - d.sell;
 
-            return (
-              <Box key={i} border="1px solid #ccc" borderRadius={2} p={2}>
-                <Typography fontWeight={600}>{hotelName}</Typography>
-                <Typography variant="body2">You own {owned} shares</Typography>
-                <Stack direction="row" spacing={2} mt={1}>
-                  <TextField
-                    type="number"
-                    label="Convert (2:1)"
-                    value={d.convert}
-                    onChange={(e) =>
-                      updateDecision(d.hotelIndex, "convert", parseInt(e.target.value || "0"))
-                    }
-                    inputProps={{
-                      min: 0,
-                      max: Math.floor(owned / 2),
-                    }}
-                  />
-                  <TextField
-                    type="number"
-                    label="Sell"
-                    value={d.sell}
-                    onChange={(e) =>
-                      updateDecision(d.hotelIndex, "sell", parseInt(e.target.value || "0"))
-                    }
-                    inputProps={{
-                      min: 0,
-                      max: owned,
-                    }}
-                  />
-                </Stack>
-                <Typography variant="caption" color="text.secondary" mt={1}>
-                  Remaining (kept): {remaining >= 0 ? remaining : 0}
-                </Typography>
-              </Box>
-            );
-          })}
+              return (
+                <Box key={i} border="1px solid #ccc" borderRadius={2} p={2}>
+                  <Typography fontWeight={600}>{hotelName}</Typography>
+                  <Typography variant="body2">You own {owned} shares</Typography>
+                  <Stack direction="row" spacing={2} mt={1}>
+                    <TextField
+                      type="number"
+                      label="Convert (2:1)"
+                      value={d.convert}
+                      onChange={(e) =>
+                        updateDecision(d.hotelIndex, "convert", parseInt(e.target.value || "0"))
+                      }
+                      inputProps={{
+                        min: 0,
+                        max: Math.floor(owned / 2),
+                      }}
+                    />
+                    <TextField
+                      type="number"
+                      label="Sell"
+                      value={d.sell}
+                      onChange={(e) =>
+                        updateDecision(d.hotelIndex, "sell", parseInt(e.target.value || "0"))
+                      }
+                      inputProps={{
+                        min: 0,
+                        max: owned,
+                      }}
+                    />
+                  </Stack>
+                  <Typography variant="caption" color="text.secondary" mt={1}>
+                    Remaining (kept): {remaining >= 0 ? remaining : 0}
+                  </Typography>
+                </Box>
+              );
+            })}
         </Stack>
       </DialogContent>
       <DialogActions>

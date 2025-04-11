@@ -17,11 +17,12 @@ import GameLog from "./GameLog";
 import HotelsInfoMini from './HotelsInfoMini';
 import { LocalPlayerIndex } from '../models/game.models';
 import { getActivePlayerIndex } from '../utils/localPlayer';
-import { isPermanentlyIllegalTile, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
+import { isPermanentlyIllegalTile, isPossibleGameEnd, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
 import { fetchGameState, postGameInput } from '../services/gameBackendService';
 import { FetchStateResponse } from '../../../../../shared/contract';
 import BuyStocks from './BuyStocks';
 import MergeDecisions from './MergerDecisions';
+import GameOver from './GameOver';
 
 interface GameProps {
   localPlayer: LocalPlayerIndex;
@@ -38,8 +39,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
-
-  console.log(gameState?.currentPlayerIndex, gameState?.decidingPlayerIndex)
+  const [gameIsEnding, setGameIsEnding] = useState<boolean>(false);
 
   const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
     setGameState(state);
@@ -67,13 +67,17 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
     let localPlayerIndex = typeof localPlayer === 'number' ? localPlayer : -1;
     let localPlayerTiles: Tile[] = [];
     let localPlayerUnplayableTiles: Tile[] = [];
+    let localPlayerReplaceableTiles: Tile[] = [];
+    let possibleGameEnd = false;
     if (!gameState) {
       return {
         activePlayerIndex,
         localPlayerIndex,
         isLocalPlayerTurn,
         localPlayerTiles,
-        localPlayerUnplayableTiles
+        localPlayerUnplayableTiles,
+        localPlayerReplaceableTiles,
+        possibleGameEnd
       };
     }
     activePlayerIndex = getActivePlayerIndex(gameState);
@@ -84,27 +88,55 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
       isLocalPlayerTurn = localPlayerIndex === activePlayerIndex;
       localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
       localPlayerUnplayableTiles = localPlayerTiles.filter((tile) => {
-        return isTemporarilyIllegalTile(gameState, tile) || isPermanentlyIllegalTile(gameState, tile);
+        return isTemporarilyIllegalTile(gameState, tile);
+      });
+      localPlayerReplaceableTiles = localPlayerTiles.filter((tile) => {
+        return isPermanentlyIllegalTile(gameState, tile);
       });
     }
+    possibleGameEnd = isPossibleGameEnd(gameState)
     return {
       activePlayerIndex,
       localPlayerIndex,
       isLocalPlayerTurn,
       localPlayerTiles,
       localPlayerUnplayableTiles,
+      localPlayerReplaceableTiles,
+      possibleGameEnd
     };
   }, [gameState, localPlayer]);
 
+  const endTheGame = (gameState: State) => {
+    setGameIsEnding(true);
+    postInput({ playerIndex: gameState.currentPlayerIndex, data: 'finish' });
+  };
+
+  useEffect(() => {
+    if (!gameState || !derivedState.possibleGameEnd) {
+      return;
+    }
+    setTimeout(() => {
+      if (confirm('Do you want to end the game now?')) {
+        endTheGame(gameState)
+      }
+    }, 500)
+
+  }, [gameState?.currentPlayerIndex ?? -1, derivedState.possibleGameEnd])
+
   if (!gameState) {
     return <div>Loading...</div>;
+  }
+
+  if (gameIsEnding && gameState.phaseId !== 'gameEnd') {
+    return <div>Game over (Loading results...)</div>
   }
 
   const {
     isLocalPlayerTurn,
     localPlayerIndex,
     localPlayerTiles,
-    localPlayerUnplayableTiles
+    localPlayerUnplayableTiles,
+    localPlayerReplaceableTiles
   } = derivedState;
 
   return (
@@ -218,6 +250,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
           <TileHandBar
             tiles={localPlayerTiles}
             unplayableTiles={localPlayerUnplayableTiles}
+            replaceableTiles={localPlayerReplaceableTiles}
             selectedTile={selectedTile}
             onSelect={(tile) => setSelectedTile(tile)}
             sendTilePlacement={postInput}
@@ -242,6 +275,8 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
           onConfirm={(decisions) => postInput(decisions)}
           open={gameState.phaseId === 'mergeDecide' && gameState.decidingPlayerIndex === localPlayerIndex}
         ></MergeDecisions>
+
+        <GameOver open={gameState.phaseId === 'gameEnd'} onClose={() => { }} gameState={gameState}></GameOver>
       </Box>
     </>
   );
