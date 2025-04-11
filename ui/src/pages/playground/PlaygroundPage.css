@@ -1,0 +1,175 @@
+.common-bordered {
+  border: 1px solid;
+  border-radius: 8px;
+}
+
+.common-padded {
+  padding: 4px;
+}
+
+.playground-container {
+  width: 100vw;
+  height: 100vh;
+  font-size: 12px;
+  --mt1: 4px;
+  --mt2: 8px;
+  --mh1: 20px;
+}
+
+.game-board {
+  display: grid;
+  grid-template-rows: repeat(10, 2.25vw);
+  grid-template-columns: repeat(13, 2.25vw);
+}
+
+@media (min-width: 768px) {
+
+  .playground-container {
+    font-size: 14px;
+    --mt1: 6px;
+    --mt2: 12px;
+  }
+
+  .common-padded {
+    padding: 6px;
+  }
+}
+
+@media (min-width: 960px) {
+  .playground-container {
+    font-size: 16px;
+    --mt1: 8px;
+    --mt2: 16px;
+  }
+
+  .common-padded {
+    padding: 8px;
+  }
+
+  .game-board {
+    grid-template-rows: repeat(10, 3vw);
+    grid-template-columns: repeat(13, 3vw);
+  }
+}
+
+@media (min-width: 1200px) {
+  .playground-container {
+    font-size: 18px;
+    --mt1: 12px;
+    --mt2: 18px;
+    --mh1: 32px;
+  }
+
+  .common-padded {
+    padding: 12px;
+  }
+
+  .player-tiles {
+    width: 140px !important;
+  }
+
+  .hotels-list {
+    width: 240px !important;
+
+  }
+
+  .game-board {
+    grid-template-rows: repeat(10, 3.5vw);
+    grid-template-columns: repeat(13, 3.5vw);
+  }
+}
+
+.turn-indicator {
+  background: rgb(200, 180, 240);
+  text-align: center;
+}
+
+.players-container {
+  display: flex;
+  gap: 32px;
+  margin-left: var(--mh1);
+  margin-right: var(--mh1);
+  margin-top: var(--mt2);
+  margin-bottom: var(--mt2);
+  justify-content: center;
+}
+
+.player-card {
+  width: 20%;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.game-area {
+  display: flex;
+  justify-content: center;
+}
+
+.player-tiles {
+  width: 100px;
+}
+
+.player-tiles ul {
+  margin-left: var(--mh1);
+  margin-right: var(--mh1);
+  margin-top: var(--mt2);
+  margin-bottom: var(--mt2);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mt1);
+  justify-content: space-between;
+}
+
+.tile-card {
+  text-align: center;
+}
+
+.hotels-list {
+  width: 180px;
+}
+
+.hotels-list ul {
+  margin-right: var(--mh1);
+  margin-left: var(--mh1);
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mt1);
+  justify-content: space-between;
+}
+
+.hotel-item {
+  display: flex;
+  gap: var(--mt2);
+  flex-direction: row;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.hotel-initial {
+  display: inline-block;
+  min-width: 18px;
+  text-align: center;
+}
+
+.player-card-extended {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.player-card-extended-stock {
+  display: flex;
+  flex-direction: column;
+  width: 14px;
+}

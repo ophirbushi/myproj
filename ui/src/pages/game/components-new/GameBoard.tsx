@@ -32,13 +32,11 @@ export default function GameBoardNew({ gameState, }: GameBoardProps) {
 
   return (
     <Box
-      display="grid"
-      gridTemplateColumns={`repeat(${boardWidth + 1}, ${tileSize})`}
-      gridTemplateRows={`repeat(${boardHeight + 1}, ${tileSize})`}
+      className='game-board'
       gap={1}
       bgcolor="white"
       borderRadius={2}
-      flex={1}
+      margin={'0 auto'}
       sx={{ touchAction: "manipulation" }}
     >
       {Array.from({ length: (boardWidth + 1) * (boardHeight + 1) }).map((_, i) => {
