@@ -1,4 +1,5 @@
 import { Typography, Paper, Stack, Button } from "@mui/material";
+import { Input } from '../../../../../engine/models';
 
 type Tile = [number, number];
 
@@ -8,10 +9,11 @@ interface TileHandBarProps {
   onSelect: (tile: Tile | null) => void;
   unplayableTiles?: Tile[];
   label?: string; // For ALL mode or debug
-  sendTilePlacement: (tileIndex: number) => any
+  sendTilePlacement: (tileIndex: Input<number>) => any
   hoveredTile: Tile | null
   setHoveredTile: (tile: Tile | null) => any,
-  isBuildPhase: boolean
+  isBuildPhase: boolean,
+  playerIndex: number
 }
 
 function tileToLabel([x, y]: Tile): string {
@@ -31,7 +33,8 @@ export default function TileHandBar({
   sendTilePlacement,
   hoveredTile,
   setHoveredTile,
-  isBuildPhase
+  isBuildPhase,
+  playerIndex
 }: TileHandBarProps) {
   return (
     <Paper className={isBuildPhase ? '' : 'isDisabled'} elevation={3} sx={{ p: 1, overflowX: "auto", display: 'flex', justifyContent: 'space-evenly' }}>
@@ -88,7 +91,7 @@ export default function TileHandBar({
               console.error("Selected tile not found in hand");
               return;
             }
-            sendTilePlacement(tileIndex);
+            sendTilePlacement({playerIndex,  data: tileIndex});
           }
         }}
         disabled={!selectedTile}

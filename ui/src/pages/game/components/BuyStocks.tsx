@@ -12,13 +12,13 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import UndoIcon from "@mui/icons-material/Undo";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useMemo, useState } from "react";
-import { State, StockDecision } from '../../../../../engine/models';
+import { Input, State, StockDecision } from '../../../../../engine/models';
 import { getHotelStockPrice, getHowManyStocksLeftForHotel, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 interface BuyStocksProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: (decisions: StockDecision[]) => void;
+  onConfirm: (decisions: Input<StockDecision[]>) => void;
   gameState: State;
   localPlayerIndex: number;
   isMobile: boolean;
@@ -98,7 +98,7 @@ export default function BuyStocks({
       hotelIndex,
       amount
     })).filter((decision => decision.amount > 0));
-    onConfirm(stockDecisions);
+    onConfirm({ playerIndex: gameState.currentPlayerIndex, data: stockDecisions });
     reset();
   };
 

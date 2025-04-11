@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { type State } from '../../../../../engine/models';
+import { Input, type State } from '../../../../../engine/models';
 import { darkHotels, hotelColors as HOTEL_COLORS } from '../utils/hotelConfig';
 import { getShortenedHotelName } from '../utils/hotelUtils';
 import { getHotelSize } from '../../../../../engine/helpers';
@@ -9,7 +9,7 @@ import { getActivePlayerIndex } from '../utils/localPlayer';
 
 interface HotelsInfoMiniParams {
   gameState: State
-  postInput: (input: number) => any
+  postInput: (input: Input<number>) => any
   fontSize?: number
   localPlayerIndex: LocalPlayerIndex
 }
@@ -73,7 +73,7 @@ export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex,
             padding={1}
             fontSize={fontSize}
             bgcolor={bgcolor}
-            color={darkHotels[idx] ? 'white' : 'auto'}
+            color={(darkHotels[idx] && bgcolor !== 'white') ? 'white' : 'auto'}
             borderRadius={2}
             textAlign="center"
             sx={{
@@ -84,7 +84,7 @@ export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex,
             }}
             onClick={() => {
               if (derivedState.isChooseHotelState) {
-                postInput(idx);
+                postInput({ playerIndex: gameState.currentPlayerIndex, data: idx });
               }
             }}
           >

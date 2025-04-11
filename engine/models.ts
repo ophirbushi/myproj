@@ -44,8 +44,13 @@ export interface MergeDecision {
   sell: number
 }
 
-export interface Input {
-  getInput<T>(): Promise<T>
+export interface Input<T> {
+  playerIndex: number;
+  data: T;
+}
+
+export interface InputSource {
+  getInput<T>(): Promise<Input<T>>
 }
 
 export enum OutputMessageCode {

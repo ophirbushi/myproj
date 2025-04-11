@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { Phase, type State } from '../../../../../engine/models';
 import { LocalPlayerIndex } from '../models/game.models';
 import { useMemo } from 'react';
-import { getActivePlayerIndex, getIsLocalPlayerTurn } from '../utils/localPlayer';
+import { getActivePlayerIndex } from '../utils/localPlayer';
 
 const textMap: { [phaseId in Phase]: string } = {
   build: "place a tile",
@@ -18,16 +18,9 @@ export default function PhaseBanner(
 ) {
   const derivedState = useMemo(() => {
     const activePlayerIndex = getActivePlayerIndex(gameState);
-    const isLocalPlayerTurn = getIsLocalPlayerTurn(gameState, localPlayerIndex);
     const phaseText = textMap[gameState.phaseId];
-    let text = ''
-    if (isLocalPlayerTurn) {
-      text = `It's your turn, ${phaseText}.`;
-    } else {
-      text = `It's P${activePlayerIndex + 1}'s turn to ${phaseText}.`;
-    }
     return {
-      text
+      text: `It's P${activePlayerIndex + 1}'s turn to ${phaseText}. (${JSON.stringify({ phaseId: gameState.phaseId, currentPlayerIndex: gameState.currentPlayerIndex, decidingPlayerIndex: gameState.decidingPlayerIndex })})`
     };
   }, [gameState, localPlayerIndex]);
 

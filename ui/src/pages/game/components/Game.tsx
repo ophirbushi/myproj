@@ -6,7 +6,7 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { State, StockDecision, Tile } from '../../../../../engine/models';
+import { Input, State, Tile } from '../../../../../engine/models';
 
 import GameBoard from "./GameBoard";
 import PlayerBar from "./PlayerBar";
@@ -18,9 +18,10 @@ import HotelsInfoMini from './HotelsInfoMini';
 import { LocalPlayerIndex } from '../models/game.models';
 import { getActivePlayerIndex } from '../utils/localPlayer';
 import { isPermanentlyIllegalTile, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
-import { fetchGameState, postGameInput, postGoBackOneState } from '../services/gameBackendService';
+import { fetchGameState, postGameInput } from '../services/gameBackendService';
 import { FetchStateResponse } from '../../../../../shared/contract';
 import BuyStocks from './BuyStocks';
+import MergeDecisions from './MergerDecisions';
 
 interface GameProps {
   localPlayer: LocalPlayerIndex;
@@ -44,15 +45,15 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
     setSelectedTile(null);
   };
 
-  const postInput = async <T = any>(input: T) => {
+  const postInput = async <T = any>(input: Input<T>) => {
     const res = await postGameInput(input);
     updateGameStateAndLogs(res);
   };
 
-  const goBackOneState = async () => {
-    const res = await postGoBackOneState();
-    updateGameStateAndLogs(res);
-  };
+  // const goBackOneState = async () => {
+  //   const res = await postGoBackOneState();
+  //   updateGameStateAndLogs(res);
+  // };
 
   useEffect(() => {
     fetchGameState().then((res) => updateGameStateAndLogs(res));
@@ -221,17 +222,24 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
             hoveredTile={hoveredTile}
             setHoveredTile={setHoveredTile}
             isBuildPhase={gameState.phaseId === 'build'}
+            playerIndex={localPlayerIndex}
           />
         </Box>
 
         <BuyStocks
           open={isLocalPlayerTurn && gameState.phaseId === 'invest'}
-          onClose={() => postInput([])}
-          onConfirm={(decisions: StockDecision[]) => postInput(decisions)}
+          onClose={() => postInput({ playerIndex: gameState.currentPlayerIndex, data: [] })}
+          onConfirm={(decisions) => postInput(decisions)}
           localPlayerIndex={localPlayerIndex}
           gameState={gameState}
           isMobile={isMobile}
         ></BuyStocks>
+
+        <MergeDecisions gameState={gameState} localPlayerIndex={localPlayerIndex}
+          onClose={() => { }}
+          onConfirm={(decisions) => postGameInput(decisions)}
+          open={gameState.phaseId === 'mergeDecide' && gameState.decidingPlayerIndex === localPlayerIndex}
+        ></MergeDecisions>
       </Box>
     </>
   );

@@ -1,3 +1,4 @@
+import { Input } from '../../../../../engine/models';
 import { type FetchStateResponse } from '../../../../../shared/contract';
 const BACKEND_BASE_URL = 'http://localhost:3000';
 
@@ -14,7 +15,7 @@ export const fetchGameState = async (): Promise<FetchStateResponse> => {
   }
 };
 
-export const postGameInput = async <T>(input: T) => {
+export const postGameInput = async <T>(input: Input<T>) => {
   try {
     const response = await fetch(`${BACKEND_BASE_URL}/input`, {
       method: 'POST',

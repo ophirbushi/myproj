@@ -1,18 +1,44 @@
 import { playerBuyStocks } from './actions'
 import { clone, getLastPlayedTile, getTileByIndex, getHotelsInvolvedInMerge, isPossibleGameEnd, isTemporarilyIllegalTile, getHowManyStocksLeftForHotel } from './helpers'
-import { MergeDecision, Output, State, StockDecision } from './models'
+import { Input, MergeDecision, Output, OutputMessageCode, State, StockDecision } from './models'
 import { doMergeDecide } from './phases/merge-decide'
 
 const noopOutput: Output = { broadcast: () => { } }
 
-export const validateInput = (state: State, input: unknown): boolean => {
+export const validateInput = (state: State, input: Input<any>, output: Output): boolean => {
   let newState = clone(state)
+
+  const { currentPlayerIndex, decidingPlayerIndex, phaseId } = newState
+  console.log()
+  console.log('validateInput', { input, phaseId, currentPlayerIndex, decidingPlayerIndex })
+  console.log()
+
+  if (newState.phaseId !== 'mergeDecide' && input.playerIndex !== newState.currentPlayerIndex) {
+    output.broadcast({
+      state,
+      code: OutputMessageCode.INVALID_INPUT,
+      log: `Invalid input - expected playerIndex to be currentPlayerIndex (${newState.currentPlayerIndex}),`
+        + ` but got index ${input.playerIndex} instead.`
+    })
+    return false;
+  }
+
+  if (newState.phaseId === 'mergeDecide' && input.playerIndex !== newState.decidingPlayerIndex) {
+    output.broadcast({
+      state,
+      code: OutputMessageCode.INVALID_INPUT,
+      log: `Invalid input - expected playerIndex to be decidingPlayerIndex (${newState.decidingPlayerIndex}),`
+        + ` but got index ${input.playerIndex} instead.`
+    })
+    return false;
+  }
+
   switch (newState.phaseId) {
     case 'build':
-      if (isPossibleGameEnd(state) && input === 'finish') {
+      if (isPossibleGameEnd(state) && input.data === 'finish') {
         return true
       }
-      const tileIndex = input as number
+      const tileIndex = input.data as number
       if (
         typeof tileIndex !== 'number' ||
         isNaN(tileIndex) ||
@@ -28,7 +54,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
       }
       break
     case 'mergeDecide':
-      const mergeDecisions = input as MergeDecision[]
+      const mergeDecisions = input.data as MergeDecision[]
       if (!Array.isArray(mergeDecisions)) {
         return false
       }
@@ -54,7 +80,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
       }
       break
     case 'invest':
-      const stockDecisions = input as StockDecision[]
+      const stockDecisions = input.data as StockDecision[]
       if (!Array.isArray(stockDecisions)) {
         return false
       }
@@ -70,7 +96,7 @@ export const validateInput = (state: State, input: unknown): boolean => {
       }
       break
     case 'establish':
-      const hotelIndex = input as number
+      const hotelIndex = input.data as number
       if (
         typeof hotelIndex !== 'number' ||
         isNaN(hotelIndex) ||
