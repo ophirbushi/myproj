@@ -8,11 +8,6 @@ const noopOutput: Output = { broadcast: () => { } }
 export const validateInput = (state: State, input: Input<any>, output: Output): boolean => {
   let newState = clone(state)
 
-  const { currentPlayerIndex, decidingPlayerIndex, phaseId } = newState
-  console.log()
-  console.log('validateInput', { input, phaseId, currentPlayerIndex, decidingPlayerIndex })
-  console.log()
-
   if (newState.phaseId !== 'mergeDecide' && input.playerIndex !== newState.currentPlayerIndex) {
     output.broadcast({
       state,
@@ -46,10 +41,20 @@ export const validateInput = (state: State, input: Input<any>, output: Output): 
         tileIndex < 0 ||
         tileIndex >= newState.playerTiles[newState.currentPlayerIndex].tiles.length
       ) {
+        output.broadcast({
+          state,
+          code: OutputMessageCode.INVALID_INPUT,
+          log: `Invalid input - tileIndex >= newState.playerTiles[newState.currentPlayerIndex].tiles.length`
+        })
         return false
       }
       const tile = getTileByIndex(newState, tileIndex)
       if (isTemporarilyIllegalTile(newState, tile)) {
+        output.broadcast({
+          state,
+          code: OutputMessageCode.INVALID_INPUT,
+          log: `Invalid input - TemporarilyIllegalTile`
+        })
         return false
       }
       break

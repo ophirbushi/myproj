@@ -9,7 +9,7 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input, MergeDecision, State } from '../../../../../engine/models';
 import { getDissolvingHotels } from '../../../../../engine/helpers';
 
@@ -28,24 +28,31 @@ export default function MergeDecisions({
   gameState,
   localPlayerIndex,
 }: MergeDecisionsProps) {
+
+  console.log('localPlayerIndex', localPlayerIndex)
+
+  const [decisions, setDecisions] = useState<MergeDecision[]>([]);
+
   const { stocks, config } = gameState;
 
-  const { defunctHotelIndices, defunctHotelNames } = useMemo(() => {
+  const { defunctHotelNames, initialDecisions } = useMemo(() => {
     const defunctHotelIndices = getDissolvingHotels(gameState, gameState.boardTiles[gameState.boardTiles.length - 1]);
-    const defunctHotelNames = defunctHotelIndices.map(hotelIndex => gameState.config.hotels[hotelIndex].hotelName)
+    const defunctHotelNames = defunctHotelIndices.map(hotelIndex => gameState.config.hotels[hotelIndex].hotelName);
+    const initialDecisions = defunctHotelIndices.map((hotelIndex) => ({
+      hotelIndex,
+      convert: 0,
+      sell: 0,
+    }));
     return {
       defunctHotelIndices,
-      defunctHotelNames
+      defunctHotelNames,
+      initialDecisions
     };
   }, [gameState]);
 
-  const initialDecisions = defunctHotelIndices.map((hotelIndex) => ({
-    hotelIndex,
-    convert: 0,
-    sell: 0,
-  }));
-
-  const [decisions, setDecisions] = useState<MergeDecision[]>(initialDecisions);
+  useEffect(() => {
+    setDecisions(initialDecisions);
+  }, [gameState]);
 
   const updateDecision = (hotelIndex: number, field: "convert" | "sell", value: number) => {
     setDecisions((prev) =>
@@ -56,8 +63,8 @@ export default function MergeDecisions({
   };
 
   const handleConfirm = () => {
-    onConfirm({ playerIndex: gameState.decidingPlayerIndex, data: decisions });
-    setDecisions(initialDecisions);
+    onConfirm({ playerIndex: gameState.decidingPlayerIndex, data: decisions.map(d => ({ ...d, convert: d.convert * 2 })) });
+    setDecisions(decisions);
   };
 
   return (

@@ -5,7 +5,7 @@ export const defaultConfig: Config = {
   hotels: [
     { hotelName: "Riviera", prestige: 0 },
     { hotelName: "Holiday", prestige: 0 },
-    { hotelName: "LasVegas", prestige: 1 },
+    { hotelName: "Las Vegas", prestige: 1 },
     { hotelName: "Park", prestige: 1 },
     { hotelName: "Olympia", prestige: 1 },
     { hotelName: "Europlaza", prestige: 2 },

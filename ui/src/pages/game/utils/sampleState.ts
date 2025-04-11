@@ -13,7 +13,7 @@ export const sampleState: State = {
         "prestige": 0
       },
       {
-        "hotelName": "LasVegas",
+        "hotelName": "Las Vegas",
         "prestige": 1
       },
       {

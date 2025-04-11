@@ -39,6 +39,8 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
 
+  console.log(gameState?.currentPlayerIndex, gameState?.decidingPlayerIndex)
+
   const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
     setGameState(state);
     setLogs(logs);
@@ -237,7 +239,7 @@ export default function Game({ localPlayer: localPlayer }: GameProps) {
 
         <MergeDecisions gameState={gameState} localPlayerIndex={localPlayerIndex}
           onClose={() => { }}
-          onConfirm={(decisions) => postGameInput(decisions)}
+          onConfirm={(decisions) => postInput(decisions)}
           open={gameState.phaseId === 'mergeDecide' && gameState.decidingPlayerIndex === localPlayerIndex}
         ></MergeDecisions>
       </Box>

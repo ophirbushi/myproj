@@ -7,7 +7,7 @@ import { getActivePlayerIndex } from '../utils/localPlayer';
 const textMap: { [phaseId in Phase]: string } = {
   build: "place a tile",
   establish: "choose a hotel to found",
-  merge: "merger in progress",
+  merge: "choose the surviving hotel",
   mergeDecide: "resolve merger stock decisions",
   invest: "buy stocks",
   gameEnd: "Game over"
