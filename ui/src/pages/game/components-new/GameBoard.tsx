@@ -33,7 +33,6 @@ export default function GameBoardNew({ gameState, }: GameBoardProps) {
   return (
     <Box
       className='game-board'
-      gap={1}
       bgcolor="white"
       borderRadius={2}
       margin={'0 auto'}

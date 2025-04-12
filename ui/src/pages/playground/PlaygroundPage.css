@@ -18,20 +18,15 @@
 
 .game-board {
   display: grid;
-  grid-template-rows: repeat(10, 2.25vw);
-  grid-template-columns: repeat(13, 2.25vw);
+  grid-template-rows: repeat(10, 2.5vw);
+  grid-template-columns: repeat(13, 2.5vw);
+  gap: 4px;
 }
 
 @media (min-width: 768px) {
 
   .playground-container {
     font-size: 14px;
-    --mt1: 6px;
-    --mt2: 12px;
-  }
-
-  .common-padded {
-    padding: 6px;
   }
 }
 
@@ -55,13 +50,13 @@
 @media (min-width: 1200px) {
   .playground-container {
     font-size: 18px;
-    --mt1: 12px;
+    --mt1: 18px;
     --mt2: 18px;
     --mh1: 32px;
   }
 
   .common-padded {
-    padding: 12px;
+    padding: 24px;
   }
 
   .player-tiles {
@@ -89,8 +84,8 @@
   gap: 32px;
   margin-left: var(--mh1);
   margin-right: var(--mh1);
-  margin-top: var(--mt2);
-  margin-bottom: var(--mt2);
+  margin-top: var(--mt1);
+  margin-bottom: var(--mt1);
   justify-content: center;
 }
 
@@ -110,14 +105,14 @@
 }
 
 .player-tiles {
-  width: 100px;
+  width: 80px;
 }
 
 .player-tiles ul {
   margin-left: var(--mh1);
   margin-right: var(--mh1);
-  margin-top: var(--mt2);
-  margin-bottom: var(--mt2);
+  margin-top: var(--mt1);
+  margin-bottom: var(--mt1);
   padding: 0;
   list-style: none;
   display: flex;
@@ -137,6 +132,7 @@
 .hotels-list ul {
   margin-right: var(--mh1);
   margin-left: var(--mh1);
+  margin-top: var(--mt1);
   padding: 0;
   list-style: none;
   display: flex;
@@ -147,7 +143,7 @@
 
 .hotel-item {
   display: flex;
-  gap: var(--mt2);
+  gap: var(--mt1);
   flex-direction: row;
   box-sizing: border-box;
   justify-content: space-between;
