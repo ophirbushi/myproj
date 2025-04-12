@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { State, Tile } from '../../../../../engine/models';
-import { getTileKey, hotelExistsOnBoard, isEqualTiles } from '../../../../../engine/helpers';
+import { getTileKey, isEqualTiles } from '../../../../../engine/helpers';
 import { BoardTile } from './BoardTile';
 import { useCallback, useMemo, useState } from 'react';
 import { colorsPalette, hotelColors } from '../shared/colors';
@@ -83,7 +83,6 @@ export default function GameBoardNew({ gameState, }: GameBoardProps) {
         if (x === -1) {
           return <LabelCell type="row" index={y} content={(y + 1).toString()} key={key} />;
         }
-        // const hotelIndex = derivedState.hotelIndexMap[key] ?? -1;
 
         const isAvailableToSelect = getIsTileAvailableToSelect(tile);
         const { color, text } = getTileColorText(tile);

@@ -2,6 +2,7 @@ import { Box } from '@mui/material';
 import { Tile } from '../../../../../engine/models';
 import { Color, colorsPalette } from '../shared/colors';
 import { useMemo } from 'react';
+import { abbreviateHotelName } from '../shared/utils';
 
 interface BoardTileParams {
   tile: Tile;
@@ -12,13 +13,8 @@ interface BoardTileParams {
   color?: Color;
 }
 
-export const BoardTile = ({ tile, label, isSelected, setIsSelected, isAvailableToSelect = Math.random() > .9, color = colorsPalette.white }: BoardTileParams) => {
-  const labelAbbreviated = useMemo(() => {
-    if (!label) {
-      return '';
-    }
-    return label.substring(0, 2);
-  }, [label]);
+export const BoardTile = ({ tile, label, isSelected, setIsSelected, isAvailableToSelect, color = colorsPalette.white }: BoardTileParams) => {
+  const labelAbbreviated = useMemo(() => abbreviateHotelName(label), [label]);
 
   const onTileClick = () => {
     if (!isAvailableToSelect) {

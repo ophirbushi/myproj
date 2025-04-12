@@ -1,5 +1,7 @@
 import './PlaygroundPage.css';
 import GameBoardNew from './components/GameBoard';
+import HotelItem from './components/HotelItem';
+import { Hotels } from './components/Hotels';
 import { gameState } from './state';
 
 
@@ -40,19 +42,7 @@ export default function PlaygroundPage() {
           </ul>
         </div>
         <GameBoardNew gameState={gameState}></GameBoardNew>
-        <div className="hotels-list">
-          <ul>
-            {gameState.config.hotels.map((h, i) => (
-              <li key={i + h.hotelName} className="hotel-item common-bordered common-padded">
-                <div>
-                  <span className="hotel-initial">{h.hotelName[0]}</span>
-                  <span>(8)</span>
-                </div>
-                <span>$200</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Hotels gameState={gameState}></Hotels>
       </div>
     </div>
   );
