@@ -1,5 +1,5 @@
 .common-bordered {
-  border: 1px solid;
+  border: 1px solid var(--color-black);
   border-radius: 8px;
 }
 
@@ -11,6 +11,7 @@
   width: 100vw;
   height: 100vh;
   font-size: 12px;
+  color: var(--color-black);
   --mt1: 4px;
   --mt2: 8px;
   --mh1: 20px;
@@ -24,7 +25,6 @@
 }
 
 @media (min-width: 768px) {
-
   .playground-container {
     font-size: 14px;
   }
@@ -44,6 +44,7 @@
   .game-board {
     grid-template-rows: repeat(10, 3vw);
     grid-template-columns: repeat(13, 3vw);
+    gap: 8px;
   }
 }
 

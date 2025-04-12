@@ -1,5 +1,5 @@
 import './PlaygroundPage.css';
-import GameBoardNew from '../game/components-new/GameBoard';
+import GameBoardNew from './components/GameBoard';
 import { gameState } from './state';
 
 
