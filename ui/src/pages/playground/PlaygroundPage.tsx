@@ -16,8 +16,10 @@ import { isPossibleGameEnd } from '../../../../engine/helpers';
 import GameOver from '../game/components/GameOver';
 import PhaseBanner from '../game/components/PhaseBanner';
 
+let isPrompted = false;
+
 export default function PlaygroundPage() {
-  const [localPlayerIndex, setLocalPlayerIndex] = useState(0);
+  const [localPlayerIndex, setLocalPlayerIndex] = useState(-1);
   const [gameState, setGameState] = useState(initState);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
@@ -55,10 +57,10 @@ export default function PlaygroundPage() {
     setAvailableToSelectTiles(availableToSelectTiles);
   }, [gameState, localPlayerIndex]);
 
-  // for local development:
-  useEffect(() => {
-    setLocalPlayerIndex(getActivePlayerIndex(gameState));
-  }, [gameState]);
+  // // for local development:
+  // useEffect(() => {
+  //   setLocalPlayerIndex(getActivePlayerIndex(gameState));
+  // }, [gameState]);
 
   useEffect(() => {
     if (localPlayerIndex === gameState.currentPlayerIndex && isPossibleGameEnd(gameState)) {
@@ -69,6 +71,20 @@ export default function PlaygroundPage() {
       }, 500);
     }
   }, [gameState?.currentPlayerIndex, localPlayerIndex]);
+
+  useEffect(() => {
+    if (localPlayerIndex === -1 && !isPrompted) {
+      let playerIndex = null;
+      while (playerIndex == null) {
+        const player = (prompt('Please select which player number you want to be? (1 - 4)') || '').trim();
+        isPrompted = true;
+        if (['1', '2', '3', '4'].includes(player)) {
+          playerIndex = (+player) - 1;
+        }
+      }
+      setLocalPlayerIndex(playerIndex);
+    }
+  }, [localPlayerIndex]);
 
   return (
     <div className="playground-container">
