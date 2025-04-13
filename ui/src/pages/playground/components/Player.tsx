@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 export interface PlayerProps {
   playerName: string;
   playerIndex: number;
@@ -11,7 +9,6 @@ export interface PlayerProps {
 }
 
 export const Player = ({ cash, isLocal, isActive, playerName, playerStocks, hotels, playerIndex }: PlayerProps) => {
-
   return (
     <div className={"player-card common-bordered common-padded"
       + (isLocal ? ' local-player' : '')

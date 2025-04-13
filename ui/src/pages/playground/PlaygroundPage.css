@@ -126,6 +126,11 @@
   text-align: center;
 }
 
+.tile-card-selected {
+  background-color: var(--color-blue);
+  color: white;
+}
+
 .hotels-list {
   width: 180px;
 }

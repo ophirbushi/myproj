@@ -1,14 +1,16 @@
 import { Box } from "@mui/material";
 import { State, Tile } from '../../../../../engine/models';
-import { getHotelTiles, getTileGroup, getTileKey, isEqualTiles, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
+import { getHotelTiles, getTileKey, isEqualTiles } from '../../../../../engine/helpers';
 import { BoardTile } from './BoardTile';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 import { colorsPalette, hotelColors } from '../shared/colors';
-import { getActivePlayerIndex } from '../../game/utils/localPlayer';
 
 export interface GameBoardProps {
   gameState: State;
   localPlayerIndex: number;
+  selectedTile: Tile | null;
+  setSelectedTile: (tile: Tile | null) => any;
+  availableToSelectTiles: Tile[];
 }
 
 const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: number; content: string; }) => (
@@ -26,9 +28,7 @@ const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: numbe
   </Box>
 );
 
-export default function GameBoardNew({ gameState, localPlayerIndex }: GameBoardProps) {
-  const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
-  const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
+export default function GameBoardNew({ gameState, localPlayerIndex, availableToSelectTiles, selectedTile, setSelectedTile }: GameBoardProps) {
 
   const derivedState = useMemo(() => {
     const hotelIndexMap: { [tileKey: string]: number } = {};
@@ -39,16 +39,6 @@ export default function GameBoardNew({ gameState, localPlayerIndex }: GameBoardP
         hotelIndexMap[tileKey] = hotel.hotelIndex;
       }
     }
-
-    if (gameState.phaseId === 'build' && localPlayerIndex === getActivePlayerIndex(gameState)) {
-      const availableToSelectTiles = gameState.playerTiles[localPlayerIndex].tiles
-        .filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
-      setAvailableToSelectTiles(availableToSelectTiles);
-    } else {
-      setSelectedTile(null);
-      setAvailableToSelectTiles([]);
-    }
-
     return {
       hotelIndexMap
     };
