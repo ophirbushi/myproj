@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import './PlaygroundPage.css';
 import { State, Tile } from '../../../../engine/models';
 import { isPossibleGameEnd, isEqualTiles, isTemporarilyIllegalTile } from '../../../../engine/helpers';
-import { defaultConfig } from '../../../../engine/constants';
-import { initState } from '../../../../engine/init';
 import GameBoardNew from './components/GameBoard';
 import { FetchStateResponse } from '../../../../shared/contract';
 import { Hotels } from './components/Hotels';
@@ -19,11 +17,8 @@ import { useParams } from 'react-router-dom';
 
 export default function PlaygroundPage() {
   const { gameId } = useParams()
-  if (!gameId) {
-    throw new Error('gameId missing')
-  }
   const [localPlayerIndex, setLocalPlayerIndex] = useState(-1);
-  const [gameState, setGameState] = useState<State>(initState(defaultConfig, { broadcast: () => { } }));
+  const [gameState, setGameState] = useState<State | null>(null);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
@@ -34,11 +29,17 @@ export default function PlaygroundPage() {
   };
 
   const postInput = async <T = any>(data: T) => {
+    if (!gameId) {
+      return;
+    }
     const res = await postGameInput(gameId, { data, playerIndex: localPlayerIndex });
     updateGameStateAndLogs(res);
   };
 
   const confirmSelectedTile = (tile: Tile) => {
+    if (!gameState) {
+      return;
+    }
     const tileIndex = gameState.playerTiles[localPlayerIndex].tiles.findIndex(t => isEqualTiles(t, tile));
     if (tileIndex > -1) {
       postInput(tileIndex);
@@ -46,10 +47,16 @@ export default function PlaygroundPage() {
   };
 
   useEffect(() => {
+    if (gameId == null) {
+      return;
+    }
     fetchGameState(gameId).then((response) => updateGameStateAndLogs(response));
-  }, []);
+  }, [gameId]);
 
   useEffect(() => {
+    if (!gameState) {
+      return;
+    }
     if (gameState.phaseId !== 'build' || localPlayerIndex !== getActivePlayerIndex(gameState)) {
       setSelectedTile(null);
       setAvailableToSelectTiles([]);
@@ -58,14 +65,20 @@ export default function PlaygroundPage() {
     const localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
     const availableToSelectTiles = localPlayerTiles.filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
     setAvailableToSelectTiles(availableToSelectTiles);
-  }, [gameState, localPlayerIndex]);
+  }, [gameId, gameState, localPlayerIndex]);
 
   // // for local development:
   useEffect(() => {
+    if (!gameState) {
+      return;
+    }
     setLocalPlayerIndex(getActivePlayerIndex(gameState));
-  }, [gameState]);
+  }, [gameId, gameState]);
 
   useEffect(() => {
+    if (!gameState) {
+      return;
+    }
     if (localPlayerIndex === gameState.currentPlayerIndex && isPossibleGameEnd(gameState)) {
       setTimeout(() => {
         if (confirm('Do you want to end the game now?')) {
@@ -73,7 +86,7 @@ export default function PlaygroundPage() {
         }
       }, 500);
     }
-  }, [gameState?.currentPlayerIndex, localPlayerIndex]);
+  }, [gameId, gameState?.currentPlayerIndex, localPlayerIndex]);
 
   // useEffect(() => {
   //   if (localPlayerIndex === -1 && !isPrompted) {
@@ -88,6 +101,10 @@ export default function PlaygroundPage() {
   //     setLocalPlayerIndex(playerIndex);
   //   }
   // }, [localPlayerIndex]);
+
+  if (!gameState) {
+    return 'loading...'
+  }
 
   return (
     <div className="playground-container">
