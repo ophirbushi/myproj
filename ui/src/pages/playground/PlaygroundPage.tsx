@@ -18,23 +18,6 @@ export default function PlaygroundPage() {
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
 
-  useEffect(() => {
-    fetchGameState().then((res) => {
-      setGameState(res.state);
-    });
-  }, []);
-
-  useEffect(() => {
-    if (gameState.phaseId !== 'build' || localPlayerIndex !== getActivePlayerIndex(gameState)) {
-      setSelectedTile(null);
-      setAvailableToSelectTiles([]);
-      return;
-    }
-    const localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
-    const availableToSelectTiles = localPlayerTiles.filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
-    setAvailableToSelectTiles(availableToSelectTiles);
-  }, [gameState]);
-
   const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
     setGameState(state);
     setSelectedTile(null);
@@ -52,6 +35,21 @@ export default function PlaygroundPage() {
       postInput({ playerIndex: activePlayerIndex, data: tileIndex });
     }
   };
+
+  useEffect(() => {
+    fetchGameState().then((response) => updateGameStateAndLogs(response));
+  }, []);
+
+  useEffect(() => {
+    if (gameState.phaseId !== 'build' || localPlayerIndex !== getActivePlayerIndex(gameState)) {
+      setSelectedTile(null);
+      setAvailableToSelectTiles([]);
+      return;
+    }
+    const localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
+    const availableToSelectTiles = localPlayerTiles.filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
+    setAvailableToSelectTiles(availableToSelectTiles);
+  }, [gameState]);
 
   return (
     <div className="playground-container">
