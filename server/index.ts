@@ -28,7 +28,6 @@ const input: InputSource = {
 const output: Output = {
   broadcast: (message: OutputMessage) => {
     if (typeof message === 'string') {
-      // console.log(message)
       logs.push(message)
       if (logs.length > 50) {
         logs.shift()
@@ -45,16 +44,8 @@ const output: Output = {
     }
   }
 }
+
 let state = initState(defaultConfig, output)
-
-
-let states = readFileSync(`/home/ophir/Desktop/gamestate.txt`).toString().split('\n')
-
-
-
-// state = JSON.parse(states[899])
-
-
 statesLog.push(state)
 engine.run(state, input, output)
 

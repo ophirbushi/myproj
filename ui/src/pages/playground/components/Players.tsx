@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { State } from '../../../../../engine/models';
 import { Player, PlayerProps } from './Player';
-import { getActivePlayerIndex } from '../../game/utils/localPlayer';
+import { getActivePlayerIndex } from '../utils/localPlayer';
 
 export interface PlayersProps {
   gameState: State;

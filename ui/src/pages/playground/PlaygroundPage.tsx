@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
 import './PlaygroundPage.css';
+import { State, Tile } from '../../../../engine/models';
+import { isPossibleGameEnd, isEqualTiles, isTemporarilyIllegalTile } from '../../../../engine/helpers';
+import { defaultConfig } from '../../../../engine/constants';
+import { initState } from '../../../../engine/init';
 import GameBoardNew from './components/GameBoard';
-import { Hotels } from './components/Hotels';
-import { gameState as initState } from './state';
-import { fetchGameState, postGameInput } from '../game/services/gameBackendService';
-import { Players } from './components/Players';
-import { Tile } from '../../../../engine/models';
-import { PlayerTiles } from './components/PlayerTiles';
-import { isEqualTiles, isTemporarilyIllegalTile } from '../../../../engine/helpers/tiles';
-import { getActivePlayerIndex } from '../game/utils/localPlayer';
 import { FetchStateResponse } from '../../../../shared/contract';
-import BuyStocks from '../game/components/BuyStocks';
-import MergeDecisions from '../game/components/MergerDecisions';
-import { isPossibleGameEnd } from '../../../../engine/helpers';
-import GameOver from '../game/components/GameOver';
-import PhaseBanner from '../game/components/PhaseBanner';
-
-// let isPrompted = false;
+import { Hotels } from './components/Hotels';
+import { fetchGameState, postGameInput } from './services/gameBackendService';
+import { Players } from './components/Players';
+import { PlayerTiles } from './components/PlayerTiles';
+import { getActivePlayerIndex } from './utils/localPlayer';
+import BuyStocks from './components/BuyStocks';
+import MergeDecisions from './components/MergerDecisions';
+import GameOver from './components/GameOver';
+import PhaseBanner from './components/PhaseBanner';
 
 export default function PlaygroundPage() {
   const [localPlayerIndex, setLocalPlayerIndex] = useState(-1);
-  const [gameState, setGameState] = useState(initState);
+  const [gameState, setGameState] = useState<State>(initState(defaultConfig, { broadcast: () => { } }));
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
