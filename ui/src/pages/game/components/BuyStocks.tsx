@@ -13,7 +13,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import SwitchRightIcon from "@mui/icons-material/SwitchRight";
 // import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useMemo, useState } from "react";
-import { Input, State, StockDecision } from '../../../../../engine/models';
+import { State, StockDecision } from '../../../../../engine/models';
 import { getHotelStockPrice, getHowManyStocksLeftForHotel, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 interface BuyStocksProps {
@@ -29,7 +29,7 @@ export default function BuyStocks({
   gameState,
   localPlayerIndex
 }: BuyStocksProps) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, _] = useState(false);
   const [isTransparentBg, setIsTransparentBg] = useState(false);
   const { hotelPrices, playerCash, availableStocks, hotelCount, hotelNames, maxBuyCount } = useMemo(() => {
     let hotelPrices: number[] = [];

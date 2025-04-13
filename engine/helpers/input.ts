@@ -1,5 +1,5 @@
 import { Input, MergeDecision, State, StockDecision } from '../models'
-import { getLastPlayedTile, getHotelsInvolvedInMerge, getDissolvingHotels } from './tiles'
+import { getLastPlayedTile, getDissolvingHotels } from './tiles'
 
 export const getImplicitInput = (state: State): Input<any> | null => {
   switch (state.phaseId) {

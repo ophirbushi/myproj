@@ -16,7 +16,7 @@ import { isPossibleGameEnd } from '../../../../engine/helpers';
 import GameOver from '../game/components/GameOver';
 import PhaseBanner from '../game/components/PhaseBanner';
 
-let isPrompted = false;
+// let isPrompted = false;
 
 export default function PlaygroundPage() {
   const [localPlayerIndex, setLocalPlayerIndex] = useState(-1);
@@ -25,7 +25,7 @@ export default function PlaygroundPage() {
   const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
 
-  const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
+  const updateGameStateAndLogs = ({ state }: FetchStateResponse) => {
     setGameState(state);
     setSelectedTile(null);
   };
@@ -58,9 +58,9 @@ export default function PlaygroundPage() {
   }, [gameState, localPlayerIndex]);
 
   // // for local development:
-  // useEffect(() => {
-  //   setLocalPlayerIndex(getActivePlayerIndex(gameState));
-  // }, [gameState]);
+  useEffect(() => {
+    setLocalPlayerIndex(getActivePlayerIndex(gameState));
+  }, [gameState]);
 
   useEffect(() => {
     if (localPlayerIndex === gameState.currentPlayerIndex && isPossibleGameEnd(gameState)) {
@@ -72,19 +72,19 @@ export default function PlaygroundPage() {
     }
   }, [gameState?.currentPlayerIndex, localPlayerIndex]);
 
-  useEffect(() => {
-    if (localPlayerIndex === -1 && !isPrompted) {
-      let playerIndex = null;
-      while (playerIndex == null) {
-        const player = (prompt('Please select which player number you want to be? (1 - 4)') || '').trim();
-        isPrompted = true;
-        if (['1', '2', '3', '4'].includes(player)) {
-          playerIndex = (+player) - 1;
-        }
-      }
-      setLocalPlayerIndex(playerIndex);
-    }
-  }, [localPlayerIndex]);
+  // useEffect(() => {
+  //   if (localPlayerIndex === -1 && !isPrompted) {
+  //     let playerIndex = null;
+  //     while (playerIndex == null) {
+  //       const player = (prompt('Please select which player number you want to be? (1 - 4)') || '').trim();
+  //       isPrompted = true;
+  //       if (['1', '2', '3', '4'].includes(player)) {
+  //         playerIndex = (+player) - 1;
+  //       }
+  //     }
+  //     setLocalPlayerIndex(playerIndex);
+  //   }
+  // }, [localPlayerIndex]);
 
   return (
     <div className="playground-container">

@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { Phase, type State } from '../../../../../engine/models';
 import { LocalPlayerIndex } from '../models/game.models';
 import { useMemo } from 'react';

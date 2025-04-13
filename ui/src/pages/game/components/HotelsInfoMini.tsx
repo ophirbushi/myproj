@@ -1,8 +1,8 @@
-import { Box, SxProps, Typography } from '@mui/material';
+import { Box, SxProps } from '@mui/material';
 import { Input, type State } from '../../../../../engine/models';
 import { darkHotels, hotelColors as HOTEL_COLORS } from '../utils/hotelConfig';
 import { getShortenedHotelName } from '../utils/hotelUtils';
-import { getDissolvingHotels, getHotelsInvolvedInMerge, getHotelSize } from '../../../../../engine/helpers';
+import { getHotelsInvolvedInMerge, getHotelSize } from '../../../../../engine/helpers';
 import { useMemo } from 'react';
 import { LocalPlayerIndex } from '../models/game.models';
 import { getActivePlayerIndex } from '../utils/localPlayer';
@@ -65,7 +65,7 @@ export default function HotelsInfoMini({ gameState, postInput, localPlayerIndex,
 
   return (
     <Box display="flex" flexWrap="wrap" flexDirection={'column'} gap={3} marginTop={7} sx={sx}>
-      {gameState.config.hotels.map((hotel, idx) => {
+      {gameState.config.hotels.map((_, idx) => {
         const hotelName = derivedState.hotelNames[idx];
         const hotelSize = derivedState.hotelSizes[idx];
         const prestige = derivedState.hotelPrestiges[idx];
