@@ -1,35 +1,27 @@
+import { useEffect, useState } from 'react';
 import './PlaygroundPage.css';
 import GameBoardNew from './components/GameBoard';
-import HotelItem from './components/HotelItem';
 import { Hotels } from './components/Hotels';
-import { gameState } from './state';
-
+import { gameState as initState } from './state';
+import { fetchGameState } from '../game/services/gameBackendService';
+import { Players } from './components/Players';
 
 export default function PlaygroundPage() {
+  const [gameState, setGameState] = useState(initState);
+
+  useEffect(() => {
+    fetchGameState().then((res) => {
+      setGameState(res.state);
+    });
+  }, []);
+
   return (
     <div className="playground-container">
       <div className="turn-indicator">
         <span>Turn indication</span>
       </div>
 
-      <div className="players-container">
-        {[0, 1, 2, 3].map((i) => (
-          <div className="player-card common-bordered common-padded" key={'playerIndex-' + i}>
-            <div className="player-header">
-              <span>Player {i + 1}</span>
-              <span>${gameState.cash[i]}</span>
-            </div>
-            <ul className="player-card-extended">
-              {gameState.config.hotels.map((h) => (
-                <li key={i + h.hotelName} className='player-card-extended-stock'>
-                  <div>{h.hotelName[0]}</div>
-                  <div>?</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+      <Players gameState={gameState} localPlayerIndex={0}></Players>
 
       <div className="game-area">
         <div className="player-tiles">
@@ -41,7 +33,7 @@ export default function PlaygroundPage() {
             ))}
           </ul>
         </div>
-        <GameBoardNew gameState={gameState}></GameBoardNew>
+        <GameBoardNew gameState={gameState} localPlayerIndex={0}></GameBoardNew>
         <Hotels gameState={gameState}></Hotels>
       </div>
     </div>

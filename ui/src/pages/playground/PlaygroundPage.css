@@ -170,3 +170,13 @@
   flex-direction: column;
   width: 14px;
 }
+
+.local-player {
+  border-width: 4px;
+}
+
+.active-player {
+  background-color: var(--color-blue);
+  color: white;
+  font-weight: bold;
+}

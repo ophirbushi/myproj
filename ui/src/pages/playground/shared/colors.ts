@@ -49,15 +49,15 @@ export const colorsPalette: ColorMap<Color> = {
   },
   purple: {
     hex: '#910dfd',
-    isDark: false
+    isDark: true
   },
   teal: {
     hex: '#0dcaf0',
     isDark: false
   },
   blue: {
-    hex: '#125fff',
-    isDark: false
+    hex: '#1275ff',
+    isDark: true
   }
 };
 

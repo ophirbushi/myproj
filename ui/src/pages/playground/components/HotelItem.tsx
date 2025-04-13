@@ -1,26 +1,30 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { abbreviateHotelName } from '../shared/utils';
+import { Color, colorsPalette } from '../shared/colors';
 
 export interface HotelItemProps {
   hotelName: string;
   hotelSize: number;
   stockPrice: number;
   prestige: number;
+  color: Color;
 }
 
-const HotelItem = ({ hotelName, hotelSize, stockPrice, prestige }: HotelItemProps) => {
+const HotelItem = ({ hotelName, hotelSize, stockPrice, color, prestige }: HotelItemProps) => {
   const abbreviatedHotelName = useMemo(() => abbreviateHotelName(hotelName), [hotelName]);
-  const hotelStars = useMemo(() => new Array(prestige).fill('⭐').join(''), [prestige]);
+  // const hotelStars = useMemo(() => new Array(prestige).fill('⭐').join(''), [prestige]);
 
   return (
-    <li className="hotel-item common-bordered common-padded">
+    <li className="hotel-item common-bordered common-padded" style={{
+      backgroundColor: color.hex,
+      color: color.isDark ? colorsPalette.white.hex : 'auto'
+    }}>
       <div>
         <span className="hotel-initial"> {abbreviatedHotelName} </span>
-        {hotelSize ? <span> ({hotelSize}) </span> : null}
+        <span> ({hotelSize}) </span>
       </div>
       <div>
-        {stockPrice ? <span> ({stockPrice}) </span> : null}
-        <span>{hotelStars}</span>
+        <span style={{ fontWeight: 'bold' }}> {stockPrice ? '$' + stockPrice : ''} </span>
       </div>
     </li>
   );

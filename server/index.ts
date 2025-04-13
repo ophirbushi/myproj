@@ -3,7 +3,7 @@ import { initState } from '../engine/init'
 import * as engine from '../engine/engine'
 import { Input, InputSource, Output, OutputMessage, OutputMessageCode, State } from '../engine/models'
 import * as cors from 'cors'
-import { createWriteStream } from 'fs'
+import { createWriteStream, readFileSync } from 'fs'
 import { resolve } from 'path'
 import * as express from 'express'
 import { EventEmitter } from 'events'
@@ -45,7 +45,16 @@ const output: Output = {
     }
   }
 }
-const state = initState(defaultConfig, output)
+let state = initState(defaultConfig, output)
+
+
+let states = readFileSync(`/home/ophir/Desktop/gamestate.txt`).toString().split('\n')
+
+
+
+state = JSON.parse(states[899])
+
+
 statesLog.push(state)
 engine.run(state, input, output)
 

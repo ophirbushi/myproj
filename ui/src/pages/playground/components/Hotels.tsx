@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { State } from '../../../../../engine/models';
 import HotelItem, { HotelItemProps } from './HotelItem';
 import { getHotelSize, getHotelStockPrice } from '../../../../../engine/helpers';
+import { colorsPalette, hotelColors } from '../shared/colors';
 
 export interface HotelsProps {
   gameState: State;
@@ -15,7 +16,8 @@ export const Hotels = ({ gameState }: HotelsProps) => {
         hotelName: hotel.hotelName,
         prestige: hotel.prestige,
         hotelSize: isHotelOnBoard ? getHotelSize(gameState, index) : 0,
-        stockPrice: isHotelOnBoard ? getHotelStockPrice(gameState, index) : 0
+        stockPrice: isHotelOnBoard ? getHotelStockPrice(gameState, index) : 0,
+        color: isHotelOnBoard ? hotelColors[index] : colorsPalette.white
       };
     });
   }, [gameState]);

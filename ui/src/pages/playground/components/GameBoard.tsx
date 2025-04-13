@@ -1,12 +1,14 @@
 import { Box } from "@mui/material";
 import { State, Tile } from '../../../../../engine/models';
-import { getTileKey, isEqualTiles } from '../../../../../engine/helpers';
+import { getHotelTiles, getTileGroup, getTileKey, isEqualTiles, isTemporarilyIllegalTile } from '../../../../../engine/helpers';
 import { BoardTile } from './BoardTile';
 import { useCallback, useMemo, useState } from 'react';
 import { colorsPalette, hotelColors } from '../shared/colors';
+import { getActivePlayerIndex } from '../../game/utils/localPlayer';
 
 export interface GameBoardProps {
   gameState: State;
+  localPlayerIndex: number;
 }
 
 const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: number; content: string; }) => (
@@ -24,30 +26,51 @@ const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: numbe
   </Box>
 );
 
-export default function GameBoardNew({ gameState, }: GameBoardProps) {
+export default function GameBoardNew({ gameState, localPlayerIndex }: GameBoardProps) {
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
-  const [isAvailableToSelectTiles, setIsAvailableToSelectTiles] = useState<Tile[]>([
-    [1, 4],
-    [5, 2],
-    [5, 3]
-  ]);
+  const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
+
+  const derivedState = useMemo(() => {
+    const hotelIndexMap: { [tileKey: string]: number } = {};
+    for (const hotel of gameState.hotels) {
+      const tiles = getHotelTiles(gameState, hotel.hotelIndex);
+      for (const tile of tiles) {
+        const tileKey = getTileKey(tile);
+        hotelIndexMap[tileKey] = hotel.hotelIndex;
+      }
+    }
+
+    if (gameState.phaseId === 'build' && localPlayerIndex === getActivePlayerIndex(gameState)) {
+      const availableToSelectTiles = gameState.playerTiles[localPlayerIndex].tiles
+        .filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
+      setAvailableToSelectTiles(availableToSelectTiles);
+    } else {
+      setSelectedTile(null);
+      setAvailableToSelectTiles([]);
+    }
+
+    return {
+      hotelIndexMap
+    };
+  }, [gameState, localPlayerIndex]);
 
   const boardLayout = useMemo(() => {
     return Array.from({ length: (gameState.config.boardWidth + 1) * (gameState.config.boardHeight + 1) });
   }, [gameState.config.boardWidth, gameState.config.boardHeight]);
 
   const getIsTileAvailableToSelect = useCallback(
-    (tile: Tile) => isAvailableToSelectTiles.some(t => isEqualTiles(t, tile)),
-    [isAvailableToSelectTiles]
+    (tile: Tile) => availableToSelectTiles.some(t => isEqualTiles(t, tile)),
+    [availableToSelectTiles]
   );
 
   const getTileColorText = useCallback(
     (tile: Tile) => {
-      const hotel = gameState.hotels.find(h => isEqualTiles([h.x, h.y], tile));
-      if (hotel) {
+      const tileKey = getTileKey(tile);
+      const hotelIndex = derivedState.hotelIndexMap[tileKey];
+      if (hotelIndex != null) {
         return {
-          color: hotelColors[hotel.hotelIndex],
-          text: gameState.config.hotels[hotel.hotelIndex].hotelName
+          color: hotelColors[hotelIndex],
+          text: gameState.config.hotels[hotelIndex].hotelName
         };
       }
       const isTileOnBoard = gameState.boardTiles.some(t => isEqualTiles(t, tile));
