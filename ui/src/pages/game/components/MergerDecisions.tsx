@@ -9,26 +9,26 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import SwitchRightIcon from "@mui/icons-material/SwitchRight";
 import { useEffect, useMemo, useState } from "react";
-import { Input, MergeDecision, State } from '../../../../../engine/models';
+import { MergeDecision, State } from '../../../../../engine/models';
 import { getDissolvingHotels } from '../../../../../engine/helpers';
 
 interface MergeDecisionsProps {
   open: boolean;
-  onClose: () => void;
-  onConfirm: (decisions: Input<MergeDecision[]>) => void;
+  onConfirm: (decisions: MergeDecision[]) => void;
   gameState: State;
   localPlayerIndex: number;
 }
 
 export default function MergeDecisions({
   open,
-  onClose,
   onConfirm,
   gameState,
   localPlayerIndex,
 }: MergeDecisionsProps) {
   const [decisions, setDecisions] = useState<MergeDecision[]>([]);
+  const [isTransparentBg, setIsTransparentBg] = useState(false);
   const { stocks, config } = gameState;
   const { defunctHotelNames, initialDecisions } = useMemo(() => {
     const defunctHotelIndices = getDissolvingHotels(gameState, gameState.boardTiles[gameState.boardTiles.length - 1]);
@@ -42,6 +42,9 @@ export default function MergeDecisions({
   }, [gameState]);
 
   const updateDecision = (hotelIndex: number, field: "convert" | "sell", value: number) => {
+    if (isTransparentBg) {
+      return;
+    }
     setDecisions((prev) =>
       prev.map((d) =>
         d.hotelIndex === hotelIndex ? { ...d, [field]: Math.max(0, value) } : d
@@ -50,12 +53,21 @@ export default function MergeDecisions({
   };
 
   const handleConfirm = () => {
-    onConfirm({ playerIndex: gameState.decidingPlayerIndex, data: decisions.map(d => ({ ...d, convert: d.convert * 2 })) });
+    if (isTransparentBg) {
+      return;
+    }
+    onConfirm(decisions.map(d => ({ ...d, convert: d.convert * 2 })));
     setDecisions(decisions);
   };
 
+  const switchView = (event: Event) => {
+    event.stopPropagation();
+    setIsTransparentBg(!isTransparentBg);
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={() => { }} onClick={() => setIsTransparentBg(false)}
+      fullWidth sx={{ opacity: isTransparentBg ? .15 : 1, }}>
       <DialogTitle>Merge Decisions {defunctHotelNames.join(', ')}</DialogTitle>
       <DialogContent dividers>
         <Typography variant="body2" mb={2}>
@@ -108,16 +120,16 @@ export default function MergeDecisions({
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="inherit">
-          Cancel
+        <Button onClick={(event) => switchView(event as any)} startIcon={<SwitchRightIcon />} color="inherit">
+          Show board
         </Button>
+
         <Button
           onClick={handleConfirm}
           variant="contained"
           disabled={
             decisions.some((d) => d.convert * 2 + d.sell > stocks[d.hotelIndex][localPlayerIndex])
-          }
-        >
+          }>
           Confirm
         </Button>
       </DialogActions>

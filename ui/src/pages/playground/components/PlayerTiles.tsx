@@ -37,7 +37,9 @@ export const PlayerTiles = ({ gameState, localPlayerIndex, selectedTile, availab
           <li key={i} >
             <div onClick={() => onTileClick(tile)} className={"tile-card common-bordered common-padded" + (
               (selectedTile && isEqualTiles(selectedTile, tile)) ? ' tile-card-selected' : ''
-            )}>
+            ) + (
+                (gameState.phaseId === 'build' && !availableToSelectTiles.some(t => isEqualTiles(t, tile))) ? ' tile-card-disabled' : ''
+              )}>
               {String.fromCharCode(65 + tile[0])}{tile[1] + 1}
             </div>
           </li>

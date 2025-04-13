@@ -5,17 +5,19 @@ import { Hotels } from './components/Hotels';
 import { gameState as initState } from './state';
 import { fetchGameState, postGameInput } from '../game/services/gameBackendService';
 import { Players } from './components/Players';
-import { Input, Tile } from '../../../../engine/models';
+import { Tile } from '../../../../engine/models';
 import { PlayerTiles } from './components/PlayerTiles';
 import { isEqualTiles, isTemporarilyIllegalTile } from '../../../../engine/helpers/tiles';
 import { getActivePlayerIndex } from '../game/utils/localPlayer';
 import { FetchStateResponse } from '../../../../shared/contract';
-
-const localPlayerIndex = 0;
+import BuyStocks from '../game/components/BuyStocks';
+import MergeDecisions from '../game/components/MergerDecisions';
 
 export default function PlaygroundPage() {
+  const [localPlayerIndex, setLocalPlayerIndex] = useState(0);
   const [gameState, setGameState] = useState(initState);
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
+  const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
 
   const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
@@ -23,16 +25,15 @@ export default function PlaygroundPage() {
     setSelectedTile(null);
   };
 
-  const postInput = async <T = any>(input: Input<T>) => {
-    const res = await postGameInput(input);
+  const postInput = async <T = any>(data: T) => {
+    const res = await postGameInput({ data, playerIndex: localPlayerIndex });
     updateGameStateAndLogs(res);
   };
 
   const confirmSelectedTile = (tile: Tile) => {
-    const activePlayerIndex = getActivePlayerIndex(gameState);
-    const tileIndex = gameState.playerTiles[activePlayerIndex].tiles.findIndex(t => isEqualTiles(t, tile));
+    const tileIndex = gameState.playerTiles[localPlayerIndex].tiles.findIndex(t => isEqualTiles(t, tile));
     if (tileIndex > -1) {
-      postInput({ playerIndex: activePlayerIndex, data: tileIndex });
+      postInput(tileIndex);
     }
   };
 
@@ -49,6 +50,11 @@ export default function PlaygroundPage() {
     const localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
     const availableToSelectTiles = localPlayerTiles.filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
     setAvailableToSelectTiles(availableToSelectTiles);
+  }, [gameState, localPlayerIndex]);
+
+  // for local development:
+  useEffect(() => {
+    setLocalPlayerIndex(getActivePlayerIndex(gameState));
   }, [gameState]);
 
   return (
@@ -62,7 +68,21 @@ export default function PlaygroundPage() {
           selectedTile={selectedTile} setSelectedTile={setSelectedTile} confirmSelectedTile={confirmSelectedTile} />
         <GameBoardNew gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
           selectedTile={selectedTile} setSelectedTile={setSelectedTile} />
-        <Hotels gameState={gameState} />
+        <Hotels gameState={gameState} selectedHotelIndex={selectedHotelIndex} setSelectedHotelIndex={setSelectedHotelIndex}
+          confirmSelectedHotelIndex={(selectedHotelIndex) => postInput(selectedHotelIndex)}
+        />
+        <BuyStocks
+          gameState={gameState}
+          open={gameState.phaseId === 'invest' && localPlayerIndex === gameState.currentPlayerIndex}
+          onConfirm={(decisions) => postInput(decisions)}
+          localPlayerIndex={localPlayerIndex}
+        />
+        <MergeDecisions
+          gameState={gameState}
+          open={gameState.phaseId === 'mergeDecide' && localPlayerIndex === getActivePlayerIndex(gameState)}
+          localPlayerIndex={localPlayerIndex}
+          onConfirm={(decisions) => postInput(decisions)}
+        />
       </div>
     </div>
   );

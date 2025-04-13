@@ -10,29 +10,27 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import UndoIcon from "@mui/icons-material/Undo";
-import CloseIcon from "@mui/icons-material/Close";
+import SwitchRightIcon from "@mui/icons-material/SwitchRight";
+// import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useMemo, useState } from "react";
 import { Input, State, StockDecision } from '../../../../../engine/models';
 import { getHotelStockPrice, getHowManyStocksLeftForHotel, hotelExistsOnBoard } from '../../../../../engine/helpers';
 
 interface BuyStocksProps {
   open: boolean;
-  onClose: () => void;
-  onConfirm: (decisions: Input<StockDecision[]>) => void;
+  onConfirm: (decisions: StockDecision[]) => void;
   gameState: State;
   localPlayerIndex: number;
-  isMobile: boolean;
 }
 
 export default function BuyStocks({
   open,
-  onClose,
   onConfirm,
   gameState,
-  localPlayerIndex,
-  isMobile
+  localPlayerIndex
 }: BuyStocksProps) {
-
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTransparentBg, setIsTransparentBg] = useState(false);
   const { hotelPrices, playerCash, availableStocks, hotelCount, hotelNames, maxBuyCount } = useMemo(() => {
     let hotelPrices: number[] = [];
     let playerCash: number = 0;
@@ -81,24 +79,40 @@ export default function BuyStocks({
   const totalCost = selection.reduce((sum, count, i) => sum + count * hotelPrices[i], 0);
   const canAfford = totalCost <= playerCash;
   const updateSelection = (i: number, delta: number) => {
+    if (isTransparentBg) {
+      return;
+    }
     setSelection((prev) => {
       const next = [...prev];
       next[i] = Math.max(0, Math.min(availableStocks[i], next[i] + delta));
       return next;
     });
   };
-  const reset = () => setSelection(Array(hotelCount).fill(0));
+  const reset = () => {
+    if (isTransparentBg) {
+      return;
+    }
+    setSelection(Array(hotelCount).fill(0));
+  };
+
+  const switchView = (event: Event) => {
+    event.stopPropagation();
+    setIsTransparentBg(!isTransparentBg);
+  };
 
   useEffect(() => {
     reset();
   }, [gameState, localPlayerIndex]);
 
   const handleConfirm = () => {
+    if (isTransparentBg) {
+      return;
+    }
     const stockDecisions = selection.map<StockDecision>((amount, hotelIndex) => ({
       hotelIndex,
       amount
     })).filter((decision => decision.amount > 0));
-    onConfirm({ playerIndex: gameState.currentPlayerIndex, data: stockDecisions });
+    onConfirm(stockDecisions);
     reset();
   };
 
@@ -107,7 +121,7 @@ export default function BuyStocks({
       <SwipeableDrawer
         anchor="bottom"
         open={open}
-        onClose={onClose}
+        onClose={() => { }}
         onOpen={() => { }}
         slotProps={{
           paper: {
@@ -119,7 +133,9 @@ export default function BuyStocks({
           }
         }}
       >
-        <Box>
+        <Box sx={{
+          zoom: .75
+        }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
             <Typography variant="h6">Buy Stocks</Typography>
             {/* <IconButton onClick={onClose}>
@@ -166,6 +182,11 @@ export default function BuyStocks({
             <Button onClick={reset} startIcon={<UndoIcon />} color="inherit">
               Clear
             </Button>
+
+            <Button onClick={(event) => switchView(event as any)} startIcon={<SwitchRightIcon />} color="inherit">
+              Switch view
+            </Button>
+
             <Button
               onClick={handleConfirm}
               variant="contained"
@@ -182,11 +203,7 @@ export default function BuyStocks({
   return (
     <Modal
       open={open}
-      onClose={(_, reason) => {
-        if (reason !== "backdropClick") {
-          onClose();
-        }
-      }} aria-labelledby="buy-stocks-modal-title"
+      aria-labelledby="buy-stocks-modal-title"
       aria-describedby="buy-stocks-modal-description"
     >
       <Box
@@ -201,7 +218,9 @@ export default function BuyStocks({
           borderRadius: 2,
           boxShadow: 24,
           p: 3,
+          opacity: isTransparentBg ? .15 : 1,
         }}
+        onClick={() => setIsTransparentBg(false)}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography id="buy-stocks-modal-title" variant="h6">Buy Stocks</Typography>
@@ -246,8 +265,11 @@ export default function BuyStocks({
         </Stack>
 
         <Box display="flex" justifyContent="space-between">
-          <Button onClick={reset} startIcon={<UndoIcon />} color="inherit">
+          <Button onClick={reset} startIcon={<UndoIcon />} color="inherit" disabled={selection.every(amount => amount === 0)}>
             Clear
+          </Button>
+          <Button onClick={(event) => switchView(event as any)} startIcon={<SwitchRightIcon />} color="inherit">
+            Show board
           </Button>
           <Button
             onClick={handleConfirm}
@@ -257,6 +279,8 @@ export default function BuyStocks({
             Confirm
           </Button>
         </Box>
+
+
       </Box>
     </Modal>
   );

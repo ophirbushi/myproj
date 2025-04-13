@@ -24,6 +24,20 @@
   gap: 4px;
 }
 
+.MuiBackdrop-root {
+  opacity: .75 !important;
+}
+
+.MuiDialogActions-root {
+  justify-content: space-between !important;
+}
+
+@media (max-width: 960px) {
+  .MuiBox-root {
+    zoom: .75;
+  }
+}
+
 @media (min-width: 768px) {
   .playground-container {
     font-size: 14px;
@@ -129,6 +143,11 @@
 .tile-card-selected {
   background-color: var(--color-blue);
   color: white;
+}
+
+.tile-card-disabled {
+  background-color: var(--color-gray);
+  cursor: not-allowed;
 }
 
 .hotels-list {
