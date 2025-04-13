@@ -41,7 +41,7 @@ export const playerBuildTile = (state: State, tileIndex: number, output: Output)
   const boardTiles = clone(state.boardTiles)
   const tile = getTileByIndex(state, tileIndex)
   boardTiles.push(tile)
-  output.broadcast(`${getPlayerName(state)} built a tile - ${tile[0]}, ${tile[1]}.`)
+  output.broadcast(`${getPlayerName(state)} built a tile - ${String.fromCharCode(65 + tile[0])}${tile[1] + 1}.`)
   return {
     ...state,
     ...playerDiscardTile(state, tileIndex, output),

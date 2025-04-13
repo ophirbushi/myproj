@@ -3,9 +3,9 @@ import { Input } from '../../../../../engine/models';
 import { CreateGameResponse, type FetchStateResponse } from '../../../../../shared/contract';
 const BACKEND_BASE_URL = 'http://localhost:3000';
 
-export const fetchGameState = async (gameId: string): Promise<FetchStateResponse> => {
+export const fetchGameState = async (gameId: string, clientId: number): Promise<FetchStateResponse> => {
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/game/${gameId}`);
+    const response = await fetch(`${BACKEND_BASE_URL}/game/${gameId}?clientId=${clientId}`);
     if (!response.ok) {
       throw response;
     }
@@ -16,7 +16,7 @@ export const fetchGameState = async (gameId: string): Promise<FetchStateResponse
   }
 };
 
-export const postGameInput = async <T>(gameId: string, input: Input<T>) => {
+export const postGameInput = async <T>(gameId: string, input: Input<T>, clientId: number) => {
   try {
     const response = await fetch(`${BACKEND_BASE_URL}/game/${gameId}`, {
       method: 'PATCH',
@@ -28,7 +28,7 @@ export const postGameInput = async <T>(gameId: string, input: Input<T>) => {
     if (!response.ok) {
       throw response;
     }
-    return fetchGameState(gameId);
+    return fetchGameState(gameId, clientId);
   } catch (error) {
     console.error('Error posting game input:', error);
     throw error;

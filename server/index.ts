@@ -23,16 +23,20 @@ class WriteableInputSource implements InputSource {
 class WriteableOutput implements Output {
   logs: string[] = []
   invalidInput: string | null = null
+  latestState!: State
 
   broadcast(message: OutputMessage | string): void {
     if (typeof message === 'string') {
       this.logs.push(message)
-      if (this.logs.length > 50) {
-        this.logs.shift()
+      // if (this.logs.length > 20) {
+      //   this.logs.shift()
+      // }
+    } else {
+      if (message.code === OutputMessageCode.INVALID_INPUT) {
+        this.logs.push(message.log || 'Invalid input')
+        this.invalidInput = message.log || null
       }
-    } else if (message.code === OutputMessageCode.INVALID_INPUT) {
-      this.logs.push(message.log || 'Invalid input')
-      this.invalidInput = message.log || null
+      this.latestState = message.state
     }
   }
 }
@@ -40,59 +44,88 @@ class WriteableOutput implements Output {
 const games: { [gameId: string]: { state: State, input: WriteableInputSource, output: WriteableOutput } } = {}
 let gameIdCounter = 0
 
-express()
-  .use(express.json())
-  .use(cors())
-  .get('/game/:gameId', (req, res) => {
-    const gameId = req.params.gameId
-    if (!games[gameId]) {
-      res.sendStatus(404)
-      return
+const app = express()
+app.use(express.json())
+app.use(cors())
+
+
+const clientLogIndices: { [clientId: string]: { [gameId: string]: number } } = {};
+
+app.get('/game/:gameId', (req, res) => {
+  const gameId = req.params.gameId
+  const clientId = req.query.clientId as string;
+
+  if (!games[gameId]) {
+    res.sendStatus(404)
+    return
+  }
+
+  if (!clientId) {
+    res.status(400).send({ error: 'clientId is required' });
+    return;
+  }
+
+  const { output, state } = games[gameId];
+
+  // Initialize clientLogIndices for this client and game if not already set
+  if (!clientLogIndices[clientId]) {
+    clientLogIndices[clientId] = {};
+  }
+  if (clientLogIndices[clientId][gameId] == null) {
+    clientLogIndices[clientId][gameId] = 0;
+  }
+
+  const lastLogIndex = clientLogIndices[clientId][gameId];
+  const newLogs = output.logs.slice(lastLogIndex);
+
+  const response: FetchStateResponse = {
+    state: output.latestState || state,
+    logs: newLogs
+  }
+
+  clientLogIndices[clientId][gameId] += newLogs.length;
+  res.send(response)
+})
+
+app.post('/game', (req, res) => {
+  const config = req.body.config as Config
+  if (!config) {
+    res.status(400).send({ error: 'config is missing' })
+  }
+  const input = new WriteableInputSource()
+  const output = new WriteableOutput()
+  const state = initState(config, output)
+  games[++gameIdCounter] = { state, input, output }
+  engine.run(state, input, output)
+  const response: CreateGameResponse = {
+    gameId: gameIdCounter.toString(),
+    state,
+    logs: output.logs
+  }
+  res.send(response)
+})
+
+app.patch('/game/:gameId', (req, res) => {
+  const gameId = req.params.gameId
+  const game = games[gameId]
+  if (!game) {
+    res.sendStatus(404)
+    return
+  }
+  const input = req.body.input
+  if (input == null) {
+    res.sendStatus(400)
+    return
+  }
+  game.input.setInput(input)
+  setTimeout(() => {
+    if (game.output.invalidInput) {
+      res.status(400).send({ invalidInput: game.output.invalidInput })
+      game.output.invalidInput = null
+    } else {
+      res.sendStatus(200)
     }
-    const { output, state } = games[gameId]
-    const response: FetchStateResponse = {
-      state,
-      logs: output.logs
-    }
-    res.send(response)
   })
-  .post('/game', (req, res) => {
-    const config = req.body.config as Config
-    if (!config) {
-      res.status(400).send({ error: 'config is missing' })
-    }
-    const input = new WriteableInputSource()
-    const output = new WriteableOutput()
-    const state = initState(config, output)
-    games[++gameIdCounter] = { state, input, output }
-    engine.run(state, input, output)
-    const response: CreateGameResponse = {
-      gameId: gameIdCounter.toString(),
-      state,
-      logs: output.logs
-    }
-    res.send(response)
-  })
-  .patch('/game/:gameId', (req, res) => {
-    const gameId = req.params.gameId
-    const game = games[gameId]
-    if (!game) {
-      res.sendStatus(404)
-      return
-    }
-    const input = req.body.input
-    if (input == null) {
-      res.sendStatus(400)
-      return
-    }
-    game.input.setInput(input)
-    setTimeout(() => {
-      if (game.output.invalidInput) {
-        res.status(400).send({ invalidInput: game.output.invalidInput })
-        game.output.invalidInput = null
-      } else {
-        res.sendStatus(200)
-      }
-    })
-  })
-  .listen(3000)
+})
+
+app.listen(3000)

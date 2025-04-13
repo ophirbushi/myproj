@@ -9,10 +9,11 @@ export interface HotelsProps {
   gameState: State;
   selectedHotelIndex: number | null;
   setSelectedHotelIndex: (value: number | null) => any;
-  confirmSelectedHotelIndex: (value: number) => any
+  confirmSelectedHotelIndex: (value: number) => any;
+  isLocalPlayerActive: boolean;
 }
 
-export const Hotels = ({ gameState, selectedHotelIndex, setSelectedHotelIndex, confirmSelectedHotelIndex }: HotelsProps) => {
+export const Hotels = ({ gameState, selectedHotelIndex, setSelectedHotelIndex, confirmSelectedHotelIndex, isLocalPlayerActive }: HotelsProps) => {
   const hotels: HotelItemProps[] = useMemo(() => {
     return gameState.config.hotels.map<HotelItemProps>((hotel, index) => {
       const isHotelOnBoard = gameState.hotels.some(h => h.hotelIndex === index);
@@ -23,7 +24,7 @@ export const Hotels = ({ gameState, selectedHotelIndex, setSelectedHotelIndex, c
         stockPrice: isHotelOnBoard ? getHotelStockPrice(gameState, index) : 0,
         color: isHotelOnBoard ? hotelColors[index] : colorsPalette.white,
         stocksLeft: getHowManyStocksLeftForHotel(gameState, index),
-        isSelectable: (
+        isSelectable: isLocalPlayerActive && (
           (
             gameState.phaseId === 'establish' && !isHotelOnBoard
           )
@@ -37,7 +38,7 @@ export const Hotels = ({ gameState, selectedHotelIndex, setSelectedHotelIndex, c
         setIsSelected: (value: boolean) => setSelectedHotelIndex(value ? index : null)
       };
     });
-  }, [gameState, selectedHotelIndex]);
+  }, [gameState, selectedHotelIndex, isLocalPlayerActive]);
 
   return (
     <div className="hotels-list">
