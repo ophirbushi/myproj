@@ -16,15 +16,20 @@ const textMap: { [phaseId in Phase]: string } = {
 export default function PhaseBanner(
   { gameState, localPlayerIndex }: { gameState: State, localPlayerIndex: LocalPlayerIndex }
 ) {
-  const derivedState = useMemo(() => {
+  const { text, activePlayerIndex } = useMemo(() => {
     const activePlayerIndex = getActivePlayerIndex(gameState);
     const phaseText = textMap[gameState.phaseId];
+    const playerName = activePlayerIndex === localPlayerIndex ? 'your' : `Player ${activePlayerIndex + 1}'s`;
     return {
-      text: `It's P${activePlayerIndex + 1}'s turn to ${phaseText}. (${JSON.stringify({ phaseId: gameState.phaseId, currentPlayerIndex: gameState.currentPlayerIndex, decidingPlayerIndex: gameState.decidingPlayerIndex })})`
+      activePlayerIndex,
+      text: `It's ${playerName} turn to ${phaseText}.`
     };
   }, [gameState, localPlayerIndex]);
 
-  return <Box textAlign={'center'} padding={2} sx={{ userSelect: 'none' }}>
-    {derivedState.text}
-  </Box>
+  return (
+    <div className={"turn-indicator" + (localPlayerIndex === activePlayerIndex ? ' turn-indicator-active' : '')}>
+      <span>{text}</span>
+    </div>
+  );
+
 }

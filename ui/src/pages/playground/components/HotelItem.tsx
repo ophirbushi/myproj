@@ -7,13 +7,14 @@ export interface HotelItemProps {
   hotelSize: number;
   stockPrice: number;
   prestige: number;
+  stocksLeft: number;
   color: Color;
   isSelectable: boolean;
   isSelected: boolean;
   setIsSelected: (value: boolean) => any;
 }
 
-const HotelItem = ({ hotelName, hotelSize, stockPrice, color, isSelectable, isSelected, setIsSelected }: HotelItemProps) => {
+const HotelItem = ({ hotelName, hotelSize, stockPrice, stocksLeft, color, isSelectable, isSelected, setIsSelected }: HotelItemProps) => {
   const onHotelClick = () => {
     if (isSelectable) {
       setIsSelected(!isSelected);
@@ -28,15 +29,17 @@ const HotelItem = ({ hotelName, hotelSize, stockPrice, color, isSelectable, isSe
   return (
     <li className="hotel-item common-bordered common-padded" onClick={() => onHotelClick()} style={{
       backgroundColor: bgColor.hex,
-      color: bgColor.isDark ? colorsPalette.white.hex : 'unset',
-      borderColor: (isSelected || isSelectable) ? colorsPalette.blue.hex : 'auto',
+      color: bgColor.isDark ? colorsPalette.white.hex : colorsPalette.black.hex,
+      borderColor: (isSelected || isSelectable) ? colorsPalette.blue.hex : colorsPalette.black.hex,
+      borderWidth: (isSelected || isSelectable) ? '4px' : '1px'
     }}>
       <div>
         <span className="hotel-initial"> {abbreviatedHotelName} </span>
         <span> ({hotelSize}) </span>
       </div>
       <div>
-        <span style={{ fontWeight: 'bold' }}> {stockPrice ? '$' + stockPrice : ''} </span>
+        <span style={{ fontWeight: 'bold' }}> {true ? '$' + stockPrice : ''} </span>
+        <span > ({stocksLeft})  </span>
       </div>
     </li>
   );

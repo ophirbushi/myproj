@@ -22,7 +22,7 @@ export const Player = ({ cash, isLocal, isActive, playerName, playerStocks, hote
         {hotels.map((h, hi) => (
           <li key={playerIndex + '-' + h.hotelName} className='player-card-extended-stock'>
             <div>{h.hotelName[0]}</div>
-            <div>{isLocal ? (playerStocks[hi]) : (playerStocks[hi] ? '?' : 0)}</div>
+            <div>{(isLocal || true) ? (playerStocks[hi]) : (playerStocks[hi] ? '?' : 0)}</div>
           </li>
         ))}
       </ul>

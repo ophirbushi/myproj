@@ -78,7 +78,7 @@ export default function GameBoardNew({ gameState, localPlayerIndex, availableToS
       bgcolor="white"
       borderRadius={2}
       margin={'0 auto'}
-      sx={{ touchAction: "manipulation" }}
+      sx={{ touchAction: "manipulation", zoom: '1 !important' }}
     >
       {boardLayout.map((_, i) => {
         const x = i % (gameState.config.boardWidth + 1) - 1;

@@ -79,7 +79,7 @@
   }
 
   .hotels-list {
-    width: 240px !important;
+    width: 340px !important;
 
   }
 
@@ -90,8 +90,14 @@
 }
 
 .turn-indicator {
-  background: rgb(200, 180, 240);
+  /* background-color: rgb(200, 180, 240); */
+  background-color: #ebebeb;
   text-align: center;
+}
+
+.turn-indicator.turn-indicator-active {
+  background-color: var(--color-blue);
+  color: white;
 }
 
 .players-container {

@@ -12,6 +12,9 @@ import { getActivePlayerIndex } from '../game/utils/localPlayer';
 import { FetchStateResponse } from '../../../../shared/contract';
 import BuyStocks from '../game/components/BuyStocks';
 import MergeDecisions from '../game/components/MergerDecisions';
+import { isPossibleGameEnd } from '../../../../engine/helpers';
+import GameOver from '../game/components/GameOver';
+import PhaseBanner from '../game/components/PhaseBanner';
 
 export default function PlaygroundPage() {
   const [localPlayerIndex, setLocalPlayerIndex] = useState(0);
@@ -57,11 +60,20 @@ export default function PlaygroundPage() {
     setLocalPlayerIndex(getActivePlayerIndex(gameState));
   }, [gameState]);
 
+  useEffect(() => {
+    if (localPlayerIndex === gameState.currentPlayerIndex && isPossibleGameEnd(gameState)) {
+      setTimeout(() => {
+        if (confirm('Do you want to end the game now?')) {
+          postInput('finish');
+        }
+      }, 500);
+    }
+  }, [gameState?.currentPlayerIndex, localPlayerIndex]);
+
   return (
     <div className="playground-container">
-      <div className="turn-indicator">
-        <span>Turn indication</span>
-      </div>
+      <PhaseBanner gameState={gameState} localPlayerIndex={localPlayerIndex} />
+      {/* */}
       <Players gameState={gameState} localPlayerIndex={localPlayerIndex} />
       <div className="game-area">
         <PlayerTiles gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
@@ -83,6 +95,7 @@ export default function PlaygroundPage() {
           localPlayerIndex={localPlayerIndex}
           onConfirm={(decisions) => postInput(decisions)}
         />
+        <GameOver open={gameState.phaseId === 'gameEnd'} onClose={() => { }} gameState={gameState} />
       </div>
     </div>
   );

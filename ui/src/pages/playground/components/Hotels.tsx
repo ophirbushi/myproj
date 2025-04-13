@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { State } from '../../../../../engine/models';
 import HotelItem, { HotelItemProps } from './HotelItem';
-import { getHotelSize, getHotelStockPrice } from '../../../../../engine/helpers';
+import { getHotelsInvolvedInMerge, getHotelSize, getHotelStockPrice, getHowManyStocksLeftForHotel } from '../../../../../engine/helpers';
 import { colorsPalette, hotelColors } from '../shared/colors';
 import { Button } from '@mui/material';
 
@@ -22,7 +22,17 @@ export const Hotels = ({ gameState, selectedHotelIndex, setSelectedHotelIndex, c
         hotelSize: isHotelOnBoard ? getHotelSize(gameState, index) : 0,
         stockPrice: isHotelOnBoard ? getHotelStockPrice(gameState, index) : 0,
         color: isHotelOnBoard ? hotelColors[index] : colorsPalette.white,
-        isSelectable: gameState.phaseId === 'establish' && !isHotelOnBoard,
+        stocksLeft: getHowManyStocksLeftForHotel(gameState, index),
+        isSelectable: (
+          (
+            gameState.phaseId === 'establish' && !isHotelOnBoard
+          )
+          ||
+          (
+            gameState.phaseId === 'merge' &&
+            getHotelsInvolvedInMerge(gameState, gameState.boardTiles[gameState.boardTiles.length - 1]).includes(index)
+          )
+        ),
         isSelected: index === selectedHotelIndex,
         setIsSelected: (value: boolean) => setSelectedHotelIndex(value ? index : null)
       };

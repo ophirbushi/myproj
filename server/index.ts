@@ -52,7 +52,7 @@ let states = readFileSync(`/home/ophir/Desktop/gamestate.txt`).toString().split(
 
 
 
-state = JSON.parse(states[899])
+// state = JSON.parse(states[899])
 
 
 statesLog.push(state)
