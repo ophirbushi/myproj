@@ -15,8 +15,13 @@ import BuyStocks from './components/BuyStocks';
 import MergeDecisions from './components/MergerDecisions';
 import GameOver from './components/GameOver';
 import PhaseBanner from './components/PhaseBanner';
+import { useParams } from 'react-router-dom';
 
 export default function PlaygroundPage() {
+  const { gameId } = useParams()
+  if (!gameId) {
+    throw new Error('gameId missing')
+  }
   const [localPlayerIndex, setLocalPlayerIndex] = useState(-1);
   const [gameState, setGameState] = useState<State>(initState(defaultConfig, { broadcast: () => { } }));
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
@@ -29,7 +34,7 @@ export default function PlaygroundPage() {
   };
 
   const postInput = async <T = any>(data: T) => {
-    const res = await postGameInput({ data, playerIndex: localPlayerIndex });
+    const res = await postGameInput(gameId, { data, playerIndex: localPlayerIndex });
     updateGameStateAndLogs(res);
   };
 
@@ -41,7 +46,7 @@ export default function PlaygroundPage() {
   };
 
   useEffect(() => {
-    fetchGameState().then((response) => updateGameStateAndLogs(response));
+    fetchGameState(gameId).then((response) => updateGameStateAndLogs(response));
   }, []);
 
   useEffect(() => {

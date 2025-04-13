@@ -1,10 +1,11 @@
+import { defaultConfig } from '../../../../../engine/constants';
 import { Input } from '../../../../../engine/models';
-import { type FetchStateResponse } from '../../../../../shared/contract';
+import { CreateGameResponse, type FetchStateResponse } from '../../../../../shared/contract';
 const BACKEND_BASE_URL = 'http://localhost:3000';
 
-export const fetchGameState = async (): Promise<FetchStateResponse> => {
+export const fetchGameState = async (gameId: string): Promise<FetchStateResponse> => {
   try {
-    const response = await fetch(BACKEND_BASE_URL);
+    const response = await fetch(`${BACKEND_BASE_URL}/game/${gameId}`);
     if (!response.ok) {
       throw response;
     }
@@ -15,10 +16,10 @@ export const fetchGameState = async (): Promise<FetchStateResponse> => {
   }
 };
 
-export const postGameInput = async <T>(input: Input<T>) => {
+export const postGameInput = async <T>(gameId: string, input: Input<T>) => {
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/input`, {
-      method: 'POST',
+    const response = await fetch(`${BACKEND_BASE_URL}/game/${gameId}`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -27,28 +28,29 @@ export const postGameInput = async <T>(input: Input<T>) => {
     if (!response.ok) {
       throw response;
     }
-    return fetchGameState();
+    return fetchGameState(gameId);
   } catch (error) {
     console.error('Error posting game input:', error);
     throw error;
   }
 };
 
-export const postGoBackOneState = async (): Promise<FetchStateResponse> => {
+export const createNewGame = async (config = defaultConfig) => {
   try {
-    const response = await fetch(`${BACKEND_BASE_URL}/back`, {
+    const response = await fetch(`${BACKEND_BASE_URL}/game`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({})
+      body: JSON.stringify({ config })
     });
     if (!response.ok) {
       throw response;
     }
-    return fetchGameState();
+    const responseData: CreateGameResponse = await response.json()
+    return responseData;
   } catch (error) {
-    console.error('Error posting go back one state:', error);
+    console.error('Error creating game:', error);
     throw error;
   }
 };

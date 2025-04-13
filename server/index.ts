@@ -1,79 +1,98 @@
-import { defaultConfig } from '../engine/constants'
 import { initState } from '../engine/init'
 import * as engine from '../engine/engine'
-import { Input, InputSource, Output, OutputMessage, OutputMessageCode, State } from '../engine/models'
+import { Config, Input, InputSource, Output, OutputMessage, OutputMessageCode, State } from '../engine/models'
 import * as cors from 'cors'
-import { createWriteStream, readFileSync } from 'fs'
-import { resolve } from 'path'
 import * as express from 'express'
 import { EventEmitter } from 'events'
-import { type FetchStateResponse } from '../shared/contract'
+import { CreateGameResponse, type FetchStateResponse } from '../shared/contract'
 
-const logs: string[] = []
-const statesLog: State[] = []
+class WriteableInputSource implements InputSource {
+  eventEmitter = new EventEmitter()
 
-const setLatestState = (state: State) => statesLog.push(state)
-const getLatestState = () => statesLog[statesLog.length - 1]
-const goBackOneState = () => statesLog.splice(statesLog.length - 1)
-
-const ws = createWriteStream(resolve(__dirname, './log.txt'), { flags: 'a' })
-const broadcast = new EventEmitter()
-const input: InputSource = {
-  getInput: () => {
+  getInput<T>(): Promise<Input<T>> {
     return new Promise(resolve => {
-      broadcast.on('input', (message) => resolve(message))
+      this.eventEmitter.on('input', (message: Input<T>) => resolve(message))
     })
   }
+
+  setInput<T>(input: Input<T>) {
+    this.eventEmitter.emit('input', input)
+  }
 }
-const output: Output = {
-  broadcast: (message: OutputMessage) => {
+
+class WriteableOutput implements Output {
+  logs: string[] = []
+  invalidInput: string | null = null
+
+  broadcast(message: OutputMessage | string): void {
     if (typeof message === 'string') {
-      logs.push(message)
-      if (logs.length > 50) {
-        logs.shift()
+      this.logs.push(message)
+      if (this.logs.length > 50) {
+        this.logs.shift()
       }
-    } else {
-      if (message.code === OutputMessageCode.INVALID_INPUT) {
-        logs.push(message.log || 'Invalid input')
-        invalidInput = message.log || null
-      }
-      if (JSON.stringify(message.state) !== JSON.stringify(getLatestState())) {
-        setLatestState(message.state)
-        ws.write(JSON.stringify(message.state) + '\n')
-      }
+    } else if (message.code === OutputMessageCode.INVALID_INPUT) {
+      this.logs.push(message.log || 'Invalid input')
+      this.invalidInput = message.log || null
     }
   }
 }
 
-let state = initState(defaultConfig, output)
-statesLog.push(state)
-engine.run(state, input, output)
-
-let invalidInput: string | null = null
+const games: { [gameId: string]: { state: State, input: WriteableInputSource, output: WriteableOutput } } = {}
+let gameIdCounter = 0
 
 express()
   .use(express.json())
   .use(cors())
-  .get('/', (req, res) => {
-    const response: FetchStateResponse = { state: getLatestState(), logs }
+  .get('/game/:gameId', (req, res) => {
+    const gameId = req.params.gameId
+    if (!games[gameId]) {
+      res.sendStatus(404)
+      return
+    }
+    const { output, state } = games[gameId]
+    const response: FetchStateResponse = {
+      state,
+      logs: output.logs
+    }
     res.send(response)
   })
-  .post('/input', (req, res) => {
-    const input = req.body.input
-    broadcast.emit('input', input)
-    setTimeout(() => {
-      if (invalidInput) {
-        res.status(400).send({ invalidInput })
-        invalidInput = null;
-      } else {
-        res.send('ok')
-      }
-    });
+  .post('/game', (req, res) => {
+    const config = req.body.config as Config
+    if (!config) {
+      res.status(400).send({ error: 'config is missing' })
+    }
+    const input = new WriteableInputSource()
+    const output = new WriteableOutput()
+    const state = initState(config, output)
+    games[++gameIdCounter] = { state, input, output }
+    engine.run(state, input, output)
+    const response: CreateGameResponse = {
+      gameId: gameIdCounter.toString(),
+      state,
+      logs: output.logs
+    }
+    res.send(response)
   })
-  .post('/back', (req, res) => {
-    console.log('/back endpoint called')
-    broadcast.emit('going back one state')
-    goBackOneState()
-    res.send({ state: getLatestState(), logs })
+  .patch('/game/:gameId', (req, res) => {
+    const gameId = req.params.gameId
+    const game = games[gameId]
+    if (!game) {
+      res.sendStatus(404)
+      return
+    }
+    const input = req.body.input
+    if (input == null) {
+      res.sendStatus(400)
+      return
+    }
+    game.input.setInput(input)
+    setTimeout(() => {
+      if (game.output.invalidInput) {
+        res.status(400).send({ invalidInput: game.output.invalidInput })
+        game.output.invalidInput = null
+      } else {
+        res.sendStatus(200)
+      }
+    })
   })
   .listen(3000)
