@@ -5,6 +5,7 @@ import * as cors from 'cors'
 import * as express from 'express'
 import { EventEmitter } from 'events'
 import { CreateGameResponse, type FetchStateResponse } from '../shared/contract'
+import { defaultConfig } from '../engine/constants';
 
 class WriteableInputSource implements InputSource {
   eventEmitter = new EventEmitter()
@@ -28,9 +29,9 @@ class WriteableOutput implements Output {
   broadcast(message: OutputMessage | string): void {
     if (typeof message === 'string') {
       this.logs.push(message)
-      // if (this.logs.length > 20) {
-      //   this.logs.shift()
-      // }
+      if (this.logs.length > 40) {
+        this.logs.shift()
+      }
     } else {
       if (message.code === OutputMessageCode.INVALID_INPUT) {
         this.logs.push(message.log || 'Invalid input')
@@ -75,15 +76,15 @@ app.get('/game/:gameId', (req, res) => {
     clientLogIndices[clientId][gameId] = 0;
   }
 
-  const lastLogIndex = clientLogIndices[clientId][gameId];
-  const newLogs = output.logs.slice(lastLogIndex);
+  // const lastLogIndex = clientLogIndices[clientId][gameId];
+  // const newLogs = output.logs.slice(lastLogIndex);
 
   const response: FetchStateResponse = {
     state: output.latestState || state,
-    logs: newLogs
+    logs: output.logs
   }
 
-  clientLogIndices[clientId][gameId] += newLogs.length;
+  // clientLogIndices[clientId][gameId] += newLogs.length;
   res.send(response)
 })
 

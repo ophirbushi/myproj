@@ -58,10 +58,8 @@ export default function PlaygroundPage() {
     if (!logs?.length) {
       return;
     }
-    for (let log of logs) {
-      toast.info(log);
-    }
-  }, [logs]);
+    toast.info(logs[logs.length - 1]);
+  }, [logs && logs[logs.length - 1]]);
 
   useEffect(() => {
     if (!gameState) {
@@ -131,6 +129,13 @@ export default function PlaygroundPage() {
     }
   }, [gameState?.currentPlayerIndex, localPlayerIndex]);
 
+  // useEffect(() => {
+  //   if (!gameState) {
+  //     return;
+  //   }
+  //   setLocalPlayerIndex(getActivePlayerIndex(gameState));
+  // }, [gameState]);
+
   if (!gameState) {
     return 'loading...'
   }
@@ -142,6 +147,15 @@ export default function PlaygroundPage() {
       <div className="game-area">
         <PlayerTiles gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
           selectedTile={selectedTile} setSelectedTile={setSelectedTile} confirmSelectedTile={confirmSelectedTile} isActive={isBoardActive} />
+
+        <div className="logs-container" style={{ marginTop: '5px' }}>
+          <ul style={{ listStyle: 'none' }}>
+            {logs.slice(-8).map((log, index) => (
+              <li key={index}>{log}</li>
+            ))}
+          </ul>
+        </div>
+
         <GameBoardNew gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
           selectedTile={selectedTile} setSelectedTile={setSelectedTile} isActive={isBoardActive} />
         <Hotels isLocalPlayerActive={localPlayerIndex === gameState.currentPlayerIndex}

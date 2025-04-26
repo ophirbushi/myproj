@@ -12,7 +12,7 @@ import {
 import SwitchRightIcon from "@mui/icons-material/SwitchRight";
 import { useEffect, useMemo, useState } from "react";
 import { MergeDecision, State } from '../../../../../engine/models';
-import { getDissolvingHotels } from '../../../../../engine/helpers';
+import { getDissolvingHotels, getHowManyStocksLeftForHotel } from '../../../../../engine/helpers';
 
 interface MergeDecisionsProps {
   open: boolean;
@@ -56,7 +56,7 @@ export default function MergeDecisions({
     if (isTransparentBg) {
       return;
     }
-    onConfirm(decisions.map(d => ({ ...d, convert: d.convert * 2 })));
+    onConfirm(decisions.map(d => ({ ...d, convert: d.convert })));
     setDecisions(decisions);
   };
 
@@ -79,7 +79,7 @@ export default function MergeDecisions({
             .map((d, i) => {
               const hotelName = config.hotels[d.hotelIndex].hotelName;
               const owned = stocks[d.hotelIndex][localPlayerIndex];
-              const remaining = owned - d.convert * 2 - d.sell;
+              const remaining = owned - d.convert - d.sell;
 
               return (
                 <Box key={i} border="1px solid #ccc" borderRadius={2} p={2}>
@@ -95,7 +95,8 @@ export default function MergeDecisions({
                       }
                       inputProps={{
                         min: 0,
-                        max: Math.floor(owned / 2),
+                        step: 2,
+                        max: owned,
                       }}
                     />
                     <TextField
@@ -128,7 +129,18 @@ export default function MergeDecisions({
           onClick={handleConfirm}
           variant="contained"
           disabled={
-            decisions.some((d) => d.convert * 2 + d.sell > stocks[d.hotelIndex][localPlayerIndex])
+            decisions.some((d) => {
+              if (d.convert < 0 || !Number.isInteger(d.convert) || d.convert % 2 !== 0) {
+                return true;
+              }
+              if (d.convert > 0) {
+                const stocksLeftForSurvivingHotel = getHowManyStocksLeftForHotel(gameState, gameState.mergingHotelIndex);
+                if (d.convert / 2 > stocksLeftForSurvivingHotel) {
+                  return true; // Ensure convert / 2 does not exceed stocks left for the surviving hotel
+                }
+              }
+              return d.convert + d.sell > stocks[d.hotelIndex][localPlayerIndex];
+            })
           }>
           Confirm
         </Button>

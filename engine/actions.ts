@@ -14,7 +14,7 @@ export const playerDrawTile = (state: State, output: Output): State => {
   if (tile !== undefined) {
     playerTiles[state.currentPlayerIndex].tiles.push(tile)
   }
-  output.broadcast(`${getPlayerName(state)} drew a tile.`)
+  // output.broadcast(`${getPlayerName(state)} drew a tile.`)
   return {
     ...state,
     tilesPile,
@@ -28,7 +28,7 @@ export const playerDiscardTile = (state: State, tileIndex: number, output: Outpu
   const discardedTiles = clone(state.discardedTiles)
   if (tile !== undefined) {
     discardedTiles.push(tile)
-    output.broadcast(`${getPlayerName(state)} discarded a tile.`)
+    // output.broadcast(`${getPlayerName(state)} discarded a tile.`)
   }
   return {
     ...state,

@@ -16,7 +16,7 @@ export const Player = ({ cash, isLocal, isActive, playerName, playerStocks, hote
     }>
       <div className="player-header">
         <span style={{ fontWeight: isLocal ? 'bold' : 'inherit' }}>{playerName + (isLocal ? ' (You)' : '')}</span>
-        <span>${cash}</span>
+        <span>{isLocal ? '$' + cash : ''}</span>
       </div>
       <ul className="player-card-extended">
         {hotels.map((h, hi) => (
