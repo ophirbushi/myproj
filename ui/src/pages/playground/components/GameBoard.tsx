@@ -11,6 +11,7 @@ export interface GameBoardProps {
   selectedTile: Tile | null;
   setSelectedTile: (tile: Tile | null) => any;
   availableToSelectTiles: Tile[];
+  isActive: boolean;
 }
 
 const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: number; content: string; }) => (
@@ -28,7 +29,7 @@ const LabelCell = ({ type, index, content }: { type: 'col' | 'row'; index: numbe
   </Box>
 );
 
-export default function GameBoardNew({ gameState, localPlayerIndex, availableToSelectTiles, selectedTile, setSelectedTile }: GameBoardProps) {
+export default function GameBoardNew({ gameState, localPlayerIndex, isActive, availableToSelectTiles, selectedTile, setSelectedTile }: GameBoardProps) {
 
   const derivedState = useMemo(() => {
     const hotelIndexMap: { [tileKey: string]: number } = {};
@@ -109,6 +110,7 @@ export default function GameBoardNew({ gameState, localPlayerIndex, availableToS
             setIsSelected={(value: boolean) => setSelectedTile(value ? tile : null)}
             isSelected={selectedTile != null && isEqualTiles(tile, selectedTile)}
             color={color}
+            isActive={isActive}
           />
         );
       })}

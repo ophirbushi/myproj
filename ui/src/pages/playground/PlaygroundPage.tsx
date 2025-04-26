@@ -28,6 +28,7 @@ export default function PlaygroundPage() {
   const [selectedTile, setSelectedTile] = useState<Tile | null>(null);
   const [selectedHotelIndex, setSelectedHotelIndex] = useState<number | null>(null);
   const [availableToSelectTiles, setAvailableToSelectTiles] = useState<Tile[]>([]);
+  const [isBoardActive, setIsBoardActive] = useState(false);
 
   const updateGameStateAndLogs = ({ state, logs }: FetchStateResponse) => {
     setGameState(state);
@@ -102,17 +103,19 @@ export default function PlaygroundPage() {
   }, [gameId, localPlayerIndex]);
 
   useEffect(() => {
-    if (!gameState) {
-      return;
-    }
-    if (gameState.phaseId !== 'build' || localPlayerIndex !== getActivePlayerIndex(gameState)) {
-      setSelectedTile(null);
-      setAvailableToSelectTiles([]);
+    if (!gameState || localPlayerIndex === -1) {
       return;
     }
     const localPlayerTiles = gameState.playerTiles[localPlayerIndex].tiles;
     const availableToSelectTiles = localPlayerTiles.filter((tile) => !isTemporarilyIllegalTile(gameState, tile));
     setAvailableToSelectTiles(availableToSelectTiles);
+  }, [gameState, localPlayerIndex]);
+
+  useEffect(() => {
+    if (!gameState || localPlayerIndex === -1) {
+      return;
+    }
+    setIsBoardActive(gameState.phaseId === 'build' && localPlayerIndex === getActivePlayerIndex(gameState))
   }, [gameState, localPlayerIndex]);
 
   useEffect(() => {
@@ -138,9 +141,9 @@ export default function PlaygroundPage() {
       <Players gameState={gameState} localPlayerIndex={localPlayerIndex} />
       <div className="game-area">
         <PlayerTiles gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
-          selectedTile={selectedTile} setSelectedTile={setSelectedTile} confirmSelectedTile={confirmSelectedTile} />
+          selectedTile={selectedTile} setSelectedTile={setSelectedTile} confirmSelectedTile={confirmSelectedTile} isActive={isBoardActive} />
         <GameBoardNew gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
-          selectedTile={selectedTile} setSelectedTile={setSelectedTile} />
+          selectedTile={selectedTile} setSelectedTile={setSelectedTile} isActive={isBoardActive} />
         <Hotels isLocalPlayerActive={localPlayerIndex === gameState.currentPlayerIndex}
           gameState={gameState} selectedHotelIndex={selectedHotelIndex} setSelectedHotelIndex={setSelectedHotelIndex}
           confirmSelectedHotelIndex={(selectedHotelIndex) => postInput(selectedHotelIndex, localPlayerIndex)}

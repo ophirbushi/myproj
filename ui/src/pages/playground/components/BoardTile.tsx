@@ -10,14 +10,15 @@ interface BoardTileParams {
   isAvailableToSelect: boolean;
   isSelected: boolean;
   setIsSelected: (value: boolean) => any;
+  isActive: boolean;
   color?: Color;
 }
 
-export const BoardTile = ({ tile, label, isSelected, setIsSelected, isAvailableToSelect, color = colorsPalette.white }: BoardTileParams) => {
+export const BoardTile = ({ tile, label, isSelected, setIsSelected, isAvailableToSelect, isActive, color = colorsPalette.white }: BoardTileParams) => {
   const labelAbbreviated = useMemo(() => abbreviateHotelName(label), [label]);
 
   const onTileClick = () => {
-    if (!isAvailableToSelect) {
+    if (!isAvailableToSelect || !isActive) {
       return;
     }
     setIsSelected(!isSelected);
@@ -27,7 +28,7 @@ export const BoardTile = ({ tile, label, isSelected, setIsSelected, isAvailableT
     <Box
       color={color.isDark ? colorsPalette.white.hex : 'auto'}
       bgcolor={isSelected ? colorsPalette.blue.hex : color.hex}
-      border={isAvailableToSelect ? `4px solid ${colorsPalette.blue.hex} !important` : 'auto'}
+      border={isAvailableToSelect ? `4px solid ${isActive ? colorsPalette.blue.hex : colorsPalette.black.hex} !important` : 'auto'}
       sx={{
         cursor: isAvailableToSelect ? 'pointer' : 'default'
       }}

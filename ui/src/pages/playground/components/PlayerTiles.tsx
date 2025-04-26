@@ -7,12 +7,13 @@ export interface PlayerTilesProps {
   gameState: State;
   localPlayerIndex: number;
   availableToSelectTiles: Tile[];
+  isActive: boolean;
   selectedTile: Tile | null;
   setSelectedTile: (tile: Tile | null) => any;
   confirmSelectedTile: (tile: Tile) => any;
 }
 
-export const PlayerTiles = ({ gameState, localPlayerIndex, selectedTile, availableToSelectTiles, setSelectedTile,
+export const PlayerTiles = ({ gameState, localPlayerIndex, isActive, selectedTile, availableToSelectTiles, setSelectedTile,
   confirmSelectedTile }: PlayerTilesProps) => {
   const isTileSelected = useCallback(
     (tile: Tile) => selectedTile != null && isEqualTiles(tile, selectedTile),
@@ -20,7 +21,7 @@ export const PlayerTiles = ({ gameState, localPlayerIndex, selectedTile, availab
   );
 
   const onTileClick = (tile: Tile) => {
-    if (!availableToSelectTiles.some(t => isEqualTiles(t, tile))) {
+    if (!isActive || !availableToSelectTiles.some(t => isEqualTiles(t, tile))) {
       return;
     }
     setSelectedTile(isTileSelected(tile) ? null : tile);
