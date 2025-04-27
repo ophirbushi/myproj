@@ -218,7 +218,7 @@ export default function BuyStocks({
           borderRadius: 2,
           boxShadow: 24,
           p: 3,
-          opacity: isTransparentBg ? .15 : 1,
+          opacity: isTransparentBg ? .05 : 1,
         }}
         onClick={() => setIsTransparentBg(false)}
       >

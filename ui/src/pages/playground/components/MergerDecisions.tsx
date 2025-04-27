@@ -67,7 +67,7 @@ export default function MergeDecisions({
 
   return (
     <Dialog open={open} onClose={() => { }} onClick={() => setIsTransparentBg(false)}
-      fullWidth sx={{ opacity: isTransparentBg ? .15 : 1, }}>
+      fullWidth sx={{ opacity: isTransparentBg ? .05 : 1, zoom: .8}}>
       <DialogTitle>Merge Decisions {defunctHotelNames.join(', ')}</DialogTitle>
       <DialogContent dividers>
         <Typography variant="body2" mb={2}>

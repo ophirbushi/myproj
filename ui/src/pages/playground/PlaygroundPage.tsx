@@ -58,7 +58,7 @@ export default function PlaygroundPage() {
     if (!logs?.length) {
       return;
     }
-    toast.info(logs[logs.length - 1]);
+    toast.info(logs[logs.length - 1], { autoClose: 2000 });
   }, [logs && logs[logs.length - 1]]);
 
   useEffect(() => {
@@ -148,7 +148,7 @@ export default function PlaygroundPage() {
         <PlayerTiles gameState={gameState} localPlayerIndex={localPlayerIndex} availableToSelectTiles={availableToSelectTiles}
           selectedTile={selectedTile} setSelectedTile={setSelectedTile} confirmSelectedTile={confirmSelectedTile} isActive={isBoardActive} />
 
-        <div className="logs-container" style={{ marginTop: '5px' }}>
+        <div className="logs-container" style={{ marginTop: '5px', minWidth: '18%', maxWidth: '18%' }}>
           <ul style={{ listStyle: 'none' }}>
             {logs.slice(-8).map((log, index) => (
               <li key={index}>{log}</li>

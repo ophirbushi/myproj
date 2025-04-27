@@ -25,18 +25,18 @@
 }
 
 .MuiBackdrop-root {
-  opacity: .75 !important;
+  opacity: .25 !important;
 }
 
 .MuiDialogActions-root {
   justify-content: space-between !important;
 }
 
-@media (max-width: 960px) {
+/* @media (max-width: 960px) {
   .MuiBox-root {
     zoom: .75;
   }
-}
+} */
 
 @media (min-width: 768px) {
   .playground-container {
@@ -80,7 +80,10 @@
 
   .hotels-list {
     width: 340px !important;
+  }
 
+  .hotel-item {
+    zoom: 1;
   }
 
   .game-board {
@@ -111,7 +114,7 @@
 }
 
 .player-card {
-  width: 22%;
+  width: 24%;
 }
 
 .player-header {
@@ -158,6 +161,7 @@
 
 .hotels-list {
   width: 180px;
+  min-width: 150px;
 }
 
 .hotels-list ul {
@@ -178,6 +182,7 @@
   flex-direction: row;
   box-sizing: border-box;
   justify-content: space-between;
+  zoom: .85;
 }
 
 .hotel-initial {
@@ -210,3 +215,35 @@
   color: white;
   font-weight: bold;
 }
+
+@keyframes shiny {
+  0% {
+      transform: translateX(-100%);
+      opacity: 0;
+  }
+  50% {
+      opacity: 1;
+  }
+  100% {
+      transform: translateX(100%);
+      opacity: 0;
+  }
+}
+
+.shiny-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.shiny-effect:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: translateX(-100%);
+  animation: shiny 5s infinite;
+}
+

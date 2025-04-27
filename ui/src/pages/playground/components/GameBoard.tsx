@@ -73,6 +73,11 @@ export default function GameBoardNew({ gameState, localPlayerIndex, isActive, av
     [gameState]
   );
 
+  const getIsLastPlayedTile = useCallback(
+    (tile: Tile) => isEqualTiles(gameState.boardTiles[gameState.boardTiles.length - 1], tile),
+    [gameState.boardTiles]
+  );
+
   return (
     <Box
       className='game-board'
@@ -99,6 +104,7 @@ export default function GameBoardNew({ gameState, localPlayerIndex, isActive, av
         }
 
         const isAvailableToSelect = getIsTileAvailableToSelect(tile);
+        const isLastPlayed = getIsLastPlayedTile(tile);
         const { color, text } = getTileColorText(tile);
 
         return (
@@ -109,6 +115,7 @@ export default function GameBoardNew({ gameState, localPlayerIndex, isActive, av
             isAvailableToSelect={isAvailableToSelect}
             setIsSelected={(value: boolean) => setSelectedTile(value ? tile : null)}
             isSelected={selectedTile != null && isEqualTiles(tile, selectedTile)}
+            isLastPlayed={isLastPlayed}
             color={color}
             isActive={isActive}
           />
